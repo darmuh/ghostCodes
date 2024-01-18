@@ -345,12 +345,23 @@ namespace ghostCodes
         //DO NOT REMOVE
         public override void OnNetworkSpawn()
         {
-
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-                Instance?.gameObject.GetComponent<NetworkObject>().Despawn();
-            Instance = this;
+            {
+                if (Instance != null && Instance.gameObject != null)
+                {
+                    NetworkObject networkObject = Instance.gameObject.GetComponent<NetworkObject>();
 
+                    if (networkObject != null)
+                    {
+                        networkObject.Despawn();
+                        Plugin.GC.LogInfo("Nethandler despawned!");
+                    }
+                }
+            }
+
+            Instance = this;
             base.OnNetworkSpawn();
+            Plugin.GC.LogInfo("Nethandler Spawned!");
         }
 
 
