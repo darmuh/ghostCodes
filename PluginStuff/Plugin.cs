@@ -1,13 +1,13 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
+using GameNetcodeStuff;
 using HarmonyLib;
 using System.Reflection;
 using UnityEngine;
 
-
 namespace ghostCodes
 {
-    [BepInPlugin("darmuh.ghostCodes", "ghostCodes", "1.5.1")]
+    [BepInPlugin("darmuh.ghostCodes", "ghostCodes", "2.0.0")]
 
     public class Plugin : BaseUnityPlugin
     {
@@ -16,10 +16,27 @@ namespace ghostCodes
         {
             public const string PLUGIN_GUID = "darmuh.ghostCodes";
             public const string PLUGIN_NAME = "ghostCodes";
-            public const string PLUGIN_VERSION = "1.5.1";
+            public const string PLUGIN_VERSION = "2.0.0";
         }
 
         internal static new ManualLogSource GC;
+
+        //variables
+        internal bool facilityMeltdown = false;
+        internal bool bypassGGE = false;
+        internal bool ghostCodeSent = false;
+        internal float groupSanity = 0f;
+        internal float maxSanity = 0f;
+        internal int playersAtStart = 0;
+        internal int codeCount = 0;
+        internal int randGC = 0;
+        internal PlayerControllerB[] players;
+
+        //Terminal Instance
+        internal Terminal Terminal;
+
+        //Dressgirl Instance
+        public DressGirlAI DressGirl;
 
         private void Awake()
         {
@@ -47,10 +64,14 @@ namespace ghostCodes
             }
 
             //end of networking stuff
-
-
         }
 
-        public static bool hauntStare = false;
+        public static void MoreLogs(string message)
+        {
+            if (gcConfig.extensiveLogging.Value)
+                Plugin.GC.LogInfo(message);
+            else
+                return;
+        }
     }
 }

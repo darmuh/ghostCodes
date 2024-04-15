@@ -38,7 +38,8 @@
     <Reference Include="0Harmony">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp" Publicize="true">
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" Publicize="true">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
@@ -46,6 +47,9 @@
     </Reference>
     <Reference Include="Facepunch.Steamworks.Win64">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Facepunch.Steamworks.Win64.dll</HintPath>
+    </Reference>
+    <Reference Include="FacilityMeltdown">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\dontloadpls\loaforc-FacilityMeltdown\FacilityMeltdown\FacilityMeltdown.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\netstandard.dll</HintPath>
@@ -87,6 +91,10 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
@@ -98,16 +106,48 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="dressGirlPatch.cs" />
-    <Compile Include="gcConfig.cs" />
-    <Compile Include="ghostCodesPatch.cs" />
-    <Compile Include="netHandler.cs" />
-    <Compile Include="netObject.cs" />
-    <Compile Include="Plugin.cs" />
+    <Compile Include="Interactions\Blastdoors.cs" />
+    <Compile Include="Interactions\TerminalAdditions.cs" />
+    <Compile Include="PluginStuff\Bools.cs" />
+    <Compile Include="CodeStuff\CodeActions.cs" />
+    <Compile Include="CodeStuff\CodeHandling.cs" />
+    <Compile Include="Compatibility\FacilityMeltdown.cs" />
+    <Compile Include="PluginStuff\Coroutines.cs" />
+    <Compile Include="Interactions\Doors.cs" />
+    <Compile Include="PluginStuff\gcConfig.cs" />
+    <Compile Include="Patches\GamePatchStuff.cs" />
+    <Compile Include="GhostGirlEnhanced\DressGirl.cs" />
+    <Compile Include="PluginStuff\InitPlugin.cs" />
+    <Compile Include="Insanity\InsanityStuff.cs" />
+    <Compile Include="Interactions\Lights.cs" />
+    <Compile Include="Interactions\Mines.cs" />
+    <Compile Include="PluginStuff\Misc.cs" />
+    <Compile Include="NetworkedStuff\NetHandler.cs" />
+    <Compile Include="NetworkedStuff\NetObject.cs" />
+    <Compile Include="PluginStuff\NumberStuff.cs" />
+    <Compile Include="PluginStuff\Plugin.cs" />
+    <Compile Include="PluginStuff\StringStuff.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CodeStuff\CodeStuff.cs" />
+    <Compile Include="PluginStuff\RapidFire.cs" />
+    <Compile Include="Interactions\ShipStuff.cs" />
+    <Compile Include="Interactions\ShowerStuff.cs" />
+    <Compile Include="Interactions\SignalTranslator.cs" />
+    <Compile Include="Interactions\SoundSystem.cs" />
+    <Compile Include="Patches\TerminalPatchStuff.cs" />
+    <Compile Include="Interactions\Turrets.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ghostngo" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="PackageStuff\icon.png" />
+    <Content Include="stuff.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PackageStuff\manifest.json" />
+    <None Include="PackageStuff\CHAGELOG.md" />
+    <None Include="PackageStuff\README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

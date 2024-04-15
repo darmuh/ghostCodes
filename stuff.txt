@@ -1,0 +1,16 @@
+﻿Z:\games\modding\LC\networkpatcher>netcode-patch plugins\darmuh-ghostCodes deps
+
+
+
+Networking required config items:
+fixGhostGirlBreakers
+ggEmoteCheck
+ggShowerCheck
+ggDeathNote
+gcRebootTerminal
+rfRapidLights
+rfRLcolorChange
+doorsOnShipEvent
+monitorsOnShipEvent
+shockTerminalUserEvent
+gcUseGirlSounds

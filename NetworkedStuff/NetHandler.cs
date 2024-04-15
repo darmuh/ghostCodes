@@ -1,8 +1,8 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
+using GameNetcodeStuff;
+using static ghostCodes.TerminalPatchStuff;
 
 namespace ghostCodes
 {
@@ -15,8 +15,14 @@ namespace ghostCodes
         //[ClientRpc]
 
         [ServerRpc(RequireOwnership = false)]
-        public void ggFlickerServerRpc()
+        public void GGFlickerServerRpc()
         {
+            if (RapidFire.meltdown)
+            {
+                NetHandler.Instance.AlarmLightsServerRpc(true);
+                return;
+            }
+                
             NetworkManager networkManager = base.NetworkManager;
 
             if (__rpc_exec_stage == __RpcExecStage.Server && (networkManager.IsHost || networkManager.IsServer))
@@ -34,87 +40,121 @@ namespace ghostCodes
                 Plugin.GC.LogInfo("no conditions met");
             }
 
-            ggFlickerClientRpc();
+            GGFlickerClientRpc();
         }
 
         [ClientRpc]
-        public void ggFlickerClientRpc()
+        public void GGFlickerClientRpc()
         {
+            if (RapidFire.meltdown)
+                return;
+
             NetworkManager networkManager = base.NetworkManager;
             if ((object)networkManager != null && networkManager.IsListening)
             {
                 if (__rpc_exec_stage != __RpcExecStage.Client && (networkManager.IsServer || networkManager.IsHost))
                 {
-                    Plugin.GC.LogInfo($"Network Manager failed to initialize.");
+                    Plugin.MoreLogs($"Network Manager failed to initialize.");
                 }
 
                 if (__rpc_exec_stage == __RpcExecStage.Client && (networkManager.IsClient && !networkManager.IsHost))
                 {
-                    RoundManager.Instance.FlickerLights(flickerFlashlights: true, disableFlashlights: true);
-                    Plugin.GC.LogInfo("flickering lights for non-HOST");
+                    RoundManager.Instance.FlickerLights(flickerFlashlights: true, disableFlashlights: false);
+                    Plugin.MoreLogs("flickering lights for non-HOST");
                 }
                 else if (__rpc_exec_stage == __RpcExecStage.Client && (networkManager.IsClient && networkManager.IsHost))
                 {
-                    RoundManager.Instance.FlickerLights(flickerFlashlights: true, disableFlashlights: true);
-                    Plugin.GC.LogInfo("flickering lights for HOST");
+                    RoundManager.Instance.FlickerLights(flickerFlashlights: true, disableFlashlights: false);
+                    Plugin.MoreLogs("flickering lights for HOST");
                 }
             }
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void EmptyShipServerRpc()
+        {
+            if (Plugin.instance.DressGirl == null)
+                return;
+
+            Plugin.MoreLogs($"SERVER: emptying ship");
+            EmptyShipClientRpc();
+        }
+
+        [ClientRpc]
+        public void EmptyShipClientRpc()
+        {
+            StartOfRound.Instance.StartCoroutine(Coroutines.EmptyShip());
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void ChangeDressGirlToPlayerServerRpc(string playerName)
+        {
+            if (Plugin.instance.DressGirl == null)
+                return;
+
+            Plugin.MoreLogs($"SERVER: Changing dressgirl to {playerName}");
+            ChangeDressGirlToPlayerClientRpc(playerName);
+        }
+
+        [ClientRpc]
+        public void ChangeDressGirlToPlayerClientRpc(string playerName)
+        {
+            if(Plugin.instance.DressGirl == null)
+            {
+                Plugin.MoreLogs("DressGirl instance is null");
+                return;
+            }
+
+            PlayerControllerB changeToPlayer = HauntedTerminal.GetPlayerFromString(playerName);
+            if (changeToPlayer != null)
+            {
+                Plugin.instance.DressGirl.switchedHauntingPlayer = true;
+                Plugin.instance.DressGirl.StartCoroutine(Plugin.instance.DressGirl.setSwitchingHauntingPlayer());
+                DressGirl.ChangeHauntedPlayer(changeToPlayer);
+                Plugin.MoreLogs($"Changing haunted player to {playerName}");
+            }
+
+        }
 
         [ServerRpc(RequireOwnership = false)]
         public void AlarmLightsServerRpc(bool normal)
         {
-            NetworkManager networkManager = base.NetworkManager;
+            if (!gcConfig.rfRLcolorChange.Value)
+                return;
 
-            if (__rpc_exec_stage == __RpcExecStage.Server && (networkManager.IsHost || networkManager.IsServer))
-            {
-                Plugin.GC.LogInfo($"Server: Syncing actions between players...");
-
-            }
-
-            else if (__rpc_exec_stage != __RpcExecStage.Server && (networkManager.IsHost || networkManager.IsServer))
-            {
-                Plugin.GC.LogInfo($"Exec stage not server");
-            }
-            else
-            {
-                Plugin.GC.LogInfo("no conditions met");
-            }
-
+            Plugin.MoreLogs("AlarmLights color ServerRpc");
             AlarmLightsClientRpc(normal);
         }
 
         [ClientRpc]
-        public void AlarmLightsClientRpc(bool normalLights)
+        public void AlarmLightsClientRpc(bool normalLights) //Color
         {
             NetworkManager networkManager = base.NetworkManager;
             if ((object)networkManager != null && networkManager.IsListening)
             {
                 if (__rpc_exec_stage != __RpcExecStage.Client && (networkManager.IsServer || networkManager.IsHost))
                 {
-                    Plugin.GC.LogInfo($"Network Manager failed to initialize.");
+                    Plugin.GC.LogError($"Network Manager failed to initialize.");
                 }
 
                 if (__rpc_exec_stage == __RpcExecStage.Client && networkManager.IsClient)
                 {
                     if (normalLights == false)
                     {
+                        Color32 configColor = Misc.ParseColorFromString(gcConfig.rfRLcolorValue.Value);
                         for (int i = 0; i < RoundManager.Instance.allPoweredLights.Count; i++)
                         {
-                            //RoundManager.Instance.allPoweredLights[i].color = new Color32(255, 143, 18, 1);
-                            
+                            RoundManager.Instance.allPoweredLights[i].color = configColor;
                         }
-                        Plugin.GC.LogInfo("Alarm lights set");
+                        Plugin.MoreLogs("Alarm lights set");
                     }
                     else if (normalLights == true)
                     {
                         for (int i = 0; i < RoundManager.Instance.allPoweredLights.Count; i++)
                         {
-                            //RoundManager.Instance.allPoweredLights[i].color = new Color32(255, 255, 255, 1);
-                            
+                            RoundManager.Instance.allPoweredLights[i].color = Color.white;
                         }
-                        Plugin.GC.LogInfo("Lights set back to normal");
+                        Plugin.MoreLogs("Lights set back to normal");
                     }
                 }
             }
@@ -122,7 +162,7 @@ namespace ghostCodes
 
 
         [ServerRpc(RequireOwnership = false)]
-        public void ggFacilityLightsServerRpc()
+        public void GGFacilityLightsServerRpc()
         {
             NetworkManager networkManager = base.NetworkManager;
 
@@ -141,11 +181,11 @@ namespace ghostCodes
                 Plugin.GC.LogInfo("no conditions met");
             }
 
-            ggFacilityLightsClientRpc();
+            GGFacilityLightsClientRpc();
         }
 
         [ClientRpc]
-        public void ggFacilityLightsClientRpc()
+        public void GGFacilityLightsClientRpc()
         {
             NetworkManager networkManager = base.NetworkManager;
             if ((object)networkManager != null && networkManager.IsListening)
@@ -204,50 +244,53 @@ namespace ghostCodes
             }
         }
 
-
         [ServerRpc(RequireOwnership = false)]
-        public void ggTermAudioServerRpc()
+        public void ShockTerminalSoundServerRpc()
         {
-            NetworkManager networkManager = base.NetworkManager;
-
-            if (__rpc_exec_stage == __RpcExecStage.Server && (networkManager.IsHost || networkManager.IsServer))
-            {
-                Plugin.GC.LogInfo($"Server: Syncing actions between players...");
-
-            }
-
-            else if (__rpc_exec_stage != __RpcExecStage.Server && (networkManager.IsHost || networkManager.IsServer))
-            {
-                Plugin.GC.LogInfo($"Exec stage not server");
-            }
-            else
-            {
-                Plugin.GC.LogInfo("no conditions met");
-            }
-
-            ggTermAudioClientRpc();
+            ShockTerminalSoundClientRpc();
         }
 
         [ClientRpc]
-        public void ggTermAudioClientRpc()
+        public void ShockTerminalSoundClientRpc()
         {
-            NetworkManager networkManager = base.NetworkManager;
-            if ((object)networkManager != null && networkManager.IsListening)
-            {
-                if (__rpc_exec_stage != __RpcExecStage.Client && (networkManager.IsServer || networkManager.IsHost))
-                {
-                    Plugin.GC.LogInfo($"Network Manager failed to initialize.");
-                }
+            SoundSystem.PlayTerminalSound(StartOfRound.Instance.damageSFX);
+        }
 
-                if (__rpc_exec_stage == __RpcExecStage.Client && (networkManager.IsClient || networkManager.IsHost))
-                {
-                    //string stringTest = "TEST - isHost/isServer (exec stage not client)";
-                    //string stringTest = "TEST - isHost/isServer (exec stage not client)";
-                    //string stringTest = "TEST - isHost/isServer (exec stage not client)";
-                    NetHandler.Instance.playGhostAudioonTerminal();
-                    //Plugin.GC.LogInfo("ghost making noise on the terminal");
-                }
-            }
+        [ServerRpc(RequireOwnership = false)]
+        public void RebootTerminalSpookyServerRpc()
+        {
+            RebootTerminalSpookyClientRpc();
+        }
+
+        [ClientRpc]
+        public void RebootTerminalSpookyClientRpc()
+        {
+            StartOfRound.Instance.StartCoroutine(TerminalAdditions.RebootTerminalSpooky());
+            Plugin.MoreLogs("Client Received Terminal Reboot");
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void MessWithMonitorsServerRpc()
+        {
+            MessWithMonitorsClientRpc();
+        }
+
+        [ClientRpc]
+        public void MessWithMonitorsClientRpc()
+        {
+            ShipStuff.MessWithMonitors();
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void GGTermAudioServerRpc(int num)
+        {
+            GGTermAudioClientRpc(num);
+        }
+
+        [ClientRpc]
+        public void GGTermAudioClientRpc(int num)
+        {
+            NetHandler.Instance.PlayGhostAudioonTerminal(num);
         }
 
 
@@ -307,38 +350,9 @@ namespace ghostCodes
                 
         }
 
-        public void playGhostAudioonTerminal()
+        public void PlayGhostAudioonTerminal(int num)
         {
-            //Plugin.GC.LogInfo($"start of playghost method");
-            Terminal getTerm = FindObjectOfType<Terminal>();
-            DressGirlAI dressGirl = FindObjectOfType<DressGirlAI>();
-            if (getTerm != null)
-            {
-                //Plugin.GC.LogInfo($"getting audioclips");
-                AudioClip[] audioClips = { getTerm.syncedAudios[3], getTerm.codeBroadcastSFX };
-                if (dressGirl != null)
-                {
-                    AudioClip[] ghostAudios = { dressGirl.breathingSFX, dressGirl.heartbeatMusic.clip };
-                    //Plugin.GC.LogInfo("ghost detected, adding dressgirl audios");
-
-                    audioClips = audioClips.Concat(dressGirl.appearStaringSFX).ToArray();
-                    audioClips = audioClips.Concat(ghostAudios).ToArray();
-                }
-                
-                //if(StartOfRound.Instance.currentLevel.levelAmbienceClips.insideAmbience.Length > 0)
-                  //  audioClips = audioClips.Concat(StartOfRound.Instance.currentLevel.levelAmbienceClips.insideAmbience).ToArray();
-
-                //audioClips = audioClips.Concat(SoundManager.Instance.heartbeatClips).ToArray();
-
-                //Plugin.GC.LogInfo($"concated all available audioclips");
-                //Plugin.GC.LogInfo($"{audioClips}");
-                // Choose a random audio clip from the combined array
-                getTerm.terminalAudio.clip = audioClips[Random.Range(0, audioClips.Length)];
-                Plugin.GC.LogInfo($"Playing on Terminal: {getTerm.terminalAudio.clip}");
-                getTerm.terminalAudio.PlayOneShot(getTerm.terminalAudio.clip);
-            }
-            else
-                Plugin.GC.LogInfo($"null objects detected");
+            Plugin.instance.Terminal.terminalAudio.PlayOneShot(SoundSystem.allSounds[num]);
         }
 
 

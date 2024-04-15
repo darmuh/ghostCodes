@@ -7,7 +7,7 @@ using GameObject = UnityEngine.GameObject;
 namespace ghostCodes
 {
     [HarmonyPatch]
-    public class netObject
+    public class NetObject
     {
 
         [HarmonyPostfix, HarmonyPatch(typeof(GameNetworkManager), nameof(GameNetworkManager.Start))]
