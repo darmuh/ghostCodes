@@ -1,6 +1,12 @@
 ## Change Log
 
-### [2.0.0] **CURRENT VERSION**
+### [2.0.1] **CURRENT VERSION**
+ - Hotfix to address compatibility issues with Terminal patch and other mods.
+	- Thanks to SourceShard of the modding discord for the quick report!
+	- Ghostly responses on the terminal will now always return to regular green terminal text color after 3 seconds.
+		- May change this in the future with an alternative solution.
+
+### [2.0.0]
  - Mod has been completely reworked for better performance and more readability between modes.
  - Readme updated for more clarity on different modes and configuration options.
  - Updated configuration file sections for clarity.
