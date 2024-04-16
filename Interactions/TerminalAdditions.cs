@@ -25,6 +25,7 @@ namespace ghostCodes
         internal static int rebootTime;
         internal static int deathNoteStrikes = 0;
         public static bool isTerminalRebooting = false;
+        internal static bool spookyColors = false;
 
         internal static string rebootConfirmName = "ghostCodes_confirm_reboot";
         internal static string rebootDenyName = "ghostCodes_deny_reboot";
@@ -33,6 +34,7 @@ namespace ghostCodes
         {
             isTerminalRebooting = false;
             rebootCommandExpired = false;
+            spookyColors = false;
             deathNoteStrikes = 0;
         }
 
@@ -54,7 +56,7 @@ namespace ghostCodes
             yield return new WaitForEndOfFrame();
             IsTerminalUsable(false);
             Plugin.instance.Terminal.terminalUIScreen.gameObject.SetActive(true);
-            Plugin.instance.Terminal.screenText.caretPosition = 0;
+            Plugin.instance.Terminal.screenText.caretPosition = Plugin.instance.Terminal.screenText.text.Length;
             yield return new WaitForSeconds(1);
             SetTerminalText(reboot_progress_1);
             endAllCodes = true;
@@ -97,16 +99,18 @@ namespace ghostCodes
                 Plugin.instance.Terminal.screenText.textComponent.color = Color.red;
                 Plugin.instance.Terminal.topRightText.color = Color.red;
                 Plugin.instance.Terminal.screenText.caretColor = Color.red;
+                spookyColors = true;
             }
             else
             {
-                Plugin.instance.Terminal.screenText.textComponent.color = Color.green;
-                Plugin.instance.Terminal.topRightText.color = Color.green;
-                Plugin.instance.Terminal.screenText.caretColor = Color.green;
+                Plugin.instance.Terminal.screenText.textComponent.color = TerminalPatchStuff.StartTerminal.screenTextDefaultColor;
+                Plugin.instance.Terminal.topRightText.color = TerminalPatchStuff.StartTerminal.topRightDefaultColor;
+                Plugin.instance.Terminal.screenText.caretColor = TerminalPatchStuff.StartTerminal.screenTextDefaultColor;
+                spookyColors = false;
             }
         }
 
-        internal static IEnumerator DelayedReturnToNormalText()
+        internal static IEnumerator DelayedReturnToNormalText() //quick fix to a null reference error in loadnode patch, not needed anymore
         {
             yield return new WaitForSeconds(3);
             SpookyTerminalColors(false);
@@ -219,7 +223,7 @@ namespace ghostCodes
                 string newText = $"\n\n\n\n\n\nI don't know anyone by that name! Guess you're stuck with me ^.^\n\n";
                 SetTerminalText(newText);
                 SpookyTerminalColors(true);
-                Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
+                //Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
                 return;
             }
 
@@ -228,7 +232,7 @@ namespace ghostCodes
                 string newText = $"\n\n\n\n\n\nYou're not getting rid of me that easy! :3\n\n";
                 SetTerminalText(newText);
                 SpookyTerminalColors(true);
-                Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
+                //Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
                 return;
             }
             else if (changeToPlayer.isPlayerControlled && !changeToPlayer.isPlayerDead)
@@ -239,7 +243,7 @@ namespace ghostCodes
                 SetTerminalText(newText);
                 SpookyTerminalColors(true);
                 deathNoteStrikes++;
-                Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
+                //Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
                 Plugin.MoreLogs("You should not be haunted anymore.");
                 return; // make sure you only skip if really necessary
             }
@@ -249,7 +253,7 @@ namespace ghostCodes
                 SetTerminalText(newText);
                 SpookyTerminalColors(true);
                 Plugin.MoreLogs("picked player is likely dead, this is an else statement");
-                Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
+                //Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
                 return;
             }
         }

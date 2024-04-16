@@ -54,6 +54,10 @@ namespace ghostCodes
         //ship stuff
         //internal static ConfigEntry<bool> emptyShipEvent;
         //internal static ConfigEntry<int> emptyShipChance;
+        internal static ConfigEntry<bool> normalTpEvent;
+        internal static ConfigEntry<int> normalTpChance;
+        internal static ConfigEntry<bool> inverseTpEvent;
+        internal static ConfigEntry<int> inverseTpChance;
         internal static ConfigEntry<bool> lightsOnShipEvent;
         internal static ConfigEntry<int> lightsOnShipChance;
         internal static ConfigEntry<bool> doorsOnShipEvent;
@@ -143,54 +147,42 @@ namespace ghostCodes
         internal static ConfigEntry<string> rfRLcolorValue;
         internal static ConfigEntry<bool> rfRLcolorChange;
 
+        //external mod stuff
+        internal static ConfigEntry<bool> toilHeadStuff;
+        internal static ConfigEntry<bool> toilHeadTurretDisable;
+        internal static ConfigEntry<int> toilHeadTurretDisableChance;
+        internal static ConfigEntry<bool> toilHeadTurretBerserk;
+        internal static ConfigEntry<int> toilHeadTurretBerserkChance;
+
         public static void SetConfigSettings()
         {
-            //Insanity Mode Values
-            sanityPercentL1 = Plugin.instance.Config.Bind("Insanity Mode", "sanityPercentL1", 25, new ConfigDescription("Set the percentage of the maximum sanity level required to reach Level 1 of Insanity Mode.", new AcceptableValueRange<int>(0, 100)));
-            sanityPercentL2 = Plugin.instance.Config.Bind("Insanity Mode", "sanityPercentL2", 50, new ConfigDescription("Set the percentage of the maximum sanity level required to reach Level 2 of Insanity Mode.", new AcceptableValueRange<int>(0, 100)));
-            sanityPercentL3 = Plugin.instance.Config.Bind("Insanity Mode", "sanityPercentL3", 75, new ConfigDescription("Set the percentage of the maximum sanity level required to reach Level 3 of Insanity Mode.", new AcceptableValueRange<int>(0, 100)));
-            sanityPercentMAX = Plugin.instance.Config.Bind("Insanity Mode", "sanityPercentMAX", 95, new ConfigDescription("Set the percentage of the maximum sanity level required to reach MAX Level of Insanity Mode and trigger rapid fire.", new AcceptableValueRange<int>(0, 100)));
-            waitPercentL1 = Plugin.instance.Config.Bind("Insanity Mode", "waitPercentL1", 90, new ConfigDescription("Set the percentage of the wait time to use after reaching Level 1 of Insanity Mode.", new AcceptableValueRange<int>(0, 100)));
-            waitPercentL2 = Plugin.instance.Config.Bind("Insanity Mode", "waitPercentL2", 50, new ConfigDescription("Set the percentage of the wait time to use after reaching Level 2 of Insanity Mode.", new AcceptableValueRange<int>(0, 100)));
-            waitPercentL3 = Plugin.instance.Config.Bind("Insanity Mode", "waitPercentL3", 10, new ConfigDescription("Set the percentage of the wait time to use after reaching Level 3 of Insanity Mode.", new AcceptableValueRange<int>(0, 100)));
-            waitPercentMAX = Plugin.instance.Config.Bind("Insanity Mode", "waitPercentMAX", 2, new ConfigDescription("Set the percentage of the wait time to use after reaching Max Level of Insanity Mode. (This is only triggered if rapidFire is disabled)", new AcceptableValueRange<int>(0, 100)));
 
-            //Insanity Buffs and Debuffs
-            deathBonus = Plugin.instance.Config.Bind<bool>("Insanity Mode", "deathBonus", false, "Toggle whether player deaths adds an insanity level bonus or not");
-            deathBonusNum = Plugin.instance.Config.Bind("Insanity Mode", "deathBonusNum", 5, new ConfigDescription("Increase of insanity level after a dead player is detected (lowered from previous max of 50).", new AcceptableValueRange<int>(0, 25)));
-            ggBonus = Plugin.instance.Config.Bind<bool>("Insanity Mode", "ggBonus", false, "Toggle whether the ghost girl being spawned adds an insanity level bonus or not");
-            ggBonusNum = Plugin.instance.Config.Bind("Insanity Mode", "ggBonusNum", 5, new ConfigDescription("Increase of insanity level once a ghostGirl has been spawned.", new AcceptableValueRange<int>(0, 25)));
-            soloAssist = Plugin.instance.Config.Bind<bool>("Solo Assistance", "soloAssist", true, "Enable this setting to reduce Insanity gains during solo play");
-            emoteBuff = Plugin.instance.Config.Bind<bool>("Insanity Mode", "emoteBuff", true, "Enable this to lower sanity whenever any living player is emoting.");
-            emoteBuffNum = Plugin.instance.Config.Bind("Insanity Mode", "emoteBuffNum", 10, new ConfigDescription("Decrease Amount of insanity level for each person that is emoting.", new AcceptableValueRange<int>(0, 25)));
+            //NETWORKING
+            ModNetworking = Plugin.instance.Config.Bind<bool>("__NETWORKING", "ModNetworking", true, "Disable this if you want to disable networking and use this mod as a Host-Only mod. This feature will completely disable GhostGirl Enhanced Mode.");
 
-            //Solo Assist Debuff Values
-            saS1percent = Plugin.instance.Config.Bind("Solo Assistance", "saS1percent", 50, new ConfigDescription("Percentage of Max Insanity required to hit Solo Assistance Buff during Stage 1 (beginning of day to Noon)", new AcceptableValueRange<int>(0, 100)));
-            saS1inside = Plugin.instance.Config.Bind("Solo Assistance", "saS1inside", 20, new ConfigDescription("Decrease of insanity level when inside the factory during Stage 1 (beginning of day to Noon)", new AcceptableValueRange<int>(0, 40)));
-            saS1outside = Plugin.instance.Config.Bind("Solo Assistance", "saS1outside", 25, new ConfigDescription("Decrease of insanity level when outside the factory during Stage 1 (beginning of day to Noon)", new AcceptableValueRange<int>(0, 40)));
-            saS2percent = Plugin.instance.Config.Bind("Solo Assistance", "saS2percent", 75, new ConfigDescription("Percentage of Max Insanity required to hit Solo Assistance Buff during Stage 2 (Noon to 5PM)", new AcceptableValueRange<int>(0, 100)));
-            saS2inside = Plugin.instance.Config.Bind("Solo Assistance", "saS2inside", 10, new ConfigDescription("Decrease of insanity level when inside the factory during Stage 2 (Noon to 5PM)", new AcceptableValueRange<int>(0, 40)));
-            saS2outside = Plugin.instance.Config.Bind("Solo Assistance", "saS2outside", 15, new ConfigDescription("Decrease of insanity level when outside the factory during Stage 2 (Noon to 5PM)", new AcceptableValueRange<int>(0, 40)));
-            saS3percent = Plugin.instance.Config.Bind("Solo Assistance", "saS3percent", 90, new ConfigDescription("Percentage of Max Insanity required to hit Solo Assistance Buff during Stage 3 (5PM - 10PM)", new AcceptableValueRange<int>(0, 100)));
-            saS3inside = Plugin.instance.Config.Bind("Solo Assistance", "saS3inside", 5, new ConfigDescription("Decrease of insanity level when inside the factory during Stage 3 (5PM - 10PM)", new AcceptableValueRange<int>(0, 40)));
-            saS3outside = Plugin.instance.Config.Bind("Solo Assistance", "saS3outside", 10, new ConfigDescription("Decrease of insanity level when outside the factory during Stage 3 (5PM - 10PM)", new AcceptableValueRange<int>(0, 40)));
+            //General
+            extensiveLogging = Plugin.instance.Config.Bind<bool>("General", "extensiveLogging", false, "Enable or Disable extensive log messages for this mod.");
+            
+            //GGE Mode Specific
+            GGEbypassList = Plugin.instance.Config.Bind("Ghost Girl Enhanced", "GGEbypassList", "Vow,Offense,March", "When using Ghost Girl Enhanced mode, this comma-separated list of moons will be bypassed for the next enabled mode (set to moons that the ghost girl cant spawn on by default).");
+            GGEbypass = Plugin.instance.Config.Bind<bool>("Ghost Girl Enhanced", "GGEbypass", true, "Enable or Disable bypassing Ghost Girl Enhanced on moons listed in GGEbypassList.");
+            gcGhostGirlOnly = Plugin.instance.Config.Bind<bool>("Ghost Girl Enhanced", "gcGhostGirlOnly", false, "When enabled, any config options listed in [gcGhostGirlOnlyList] will be set to disabled when GhostGirlEnhanced Mode is not active.");
+            gcGhostGirlOnlyList = Plugin.instance.Config.Bind("Ghost Girl Enhanced", "gcGhostGirlOnlyList", "ggShowerCheck,ggDeathNote,gcRebootTerminal", "when gcGhostGirlOnly is enabled, this comma-separated list of config options will be disabled when landing on moons in [GGEbypassList].");
 
             //GhostGirl Interactions
-            extensiveLogging = Plugin.instance.Config.Bind<bool>("General", "extensiveLogging", false, "Enable or Disable extensive log messages for this mod.");
-            GGEbypassList = Plugin.instance.Config.Bind("Ghost Girl", "GGEbypassList", "Vow, Offense, March", "Comma-separated list of moons Ghost Girl Enhanced mode will be bypassed for another mode (set to moons that ghostgirl cant spawn on by default).");
-            GGEbypass = Plugin.instance.Config.Bind<bool>("Ghost Girl", "GGEbypass", true, "Enable or Disable bypassing Ghost Girl Enhanced on moons listed in GGEbypassList.");
-            gcGhostGirlOnlyList = Plugin.instance.Config.Bind("Ghost Girl", "gcGhostGirlOnlyList", "ggShowerCheck, ggDeathNote, gcRebootTerminal", "Comma-separated list of moons Ghost Girl Enhanced mode will be bypassed for another mode (set to moons that ghostgirl cant spawn on by default).");
-            gcGhostGirlOnly = Plugin.instance.Config.Bind<bool>("Ghost Girl", "gcGhostGirlOnly", false, "Enable or Disable bypassing Ghost Girl Enhanced on moons listed in GGEbypassList.");
-            ggPlayerLightsPercent = Plugin.instance.Config.Bind("Ghost Girl", "ggPlayerLightsPercent", 45, new ConfigDescription("Set the percentage chance that the ghostGirl will flicker a player's lights during a ghostCode event.", new AcceptableValueRange<int>(0, 100)));
-            fixGhostGirlBreakers = Plugin.instance.Config.Bind<bool>("Ghost Girl", "fixGhostGirlBreakers", true, "Fix the vanilla code so that the ghost girl can flip the breakers at the start of a chase.");
-            ggEmoteStopChasingChance = Plugin.instance.Config.Bind("Ghost Girl", "ggEmoteStopChasingChance", 95, new ConfigDescription("How effective emoting to get the ghost girl to stop chasing you is.", new AcceptableValueRange<int>(0, 100)));
-            ggEmoteStopChasePlayers = Plugin.instance.Config.Bind("Ghost Girl", "ggEmoteStopChasePlayers", 75, new ConfigDescription("Percentage of living players required to stop ghost girl from chasing.", new AcceptableValueRange<int>(0, 100)));
-            ggEmoteCheck = Plugin.instance.Config.Bind<bool>("Ghost Girl", "ggEmoteCheck", true, "Enable or Disable emoting to stop the ghost girl from chasing you.");
-            ggShowerCheck = Plugin.instance.Config.Bind<bool>("Ghost Girl", "ggShowerCheck", true, "Enable or Disable taking a shower to stop the ghost girl from chasing you.");
-            ggShowerStopChasingChance = Plugin.instance.Config.Bind("Ghost Girl", "ggShowerStopChasingChance", 95, new ConfigDescription("How effective taking a shower to get the ghost girl to stop chasing you is.", new AcceptableValueRange<int>(0, 100)));
-            ggDeathNoteChance = Plugin.instance.Config.Bind("Ghost Girl", "ggDeathNoteChance", 65, new ConfigDescription("How effective typing a player's name in the terminal is to transfer the haunting.", new AcceptableValueRange<int>(0, 100)));
-            ggDeathNote = Plugin.instance.Config.Bind<bool>("Ghost Girl", "ggDeathNote", true, "Enable or Disable typing a name in the terminal to transfer the ghost girl to another player.");
-            ggDeathNoteMaxStrikes = Plugin.instance.Config.Bind("Ghost Girl", "ggDeathNoteMaxStrikes", 3, new ConfigDescription("Amount of times you can sucessfully use the death note to transfer hauntings, use -1 for infinite transfers.", new AcceptableValueRange<int>(-1, 25)));
+            ggPlayerLightsPercent = Plugin.instance.Config.Bind("Ghost Girl Interactions", "ggPlayerLightsPercent", 45, new ConfigDescription("Set the percentage chance that the ghostGirl will flicker a player's lights during a ghostCode event.", new AcceptableValueRange<int>(0, 100)));
+            fixGhostGirlBreakers = Plugin.instance.Config.Bind<bool>("Ghost Girl Interactions", "fixGhostGirlBreakers", true, "Fix the vanilla code so that the ghost girl can flip the breakers at the start of a chase.");
+            ggEmoteStopChasingChance = Plugin.instance.Config.Bind("Ghost Girl Interactions", "ggEmoteStopChasingChance", 95, new ConfigDescription("How effective emoting to get the ghost girl to stop chasing you is.", new AcceptableValueRange<int>(0, 100)));
+            ggEmoteStopChasePlayers = Plugin.instance.Config.Bind("Ghost Girl Interactions", "ggEmoteStopChasePlayers", 75, new ConfigDescription("Percentage of living players required to stop ghost girl from chasing.", new AcceptableValueRange<int>(0, 100)));
+            ggEmoteCheck = Plugin.instance.Config.Bind<bool>("Ghost Girl Interactions", "ggEmoteCheck", true, "Enable or Disable emoting to stop the ghost girl from chasing you.");
+            ggShowerCheck = Plugin.instance.Config.Bind<bool>("Ghost Girl Interactions", "ggShowerCheck", true, "Enable or Disable taking a shower to stop the ghost girl from chasing you.");
+            ggShowerStopChasingChance = Plugin.instance.Config.Bind("Ghost Girl Interactions", "ggShowerStopChasingChance", 95, new ConfigDescription("How effective taking a shower to get the ghost girl to stop chasing you is.", new AcceptableValueRange<int>(0, 100)));
+            ggDeathNoteChance = Plugin.instance.Config.Bind("Ghost Girl Interactions", "ggDeathNoteChance", 65, new ConfigDescription("How effective typing a player's name in the terminal is to transfer the haunting.", new AcceptableValueRange<int>(0, 100)));
+            ggDeathNote = Plugin.instance.Config.Bind<bool>("Ghost Girl Interactions", "ggDeathNote", true, "Enable or Disable typing a name in the terminal to transfer the ghost girl to another player.");
+            ggDeathNoteMaxStrikes = Plugin.instance.Config.Bind("Ghost Girl Interactions", "ggDeathNoteMaxStrikes", 3, new ConfigDescription("Amount of times you can sucessfully use the death note to transfer hauntings, use -1 for infinite transfers.", new AcceptableValueRange<int>(-1, 25)));
+            ggVanillaBreakerChance = Plugin.instance.Config.Bind("Ghost Girl Interactions", "ggVanillaBreakerChance", 20, new ConfigDescription("Percent chance the ghost girl will flip the breakers when beginning a chase.", new AcceptableValueRange<int>(0, 100)));
+
+            //Terminal Reboot
             gcRebootEfficacy = Plugin.instance.Config.Bind("Terminal Reboot", "ggRebootEfficacy", 75, new ConfigDescription("How effective rebooting the terminal is to delay ghostCodes.", new AcceptableValueRange<int>(0, 100)));
             gcRebootTerminal = Plugin.instance.Config.Bind<bool>("Terminal Reboot", "gcRebootTerminal", true, "Enable or Disable adding a reboot command to fight back against ghostCodes by rebooting the terminal.");
 
@@ -205,13 +197,16 @@ namespace ghostCodes
             //Turret Berserk Stuff
             turretNormalBChance = Plugin.instance.Config.Bind("Turret", "turretNormalBChance", 20, new ConfigDescription("How rare it is for the turret to go berserk from a normal ghostCode.", new AcceptableValueRange<int>(0, 100)));
             turretInsaneBChance = Plugin.instance.Config.Bind("Turret", "turretInsaneBChance", 65, new ConfigDescription("How rare it is for the turret to go berserk during rapidFire event.", new AcceptableValueRange<int>(0, 100)));
+            
+            //Mine Boom
             mineNormalBChance = Plugin.instance.Config.Bind("Mine", "mineNormalBChance", 10, new ConfigDescription("How rare it is for a mine to blow itself up from a normal ghostCode.", new AcceptableValueRange<int>(0, 100)));
             mineInsaneBChance = Plugin.instance.Config.Bind("Mine", "mineInsaneBChance", 65, new ConfigDescription("How rare it is for a mine to blow itself up during rapidFire event.", new AcceptableValueRange<int>(0, 100)));
+            
+            //Hungry Door
             hungryDoorNChance = Plugin.instance.Config.Bind("Blast Door", "hungryDoorNChance", 10, new ConfigDescription("How rare it is for a blast door to start biting from a normal ghostCode.", new AcceptableValueRange<int>(0, 100)));
             hungryDoorIChance = Plugin.instance.Config.Bind("Blast Door", "hungryDoorIChance", 65, new ConfigDescription("How rare it is for a blast door to start biting during rapidFire event.", new AcceptableValueRange<int>(0, 100)));
 
             //Facility Lights & RapidFire
-            ggVanillaBreakerChance = Plugin.instance.Config.Bind("Ghost Girl", "ggVanillaBreakerChance", 20, new ConfigDescription("Percent chance the ghost girl will flip the breakers when beginning a chase.", new AcceptableValueRange<int>(0, 100)));
             ggCodeBreakerChance = Plugin.instance.Config.Bind("Facility Lights", "ggCodeBreakerChance", 3, new ConfigDescription("How rare it is for a ghostCode to flip the breaker and turn off the facility lights.", new AcceptableValueRange<int>(0, 100)));
             rfRapidLights = Plugin.instance.Config.Bind<bool>("RapidFire", "rfRapidLights", true, "Disable this to remove light flashing effect during RapidFire event. (DISABLE THIS IF YOU HAVE SEVERE EPILEPSY)");
             rfRLmin = Plugin.instance.Config.Bind("RapidFire", "rfRLmin", 0.2f, new ConfigDescription("Set shortest possible time between each light flickering effect during rapidFire event.", new AcceptableValueRange<float>(0.1f, 10f)));
@@ -233,23 +228,23 @@ namespace ghostCodes
             lockSingleDoorChance = Plugin.instance.Config.Bind("Regular Doors", "lockSingleDoorChance", 35, new ConfigDescription("How rare it is for the lockSingleDoorChance to be called from a normal ghostCode.", new AcceptableValueRange<int>(0, 100)));
             unlockSingleDoorEvent = Plugin.instance.Config.Bind<bool>("Regular Doors", "unlockSingleDoorEvent", true, "Disable or Enable ghostCodes being able to unlock a single door in the facility at random");
             unlockSingleDoorChance = Plugin.instance.Config.Bind("Regular Doors", "unlockSingleDoorChance", 35, new ConfigDescription("How rare it is for the unlockSingleDoorChance to be called from a normal ghostCode.", new AcceptableValueRange<int>(0, 100)));
-            
+
             //ShipStuff
             //emptyShipEvent = Plugin.instance.Config.Bind<bool>("Ship Stuff", "emptyShipEvent", true, "Disable or Enable ghostCodes being able to suck any players that are currently in the ship");
             //emptyShipChance = Plugin.instance.Config.Bind("Ship Stuff", "emptyShipChance", 25, new ConfigDescription("How rare it is to call the emptyShipEvent ghostcode.", new AcceptableValueRange<int>(0, 100)));
+            normalTpEvent = Plugin.instance.Config.Bind<bool>("Ship Stuff", "normalTpEvent", true, "Disable or Enable ghostCodes being able to mess with the normal teleporter");
+            normalTpChance = Plugin.instance.Config.Bind("Ship Stuff", "normalTpChance", 5, new ConfigDescription("How rare it is to call the normalTpEvent ghostcode.", new AcceptableValueRange<int>(0, 100)));
+            inverseTpEvent = Plugin.instance.Config.Bind<bool>("Ship Stuff", "inverseTpEvent", true, "Disable or Enable ghostCodes being able to mess with the inverse teleporter");
+            inverseTpChance = Plugin.instance.Config.Bind("Ship Stuff", "inverseTpChance", 15, new ConfigDescription("How rare it is to call the inverseTpEvent ghostcode.", new AcceptableValueRange<int>(0, 100)));
             lightsOnShipEvent = Plugin.instance.Config.Bind<bool>("Ship Stuff", "lightsOnShipEvent", true, "Disable or Enable ghostCodes being able to mess with the lights on the ship");
-            lightsOnShipChance = Plugin.instance.Config.Bind("Ship Stuff", "lightsOnShipChance", 25, new ConfigDescription("How rare it is to call the lightsOnShipEvent ghostcode.", new AcceptableValueRange<int>(0, 100)));
+            lightsOnShipChance = Plugin.instance.Config.Bind("Ship Stuff", "lightsOnShipChance", 30, new ConfigDescription("How rare it is to call the lightsOnShipEvent ghostcode.", new AcceptableValueRange<int>(0, 100)));
             doorsOnShipEvent = Plugin.instance.Config.Bind<bool>("Ship Stuff", "doorsOnShipEvent", true, "Disable or Enable ghostCodes being able to mess with the doors on the ship");
-            doorsOnShipChance = Plugin.instance.Config.Bind("Ship Stuff", "doorsOnShipChance", 25, new ConfigDescription("How rare it is to call the doorsOnShipEvent ghostcode.", new AcceptableValueRange<int>(0, 100)));
+            doorsOnShipChance = Plugin.instance.Config.Bind("Ship Stuff", "doorsOnShipChance", 30, new ConfigDescription("How rare it is to call the doorsOnShipEvent ghostcode.", new AcceptableValueRange<int>(0, 100)));
             monitorsOnShipEvent = Plugin.instance.Config.Bind<bool>("Ship Stuff", "monitorsOnShipEvent", true, "Disable or Enable ghostCodes being able to mess with the monitors on the ship");
-            monitorsOnShipChance = Plugin.instance.Config.Bind("Ship Stuff", "monitorsOnShipChance", 25, new ConfigDescription("How rare it is to call the monitorsOnShipEvent ghostcode.", new AcceptableValueRange<int>(0, 100)));
+            monitorsOnShipChance = Plugin.instance.Config.Bind("Ship Stuff", "monitorsOnShipChance", 45, new ConfigDescription("How rare it is to call the monitorsOnShipEvent ghostcode.", new AcceptableValueRange<int>(0, 100)));
             shockTerminalUserEvent = Plugin.instance.Config.Bind<bool>("Ship Stuff", "shockTerminalUserEvent", true, "Disable or Enable ghostCodes being able to shock any active terminal user on the ship");
-            shockTerminalUserChance = Plugin.instance.Config.Bind("Ship Stuff", "shockTerminalUserChance", 25, new ConfigDescription("How rare it is to call the shockTerminalUserEvent ghostcode.", new AcceptableValueRange<int>(0, 100)));
+            shockTerminalUserChance = Plugin.instance.Config.Bind("Ship Stuff", "shockTerminalUserChance", 10, new ConfigDescription("How rare it is to call the shockTerminalUserEvent ghostcode.", new AcceptableValueRange<int>(0, 100)));
             monitorMessages = Plugin.instance.Config.Bind("Ship Stuff", "monitorMessages", "BEHIND YOU, HAVING FUN?, TAG YOU'RE IT, DANCE FOR ME, IM HIDING, #######, ERROR, DEATH, NO MORE SCRAP", "Comma-separated list of messages the ghostGirl can display on the ship monitors when sending a code.");
-
-
-            //Misc
-            ModNetworking = Plugin.instance.Config.Bind<bool>("__NETWORKING", "ModNetworking", true, "Disable this if you want to disable networking and use this mod as a Host-Only mod. This feature will completely disable GhostGirl Enhanced Mode.");
             
             //Sounds
             gcEnableTerminalSound = Plugin.instance.Config.Bind<bool>("Sounds", "gcEnableTerminalSound", true, "This setting determines whether the terminal will play any sound when a ghost code is entered.");
@@ -258,7 +253,6 @@ namespace ghostCodes
             gcUseGirlSounds = Plugin.instance.Config.Bind<bool>("Sounds", "gcUseGirlSounds", true, "When a ghost girl is present, enabling this will have the terminal play some of the sounds she makes when a ghostCode is run.");
             gcUseTerminalAlarmSound = Plugin.instance.Config.Bind<bool>("Sounds", "gcUseTerminalAlarmSound", true, "Enable or disable the terminal alarm sound playing when a ghostCode is run. NOTE: With networking disabled, this is the only possible sound to play.");
 
-
             //TerminalObjects Filter
             gcIgnoreLandmines = Plugin.instance.Config.Bind<bool>("Mine", "gcIgnoreLandmines", false, "Toggle whether ghostCodes ignore landmines");
             gcIgnoreTurrets = Plugin.instance.Config.Bind<bool>("Turret", "gcIgnoreTurrets", false, "Toggle whether ghostCodes ignore turrets");
@@ -266,17 +260,17 @@ namespace ghostCodes
 
             //Mode Settings
             ghostGirlEnhanced = Plugin.instance.Config.Bind<bool>("Mode Settings", "ghostGirlEnhanced", true, "Ghost Girl Enhanced Mode, will replace insanity & normal ghost codes modes");
-            useRandomIntervals = Plugin.instance.Config.Bind<bool>("Mode Settings", "useRandomIntervals", true, "Disable this to use the 'set' intervals");
-            gcInsanity = Plugin.instance.Config.Bind<bool>("Mode Settings", "gcInsanity", true, "Enable this to have player insanity levels affect the frequency of ghost codes sent.");
+            useRandomIntervals = Plugin.instance.Config.Bind<bool>("Mode Settings", "useRandomIntervals", true, "Disable this to use the 'set' intervals, all modes use intervals on first load.");
+            gcInsanity = Plugin.instance.Config.Bind<bool>("Mode Settings", "gcInsanity", true, "This will enable insanity mode, a secondary mode that sends ghost codes based on group sanity levels. (Can be used alongside GGE mode with GGEBypass)");
             insanityRapidFire = Plugin.instance.Config.Bind<bool>("Mode Settings", "insanityRapidFire", true, "Set this to false to disable rapidFire on Max Insanity (Insanity Mode ONLY)");
             rapidFireCooldown = Plugin.instance.Config.Bind<bool>("Mode Settings", "rapidFireCooldown", true, "rapidFireCooldown adds a cooldown to rapidFire when on Max Insanity (Insanity Mode ONLY)");
             rapidFireMaxHours = Plugin.instance.Config.Bind("Mode Settings", "rapidFireMaxHours", 1, new ConfigDescription("Set the maximum amount of hours for rapidFire to be active when on Max Insanity (Insanity Mode ONLY).", new AcceptableValueRange<int>(1, 12)));
 
-            //Max Codes per round
+            //Code stuff
             gcMinCodes = Plugin.instance.Config.Bind<int>("Codes", "gcMinCodes", 0, "This is the minimum amount of ghost codes that WILL be sent in one round. If you'd like for there to be the possibility of no codes set this to 0.");
             gcMaxCodes = Plugin.instance.Config.Bind<int>("Codes", "gcMaxCodes", 100, "This is the maximum amount of ghost codes that CAN be sent in one round, a random number of codes will be chosen with this value set as the maximum");
-            ggIgnoreCodeCount = Plugin.instance.Config.Bind<bool>("Codes", "ggIgnoreCodeCount", true, "Set this to false if you want to have a maximum amount of codes to send when codes depend on hauntings.");
-            enableBroadcastEffect = Plugin.instance.Config.Bind<bool>("Codes", "enableBroadcastEffect", true, "Set this to false if you want to disable the code broadcast effect during a ghost code event.");
+            ggIgnoreCodeCount = Plugin.instance.Config.Bind<bool>("Codes", "ggIgnoreCodeCount", true, "Set this to false if you want to have a maximum amount of codes to send when codes depend on hauntings in GGE mode.");
+            enableBroadcastEffect = Plugin.instance.Config.Bind<bool>("Codes", "enableBroadcastEffect", true, "Set this to false if you want to disable the code broadcast effect on the terminal during a ghost code event.");
 
             //set interval
             gcFirstSetInterval = Plugin.instance.Config.Bind<int>("Set Interval Configurations", "gcFirstSetInterval", 90, "This is the initial time it takes to start loading codes after landing the ship");
@@ -290,6 +284,44 @@ namespace ghostCodes
             gcFirstRandIntervalMax = Plugin.instance.Config.Bind<int>("Random Interval Configurations", "gcFirstRandIntervalMax", 120, "This is the maximum time it should take to start loading codes after landing the ship");
             gcSecondRandIntervalMax = Plugin.instance.Config.Bind<int>("Random Interval Configurations", "gcSecondRandIntervalMax", 60, "This is the maximum time it should take to load the code once it has been picked");
             gcRandIntervalACMax = Plugin.instance.Config.Bind<int>("Random Interval Configurations", "gcRandIntervalACMax", 240, "This is the maximum time it should wait to pick another code");
+
+            //Insanity Mode Values
+            sanityPercentL1 = Plugin.instance.Config.Bind("Insanity Mode", "sanityPercentL1", 25, new ConfigDescription("Set the percentage of the maximum sanity level required to reach Level 1 of Insanity Mode.", new AcceptableValueRange<int>(0, 100)));
+            sanityPercentL2 = Plugin.instance.Config.Bind("Insanity Mode", "sanityPercentL2", 50, new ConfigDescription("Set the percentage of the maximum sanity level required to reach Level 2 of Insanity Mode.", new AcceptableValueRange<int>(0, 100)));
+            sanityPercentL3 = Plugin.instance.Config.Bind("Insanity Mode", "sanityPercentL3", 75, new ConfigDescription("Set the percentage of the maximum sanity level required to reach Level 3 of Insanity Mode.", new AcceptableValueRange<int>(0, 100)));
+            sanityPercentMAX = Plugin.instance.Config.Bind("Insanity Mode", "sanityPercentMAX", 95, new ConfigDescription("Set the percentage of the maximum sanity level required to reach MAX Level of Insanity Mode and trigger rapid fire.", new AcceptableValueRange<int>(0, 100)));
+            waitPercentL1 = Plugin.instance.Config.Bind("Insanity Mode", "waitPercentL1", 90, new ConfigDescription("Set the percentage of the wait time to use after reaching Level 1 of Insanity Mode.", new AcceptableValueRange<int>(0, 100)));
+            waitPercentL2 = Plugin.instance.Config.Bind("Insanity Mode", "waitPercentL2", 50, new ConfigDescription("Set the percentage of the wait time to use after reaching Level 2 of Insanity Mode.", new AcceptableValueRange<int>(0, 100)));
+            waitPercentL3 = Plugin.instance.Config.Bind("Insanity Mode", "waitPercentL3", 10, new ConfigDescription("Set the percentage of the wait time to use after reaching Level 3 of Insanity Mode.", new AcceptableValueRange<int>(0, 100)));
+            waitPercentMAX = Plugin.instance.Config.Bind("Insanity Mode", "waitPercentMAX", 2, new ConfigDescription("Set the percentage of the wait time to use after reaching Max Level of Insanity Mode. (This is only triggered if rapidFire is disabled)", new AcceptableValueRange<int>(0, 100)));
+
+            //Insanity Buffs and Debuffs
+            deathBonus = Plugin.instance.Config.Bind<bool>("Insanity Mode", "deathBonus", false, "Toggle whether player deaths adds an insanity level bonus or not");
+            deathBonusNum = Plugin.instance.Config.Bind("Insanity Mode", "deathBonusNum", 5, new ConfigDescription("Increase of insanity level after a dead player is detected (lowered from previous max of 50).", new AcceptableValueRange<int>(0, 25)));
+            ggBonus = Plugin.instance.Config.Bind<bool>("Insanity Mode", "ggBonus", false, "Toggle whether the ghost girl being spawned adds an insanity level bonus or not");
+            ggBonusNum = Plugin.instance.Config.Bind("Insanity Mode", "ggBonusNum", 5, new ConfigDescription("Increase of insanity level once a ghostGirl has been spawned.", new AcceptableValueRange<int>(0, 25)));
+            emoteBuff = Plugin.instance.Config.Bind<bool>("Insanity Mode", "emoteBuff", true, "Enable this to lower sanity whenever any living player is emoting.");
+            emoteBuffNum = Plugin.instance.Config.Bind("Insanity Mode", "emoteBuffNum", 10, new ConfigDescription("Decrease Amount of insanity level for each person that is emoting.", new AcceptableValueRange<int>(0, 25)));
+
+            //Solo Assist Debuff Values
+            soloAssist = Plugin.instance.Config.Bind<bool>("Solo Assistance", "soloAssist", true, "Enable this setting to reduce Insanity gains during solo play");
+            saS1percent = Plugin.instance.Config.Bind("Solo Assistance", "saS1percent", 50, new ConfigDescription("Percentage of Max Insanity required to hit Solo Assistance Buff during Stage 1 (beginning of day to Noon)", new AcceptableValueRange<int>(0, 100)));
+            saS1inside = Plugin.instance.Config.Bind("Solo Assistance", "saS1inside", 20, new ConfigDescription("Decrease of insanity level when inside the factory during Stage 1 (beginning of day to Noon)", new AcceptableValueRange<int>(0, 40)));
+            saS1outside = Plugin.instance.Config.Bind("Solo Assistance", "saS1outside", 25, new ConfigDescription("Decrease of insanity level when outside the factory during Stage 1 (beginning of day to Noon)", new AcceptableValueRange<int>(0, 40)));
+            saS2percent = Plugin.instance.Config.Bind("Solo Assistance", "saS2percent", 75, new ConfigDescription("Percentage of Max Insanity required to hit Solo Assistance Buff during Stage 2 (Noon to 5PM)", new AcceptableValueRange<int>(0, 100)));
+            saS2inside = Plugin.instance.Config.Bind("Solo Assistance", "saS2inside", 10, new ConfigDescription("Decrease of insanity level when inside the factory during Stage 2 (Noon to 5PM)", new AcceptableValueRange<int>(0, 40)));
+            saS2outside = Plugin.instance.Config.Bind("Solo Assistance", "saS2outside", 15, new ConfigDescription("Decrease of insanity level when outside the factory during Stage 2 (Noon to 5PM)", new AcceptableValueRange<int>(0, 40)));
+            saS3percent = Plugin.instance.Config.Bind("Solo Assistance", "saS3percent", 90, new ConfigDescription("Percentage of Max Insanity required to hit Solo Assistance Buff during Stage 3 (5PM - 10PM)", new AcceptableValueRange<int>(0, 100)));
+            saS3inside = Plugin.instance.Config.Bind("Solo Assistance", "saS3inside", 5, new ConfigDescription("Decrease of insanity level when inside the factory during Stage 3 (5PM - 10PM)", new AcceptableValueRange<int>(0, 40)));
+            saS3outside = Plugin.instance.Config.Bind("Solo Assistance", "saS3outside", 10, new ConfigDescription("Decrease of insanity level when outside the factory during Stage 3 (5PM - 10PM)", new AcceptableValueRange<int>(0, 40)));
+
+            //external mod stuff
+            toilHeadStuff = Plugin.instance.Config.Bind<bool>("External Mod Stuff", "toilHeadStuff", false, "If ToilHead by Zehs is detected, check for any living toilheads and add their turrets to potential ghost code interactions.");
+            toilHeadTurretDisable = Plugin.instance.Config.Bind<bool>("External Mod Stuff", "toilHeadTurretDisable", false, "If ToilHead by Zehs is detected, allows ghost codes to disable the turret on top of the coil head.");
+            toilHeadTurretDisableChance = Plugin.instance.Config.Bind("External Mod Stuff", "toilHeadTurretDisableChance", 30, new ConfigDescription("Chance of toilHeadTurretDisable being called in a ghostCode.", new AcceptableValueRange<int>(0, 100)));
+            toilHeadTurretBerserk = Plugin.instance.Config.Bind<bool>("External Mod Stuff", "toilHeadTurretBerserk", false, "If ToilHead by Zehs is detected, allows ghost codes to set the turret on top of the coil head into berserk mode.");
+            toilHeadTurretBerserkChance = Plugin.instance.Config.Bind("External Mod Stuff", "toilHeadTurretBerserkChance", 5, new ConfigDescription("Chance of toilHeadTurretBerserk being called in a ghostCode.", new AcceptableValueRange<int>(0, 100)));
+
 
             Plugin.GC.LogInfo("ghostCodes config initialized");
             RemoveOrphanedEntries();

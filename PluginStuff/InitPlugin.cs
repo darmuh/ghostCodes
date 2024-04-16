@@ -38,7 +38,10 @@ namespace ghostCodes
 
             Plugin.MoreLogs("Initializing GhostGirlEnhanced Bypass List");
 
-            List<string> noGhostPlanets = gcConfig.GGEbypassList.Value.Split(',').ToList();
+            List<string> noGhostPlanets = gcConfig.GGEbypassList.Value
+                                      .Split(',')
+                                      .Select(item => item.TrimStart())
+                                      .ToList();
 
             if (gcConfig.GGEbypass.Value && (noGhostPlanets.Any(planet => StartOfRound.Instance.currentLevel.PlanetName.Contains(planet))))
             {
@@ -58,7 +61,9 @@ namespace ghostCodes
 
             Plugin.MoreLogs("Checking gcGhostGirlOnlyList");
 
-            List<string> ghostGirlOnly = gcConfig.gcGhostGirlOnlyList.Value.Split(',').ToList();
+            List<string> ghostGirlOnly = gcConfig.gcGhostGirlOnlyList.Value.Split(',')
+                                      .Select(item => item.TrimStart())
+                                      .ToList();
 
             // Check if ghost girl enhancement is disabled or bypassed
             if (!gcConfig.ghostGirlEnhanced.Value || Plugin.instance.bypassGGE)
