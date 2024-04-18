@@ -63,6 +63,11 @@ namespace ghostCodes
 
             if (!gcConfig.ghostGirlEnhanced.Value || Plugin.instance.bypassGGE)
                 return GameNetworkManager.Instance.gameHasStarted;
+            else if(Plugin.instance.DressGirl == null)
+            {
+                Plugin.MoreLogs("dressgirl instance is null");
+                return false;
+            }   
             else
                 return GameNetworkManager.Instance.gameHasStarted && Plugin.instance.DressGirl.hauntingLocalPlayer == StartOfRound.Instance.localPlayerController;
         }
@@ -83,7 +88,7 @@ namespace ghostCodes
             if (endAllCodes || RapidFire.startRapidFire)
                 return false;
 
-            return !StartOfRound.Instance.allPlayersDead && Plugin.instance.codeCount < Plugin.instance.randGC && !StartOfRound.Instance.shipIsLeaving && Plugin.instance.DressGirl.staringInHaunt && !DressGirl.performingAction && !Plugin.instance.DressGirl.hauntingPlayer.isPlayerDead;
+            return !StartOfRound.Instance.allPlayersDead && Plugin.instance.codeCount < Plugin.instance.randGC && !StartOfRound.Instance.shipIsLeaving && Plugin.instance.DressGirl.staringInHaunt && !Plugin.instance.DressGirl.hauntingPlayer.isPlayerDead;
         }
 
         internal static bool isThisaMine(int randomObjectNum)

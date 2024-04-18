@@ -284,42 +284,31 @@ namespace ghostCodes
         {
             Plugin.MoreLogs("GhostGirl is being enhanced");
 
-            while (KeepSendingCodes())
+            if (startRapidFire)
             {
-                float timeWait1 = Random.Range(0.75f, 1.5f);
-                if (startRapidFire)
+                yield break;
+            }
+
+            while (Plugin.instance.DressGirl.staringInHaunt)
+            {
+                float timeWait2 = Random.Range(1f, 4f);
+                if (!Plugin.instance.ghostCodeSent && !girlIsChasing)
                 {
+                    HandleGhostCodeSending(instance);
+                    Plugin.instance.ghostCodeSent = true;
+                }
+                else
+                {
+                    Plugin.GC.LogInfo($"ghostCode was just sent, waiting {timeWait2}");
+                    yield return new WaitForSeconds(timeWait2);
+                    Plugin.instance.ghostCodeSent = false;
+                }
+
+                if (LoopBreakers())
                     yield break;
-                }
-
-                while (Plugin.instance.DressGirl.staringInHaunt)
-                {
-                    float timeWait2 = Random.Range(1f, 4f);
-                    performingAction = true;
-                    if (!Plugin.instance.ghostCodeSent && !girlIsChasing)
-                    {
-
-                        HandleGhostCodeSending(instance);
-                        Plugin.instance.ghostCodeSent = true;
-                    }
-                    else
-                    {
-                        Plugin.GC.LogInfo($"ghostCode was just sent, waiting {timeWait2}");
-
-                        yield return new WaitForSeconds(timeWait2);
-                        Plugin.instance.ghostCodeSent = false;
-                    }
-
-                    if (LoopBreakers())
-                        yield break;
-                }
-                Plugin.MoreLogs("not currently haunting, waiting.");
-                yield return new WaitForSeconds(timeWait1);
             }
 
             Plugin.MoreLogs("End of GhostGirlEnhanced Coroutine...");
-            performingAction = false;
         }
-
     }
 }

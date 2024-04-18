@@ -1,6 +1,6 @@
 {
     "name": "ghostCodes",
-    "version_number": "2.0.2",
+    "version_number": "2.0.3",
     "website_url": "https://github.com/darmuh/ghostcodes",
     "description": "(v50 Compatible) There's a ghost in the terminal and it's sending random broadcast codes to mess with the facility!",
     "dependencies": [
