@@ -23,7 +23,7 @@ namespace ghostCodes
             Plugin.MoreLogs("Getting alive players");
             foreach(PlayerControllerB player in Plugin.instance.players)
             {
-                if(!player.isPlayerDead)
+                if(!player.isPlayerDead && player.isPlayerControlled)
                     alivePlayers++;
             }
 
@@ -34,13 +34,13 @@ namespace ghostCodes
         {
             int firstWait;
 
-            if (gcConfig.useRandomIntervals.Value)
+            if (ModConfig.useRandomIntervals.Value)
             {
-                firstWait = GetInt(gcConfig.gcFirstRandIntervalMin.Value, gcConfig.gcFirstRandIntervalMax.Value);
+                firstWait = GetInt(ModConfig.gcFirstRandIntervalMin.Value, ModConfig.gcFirstRandIntervalMax.Value);
                 Plugin.MoreLogs("Using random intervals for first wait");
             }
             else
-                firstWait = gcConfig.gcFirstSetInterval.Value;
+                firstWait = ModConfig.gcFirstSetInterval.Value;
 
             return firstWait;
 
@@ -51,13 +51,13 @@ namespace ghostCodes
         {
             int secondWait;
 
-            if (gcConfig.useRandomIntervals.Value)
+            if (ModConfig.useRandomIntervals.Value)
             {
-                secondWait = GetInt(gcConfig.gcSecondRandIntervalMin.Value, gcConfig.gcSecondRandIntervalMax.Value);
+                secondWait = GetInt(ModConfig.gcSecondRandIntervalMin.Value, ModConfig.gcSecondRandIntervalMax.Value);
                 Plugin.MoreLogs("Using random intervals for second wait");
             }
             else
-                secondWait = gcConfig.gcSecondSetInterval.Value;
+                secondWait = ModConfig.gcSecondSetInterval.Value;
 
             return secondWait;
         }
@@ -65,27 +65,25 @@ namespace ghostCodes
         internal static int GetWaitAfterCode()
         {
             int waitAfterCode;
-            if (gcConfig.useRandomIntervals.Value)
+            if (ModConfig.useRandomIntervals.Value)
             {
-                waitAfterCode = GetInt(gcConfig.gcRandIntervalACMin.Value, gcConfig.gcRandIntervalACMax.Value);
+                waitAfterCode = GetInt(ModConfig.gcRandIntervalACMin.Value, ModConfig.gcRandIntervalACMax.Value);
                 Plugin.MoreLogs("Using random intervals for after code wait");
             }
             else
-                waitAfterCode = gcConfig.gcSetIntervalAC.Value;
+                waitAfterCode = ModConfig.gcSetIntervalAC.Value;
 
             return waitAfterCode;
         }
 
-        internal static int GetObjectNum()
+        internal static void GetObjectNum(out int randomObjectNum)
         {
-            int randomObjectNum;
-
             if (myTerminalObjects.Count == 0)
                 randomObjectNum = - 1;
             else            
                 randomObjectNum = Random.Range(0, myTerminalObjects.Count-1);
-            
-            return randomObjectNum;
+
+            return;
         }
 
         internal static int GetNumberPlayersEmoting()

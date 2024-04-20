@@ -143,7 +143,7 @@ namespace ghostCodes
 
             Plugin.MoreLogs("handling player name node");
 
-            if (gcConfig.ggDeathNoteMaxStrikes.Value != -1 && deathNoteStrikes > gcConfig.ggDeathNoteMaxStrikes.Value)
+            if (ModConfig.ggDeathNoteMaxStrikes.Value != -1 && deathNoteStrikes > ModConfig.ggDeathNoteMaxStrikes.Value)
             {
                 string newText = "\n\n\n\n\n\n\t\tDeath note is out of space...\r\n";
                 SetTerminalText(newText);
@@ -160,7 +160,7 @@ namespace ghostCodes
             Plugin.MoreLogs("Handling reboot node");
 
             int chance = GetInt(0, 100);
-            if (gcConfig.gcRebootEfficacy.Value < chance || rebootCommandExpired)
+            if (ModConfig.gcRebootEfficacy.Value < chance || rebootCommandExpired)
             {
                 string newText = "\n\n\n\n\n\n\t\tTerminal reboot has failed...\r\n";
                 SetTerminalText(newText);
@@ -178,7 +178,7 @@ namespace ghostCodes
 
         internal static void CreateAllNodes()
         {
-            if (!gcConfig.ModNetworking.Value)
+            if (!ModConfig.ModNetworking.Value)
                 return;
 
             CreateRebootNode();
@@ -187,7 +187,7 @@ namespace ghostCodes
 
         private static void CreateRebootNode()
         {
-            if (!gcConfig.gcRebootTerminal.Value)
+            if (!ModConfig.gcRebootTerminal.Value)
                 return;
 
             rebootTime = GetInt(30, 60);
@@ -196,12 +196,12 @@ namespace ghostCodes
 
         private static void CreatePlayerNameNodes()
         {
-            if (!gcConfig.ggDeathNote.Value)
+            if (!ModConfig.ggDeathNote.Value)
                 return;
 
             foreach (PlayerControllerB player in Plugin.instance.players)
             {
-                if (player != StartOfRound.Instance.localPlayerController)
+                if (player != StartOfRound.Instance.localPlayerController && player.isPlayerControlled)
                 {
                     string playerName = player.playerUsername;
                     playerName = TerminalFriendlyString(playerName);
@@ -209,9 +209,18 @@ namespace ghostCodes
                     Plugin.MoreLogs($"Command created for haunting {playerName}");
                 }
                 else
-                    Plugin.MoreLogs("skipping self");
+                    Plugin.MoreLogs("skipping self and non-player controlled players");
                 
             }
+        }
+
+        private static void DeathNoteFail()
+        {
+            if (!ModConfig.ggDeathNoteFailChase.Value)
+                return;
+
+            Plugin.MoreLogs("death note failed, beginning ghost girl chase");
+            Plugin.instance.DressGirl.BeginChasing();
         }
 
         private static void ValidPlayerNameInput(string s)
@@ -223,15 +232,19 @@ namespace ghostCodes
                 string newText = $"\n\n\n\n\n\nI don't know anyone by that name! Guess you're stuck with me ^.^\n\n";
                 SetTerminalText(newText);
                 SpookyTerminalColors(true);
+                deathNoteStrikes++;
+                DeathNoteFail();
                 //Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
                 return;
             }
 
-            if (gcConfig.ggDeathNoteChance.Value < chance)
+            if (ModConfig.ggDeathNoteChance.Value < chance)
             {
                 string newText = $"\n\n\n\n\n\nYou're not getting rid of me that easy! :3\n\n";
                 SetTerminalText(newText);
                 SpookyTerminalColors(true);
+                deathNoteStrikes++;
+                DeathNoteFail();
                 //Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
                 return;
             }
@@ -252,7 +265,9 @@ namespace ghostCodes
                 string newText = $"\n\n\n\n\n\nI think i'll keep having fun with you! :3\n\n";
                 SetTerminalText(newText);
                 SpookyTerminalColors(true);
+                deathNoteStrikes++;
                 Plugin.MoreLogs("picked player is likely dead, this is an else statement");
+                DeathNoteFail();
                 //Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
                 return;
             }

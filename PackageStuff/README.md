@@ -56,8 +56,14 @@ This Mod comes highly configurable with a variety of different modes available.
 	- Open/Close/Lock/Unlock Regular Doors within the facility
 	- Mess with the doors on the ship
 	- Mess with the lights on the ship
+	- Activate either of the teleporters
+	- Disable Turrets on Toilheads (Toilhead mod required)
+	- Make Turrets on Toilheads go berserk (Toilhead mod required)
+	- Drain all players, a random player, or the currently haunted player's items' batteries (NETWORKING REQUIRED)
 	- Mess with the monitors on the ship (NETWORKING REQUIRED)
 	- Shock terminal users out of the terminal (NETWORKING REQUIRED)
+	- Ghost girl breathe on walkies (NETWORKING REQUIRED)
+	- Garble all walkie talkies (NETWORKING REQUIRED)
 - With [ModNetworking] disabled, any Networking required components in the mod will be disabled and their config options updated.
 - With [gcGhostGirlOnly] enabled, any config options listed in [gcGhostGirlOnlyList] will be set to disabled when GhostGirlEnhanced Mode is not active.
 	- Updates every time the ship lands on a moon.
@@ -87,11 +93,12 @@ You can combat against ghost codes by doing the following:
 ### Other things this mod does
  - Transfer Hauntings to another player. (Death Note)
 	- If you are currently being haunted, you can type another player's name in the terminal to tell the ghost girl to haunt them instead.
-	- Remember though, you only have so many spaces in your death note to do this - [ggDeathNoteMaxStrikes]
+	- For each failed attempt an entry in your death note is removed, and you only have so many entries [ggDeathNoteMaxStrikes]
+	- Also every failed attempt will have the ghost girl start chasing you.
  - When a ghost girl starts a chase, she can trigger flipping the breaker.
 	- This looks to have been an idea that was scrapped from the main game that I am patching back in.
 	- Use [fixGhostGirlBreakers] to enable and [ggVanillaBreakerChance] for the odds it'll happen.
  - When [canSendMessages] is enabled, the signal translator can send random messages from the list [signalMessages]
  - When [monitorsOnShipEvent] interaction is enabled, the ship monitors will display random messages from the list [monitorMessages]
 
-Remember: The ghost doesn't really care if it's helping or not it's just sending codes to be noticed. The more you notice it the more it likes to say hello :)
+Remember: The ghost doesn't really care if it's helping or not it's just sending codes to be noticed. The more you notice it the more it likes to say hello. Have fun! :)

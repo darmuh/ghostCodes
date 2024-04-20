@@ -1,7 +1,9 @@
 ﻿using GameNetcodeStuff;
+using System.Runtime.Remoting.Messaging;
 using System.Xml.Linq;
 using UnityEngine;
 using static ghostCodes.CodeStuff;
+using static ghostCodes.Coroutines;
 
 namespace ghostCodes
 {
@@ -27,13 +29,13 @@ namespace ghostCodes
 
         internal static bool ShouldRunCodeLooper()
         {
-            if (!gcConfig.ghostGirlEnhanced.Value)
+            if (!ModConfig.ghostGirlEnhanced.Value)
                 return true;
 
             if (Plugin.instance.bypassGGE)
                 return true;
 
-            if (!gcConfig.ModNetworking.Value)
+            if (!ModConfig.ModNetworking.Value)
                 return true;
 
             if(Plugin.instance.Terminal == null)
@@ -56,12 +58,26 @@ namespace ghostCodes
             return true;
         }
 
+        public static bool GhostCodesShouldNotBePresentEver()
+        {
+            if (StartOfRound.Instance.currentLevel.name == "CompanyBuildingLevel" || StartOfRound.Instance.currentLevel.riskLevel == "Safe")
+                return true;
+
+            if (StartOfRound.Instance.inShipPhase)
+                return true;
+
+            if (Plugin.instance.codeCount > Plugin.instance.randGC)
+                return true;
+
+            return false;
+        }
+
         public static bool CanSendCodes()
         {
-            if (endAllCodes)
+            if (endAllCodes || GhostCodesShouldNotBePresentEver())
                 return false;
 
-            if (!gcConfig.ghostGirlEnhanced.Value || Plugin.instance.bypassGGE)
+            if (!ModConfig.ghostGirlEnhanced.Value || Plugin.instance.bypassGGE)
                 return GameNetworkManager.Instance.gameHasStarted;
             else if(Plugin.instance.DressGirl == null)
             {
@@ -74,21 +90,45 @@ namespace ghostCodes
 
         internal static bool KeepSendingCodes()
         {
-            if (endAllCodes)
+            if (endAllCodes || GhostCodesShouldNotBePresentEver())
                 return false;
 
-            if (!gcConfig.ghostGirlEnhanced.Value || Plugin.instance.bypassGGE)
-                return !StartOfRound.Instance.allPlayersDead && Plugin.instance.codeCount < Plugin.instance.randGC && !StartOfRound.Instance.shipIsLeaving;
+            if (StartOfRound.Instance.shipIsLeaving || StartOfRound.Instance.allPlayersDead)
+                return false;
+
+            if (!ModConfig.ghostGirlEnhanced.Value || Plugin.instance.bypassGGE)
+                return true;
             else
-                return !StartOfRound.Instance.allPlayersDead && Plugin.instance.codeCount < Plugin.instance.randGC && !StartOfRound.Instance.shipIsLeaving && !Plugin.instance.DressGirl.hauntingPlayer.isPlayerDead && Plugin.instance.DressGirl.hauntingLocalPlayer;
+            {
+                if (Plugin.instance.DressGirl == null)
+                    return false;
+
+                if (!Plugin.instance.DressGirl.hauntingLocalPlayer)
+                    return false;
+
+                if (Plugin.instance.DressGirl.hauntingPlayer.isPlayerDead)
+                    return false;
+
+                if (rapidFireStart && !DressGirl.girlIsChasing)
+                    return false;
+
+                return true;
+            }
+                
         }
 
         internal static bool DressGirlStartCodes()
         {
-            if (endAllCodes || RapidFire.startRapidFire)
+            if (endAllCodes || RapidFire.startRapidFire || GhostCodesShouldNotBePresentEver())
                 return false;
 
-            return !StartOfRound.Instance.allPlayersDead && Plugin.instance.codeCount < Plugin.instance.randGC && !StartOfRound.Instance.shipIsLeaving && Plugin.instance.DressGirl.staringInHaunt && !Plugin.instance.DressGirl.hauntingPlayer.isPlayerDead;
+            if (StartOfRound.Instance.shipIsLeaving || StartOfRound.Instance.allPlayersDead)
+                return false;
+
+            if (!Plugin.instance.DressGirl.staringInHaunt || Plugin.instance.DressGirl.hauntingPlayer.isPlayerDead)
+                return false;
+
+            return true;
         }
 
         internal static bool isThisaMine(int randomObjectNum)

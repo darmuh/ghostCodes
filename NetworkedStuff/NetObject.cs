@@ -13,7 +13,7 @@ namespace ghostCodes
         [HarmonyPostfix, HarmonyPatch(typeof(GameNetworkManager), nameof(GameNetworkManager.Start))]
         public static void Init()
         {
-            if (gcConfig.ModNetworking.Value)
+            if (ModConfig.ModNetworking.Value)
             {
                 if (networkPrefab != null)
                     return;
@@ -30,7 +30,7 @@ namespace ghostCodes
         [HarmonyPostfix, HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Awake))]
         static void SpawnNetworkHandler()
         {
-            if (gcConfig.ModNetworking.Value)
+            if (ModConfig.ModNetworking.Value)
             {
                 if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
                 {

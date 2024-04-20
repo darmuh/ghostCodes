@@ -12,9 +12,9 @@ namespace ghostCodes
     internal class InsanityStuff
     {
         internal static Dictionary<string, ConfigEntry<int>> stageKeyVal = new Dictionary<string, ConfigEntry<int>>();
-        internal static Stages stage1 = SetStageInfo("Stage 1", 0, 6, gcConfig.saS1percent, gcConfig.saS1inside, gcConfig.saS1outside);
-        internal static Stages stage2 = SetStageInfo("Stage 2", 7, 10, gcConfig.saS2percent, gcConfig.saS2inside, gcConfig.saS2outside);
-        internal static Stages stage3 = SetStageInfo("Stage 3", 11, 15, gcConfig.saS3percent, gcConfig.saS3inside, gcConfig.saS3outside);
+        internal static Stages stage1 = SetStageInfo("Stage 1", 0, 6, ModConfig.saS1percent, ModConfig.saS1inside, ModConfig.saS1outside);
+        internal static Stages stage2 = SetStageInfo("Stage 2", 7, 10, ModConfig.saS2percent, ModConfig.saS2inside, ModConfig.saS2outside);
+        internal static Stages stage3 = SetStageInfo("Stage 3", 11, 15, ModConfig.saS3percent, ModConfig.saS3inside, ModConfig.saS3outside);
         internal static List<Stages> allStages = new List<Stages>();
 
         public static void ApplyInsanityMode(StartOfRound instance, ref float randomWaitNum)
@@ -23,7 +23,7 @@ namespace ghostCodes
             float groupSanity = Plugin.instance.groupSanity;
             float maxSanity = Plugin.instance.maxSanity;
 
-            if (startRapidFire && gcConfig.insanityRapidFire.Value)
+            if (startRapidFire && ModConfig.insanityRapidFire.Value)
             {
                 Plugin.GC.LogInfo("max insanity level reached!!! startRapidFire TRUE");
                 instance.StartCoroutine(Coroutines.RapidFireStart(instance));
@@ -59,16 +59,18 @@ namespace ghostCodes
                 }
             }
 
-            ApplyBonuses(ref Plugin.instance.groupSanity, Plugin.instance.maxSanity);
+            float groupSanity = Plugin.instance.groupSanity;
+            ApplyBonuses(ref groupSanity, Plugin.instance.maxSanity);
+            Plugin.instance.groupSanity = groupSanity;
             CheckSanityRapidFire();
         }
 
         private static void CheckSanityRapidFire()
         {
-            if (!gcConfig.insanityRapidFire.Value)
+            if (!ModConfig.insanityRapidFire.Value)
                 return;
 
-            if (Mathf.Round(Plugin.instance.groupSanity) >= Mathf.Round(Plugin.instance.maxSanity) * (gcConfig.sanityPercentMAX.Value / 100f))
+            if (Mathf.Round(Plugin.instance.groupSanity) >= Mathf.Round(Plugin.instance.maxSanity) * (ModConfig.sanityPercentMAX.Value / 100f))
             {
                 startRapidFire = true;
                 Plugin.MoreLogs("max sanity hit, CheckSanityRapidFire()");
@@ -85,28 +87,28 @@ namespace ghostCodes
 
         private static float AdjustWaitNum(float groupSanity, float maxSanity, ref float randomWaitNum)
         {
-            if (!gcConfig.insanityRapidFire.Value && Mathf.Round(groupSanity) >= Mathf.Round(maxSanity) * (gcConfig.sanityPercentMAX.Value/100f))
+            if (!ModConfig.insanityRapidFire.Value && Mathf.Round(groupSanity) >= Mathf.Round(maxSanity) * (ModConfig.sanityPercentMAX.Value/100f))
             {
-                randomWaitNum *= gcConfig.waitPercentMAX.Value / 100f;
+                randomWaitNum *= ModConfig.waitPercentMAX.Value / 100f;
                 Plugin.MoreLogs("Max Insanity Level reached (rapidFire disabled)");
                 return randomWaitNum;
             }
-            else if (Mathf.Round(groupSanity) >= Mathf.Round(maxSanity) * (gcConfig.sanityPercentL3.Value / 100f))
+            else if (Mathf.Round(groupSanity) >= Mathf.Round(maxSanity) * (ModConfig.sanityPercentL3.Value / 100f))
             {
-                randomWaitNum *= gcConfig.waitPercentL3.Value / 100f;
+                randomWaitNum *= ModConfig.waitPercentL3.Value / 100f;
                 //Plugin.GC.LogInfo($"(ApplyInsanityMode)Group Max Insanity level: {Mathf.Round(groupSanity)} >= {Mathf.Round(maxSanity) * sPercentL3} ");
                 Plugin.MoreLogs("insanity level 3 reached");
                 return randomWaitNum;
             }
-            else if (Mathf.Round(groupSanity) >= Mathf.Round(maxSanity) * (gcConfig.sanityPercentL2.Value / 100f))
+            else if (Mathf.Round(groupSanity) >= Mathf.Round(maxSanity) * (ModConfig.sanityPercentL2.Value / 100f))
             {
-                randomWaitNum *= gcConfig.waitPercentL2.Value / 100f;
+                randomWaitNum *= ModConfig.waitPercentL2.Value / 100f;
                 Plugin.MoreLogs("insanity level 2 reached");
                 return randomWaitNum;
             }
-            else if (Mathf.Round(groupSanity) >= Mathf.Round(maxSanity) * (gcConfig.sanityPercentL1.Value / 100f))
+            else if (Mathf.Round(groupSanity) >= Mathf.Round(maxSanity) * (ModConfig.sanityPercentL1.Value / 100f))
             {
-                randomWaitNum *= gcConfig.waitPercentL1.Value / 100f;
+                randomWaitNum *= ModConfig.waitPercentL1.Value / 100f;
                 Plugin.MoreLogs("insanity level 1 reached");
                 return randomWaitNum;
             }
@@ -122,27 +124,27 @@ namespace ghostCodes
         {
             Plugin.MoreLogs("Applying bonuses & debuffs");
             // Apply solo assist bonus if conditions are met
-            if (gcConfig.soloAssist.Value && Plugin.instance.playersAtStart == 1)
+            if (ModConfig.soloAssist.Value && Plugin.instance.playersAtStart == 1)
             {
                 Plugin.MoreLogs("SoloAssist Activated");
                 groupSanity = SoloAssist(ref groupSanity, maxSanity);
             }
 
             // Apply death bonus if conditions are met
-            if (gcConfig.deathBonus.Value)
+            if (ModConfig.deathBonus.Value)
             {
                 Plugin.MoreLogs("Death Bonus Activated");
                 groupSanity = ApplyDeathBonus(ref groupSanity, maxSanity);
             }
 
             // Apply ghost girl bonus if conditions are met
-            if (gcConfig.ggBonus.Value && Plugin.instance.DressGirl != null)
+            if (ModConfig.ggBonus.Value && Plugin.instance.DressGirl != null)
             {
                 Plugin.MoreLogs("Ghost Girl Bonus Activated");
                 groupSanity = ApplyGirlBonus(ref groupSanity, maxSanity);
             }
 
-            if(gcConfig.emoteBuff.Value)
+            if(ModConfig.emoteBuff.Value)
             {
                 Plugin.MoreLogs("Emote Buff Activated");
                 groupSanity = EmoteBuff(ref groupSanity);
@@ -159,7 +161,9 @@ namespace ghostCodes
 
             for (int i = 0; i < deadPlayers; i++)
             {
-                groupSanity = ApplyBonus(groupSanity, maxSanity, gcConfig.deathBonusNum.Value, (_) => true);
+                float bonusNum = groupSanity * (ModConfig.deathBonusPercent.Value / 100f);
+                Plugin.MoreLogs($"Dead Player detected. Adding {bonusNum} to group sanity");
+                groupSanity = ApplyBonus(groupSanity, maxSanity, bonusNum, (_) => true);
             }
 
             Plugin.MoreLogs("Death bonus applied to insanity values");
@@ -170,7 +174,9 @@ namespace ghostCodes
         private static float ApplyGirlBonus(ref float groupSanity, float maxSanity)
         {
             Plugin.MoreLogs("Ghost Girl Bonus applied to insanity values");
-            groupSanity = ApplyBonus(groupSanity, maxSanity, gcConfig.ggBonusNum.Value, (_) => true);
+            float bonusNum = groupSanity * (ModConfig.ggBonusPercent.Value / 100f);
+            Plugin.MoreLogs($"Ghost Girl Bonus adding {bonusNum} to group sanity");
+            groupSanity = ApplyBonus(groupSanity, maxSanity, bonusNum, (_) => true);
             return groupSanity;
         }
 
@@ -200,13 +206,15 @@ namespace ghostCodes
 
         private static float EmoteBuff(ref float groupSanity)
         {
-            if(gcConfig.emoteBuff.Value)
+            if(ModConfig.emoteBuff.Value)
             {
                 foreach(PlayerControllerB player in Plugin.instance.players)
                 {
                     if (!player.isPlayerDead && player.performingEmote)
                     {
-                        ApplySanityDebuff(ref groupSanity, gcConfig.emoteBuffNum.Value);
+                        float buffNum = groupSanity * (ModConfig.emoteBuffPercent.Value / 100f);
+                        Plugin.MoreLogs($"Emote buff removing {buffNum} from group sanity");
+                        ApplySanityDebuff(ref groupSanity, buffNum);
                     }
                 }
             }
@@ -216,7 +224,7 @@ namespace ghostCodes
 
         private static float SoloAssist(ref float groupSanity, float maxSanity)
         {
-            if (gcConfig.soloAssist.Value && Plugin.instance.playersAtStart == 1)
+            if (ModConfig.soloAssist.Value && Plugin.instance.playersAtStart == 1)
             {
                 int hour = TimeOfDay.Instance.hour;
                 Plugin.GC.LogInfo($"Hour: {hour}");
@@ -225,7 +233,7 @@ namespace ghostCodes
                 {
                     if (IsHourInRange(hour, stage.StartHour, stage.EndHour))
                     {
-                        float threshold = maxSanity * (stage.PercentKey.Value / 100);
+                        float threshold = maxSanity * (stage.PercentKey.Value / 100f);
                         bool isInsideFactory = IsInsideFactory();
                         float debuffAmount = isInsideFactory ? stage.InsideKey.Value : stage.OutsideKey.Value;
 

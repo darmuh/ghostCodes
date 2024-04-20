@@ -1,6 +1,28 @@
 ## Change Log
 
-### [2.0.3] **CURRENT VERSION**
+### [2.0.4] **CURRENT VERSION**
+- Removed [rapidFireCooldown] config option and adjusted [rapidFireMaxHours] to be configured to include the entire day if no cooldown is wanted.
+- Added check to make sure commands are only created for actual players for the deathNote feature.
+- Fixed various issues where the config options were not actually being implemented in the mod's code, thank you @Mi6k on discord for taking a deep look at the config.
+	- Completed a complete config cleanup to make sure no further items are being missed.
+	- Changed how configuration items are created with helper methods to make things easier going forward (for me).
+- Added cooldown check to ToilHead interactions, thanks Zehs for adding the public variables
+- Switched insanity mode buffs/debuffs to be percentage based configuration options instead of direct numbers.
+	- This is to make creating the config a bit more intuitive, as not everyone knows the max possible sanity values and how it all works.
+- Adjusted logic detemrining if codes should/can continue to be a bit more straight forward following reports that somehow codes were running in orbit.
+- Added new config item [modifiedConfigItemsList] to hold any config items that were modified by gcGhostGirlOnly.
+	- DO NOT MODIFY [modifiedConfigItemsList], this config item will be populated on it's own and emptied if no items need to be returned to their initial state.
+- Added new section for walkie talkie interactions [Walkies]
+	- new interaction [ggBreatheOnWalkies] will play the ghost girl breathing sound effect over all walkie talkies
+	- [ggBreatheOnWalkies] is based on chance value [ggBreatheOnWalkiesChance]
+- Added new section for Item interactions [Item]
+	- currently all config options in this section are related to any item with a battery
+	- Drain all players, a random one, or the haunted one's items of battery by a configured percentage [gcBatteryDrainPercentage]
+- Added config options to enable/disable entire sections: Items, Walkies, Ship Stuff, and Regular Doors.
+- Added error handling for rare scenario where everything in the config is disabled and no possible actions can be chosen to run as a ghost code.
+- Updated README with new stuff.
+
+### [2.0.3]
 - Reworked ghost girl enhanced handling patches to address some null reference errors that were breaking the mod in certain profiles (thank you Lunxara)
 	- Removed DressGirl AI Update patch and ended ghostgirlenhanced coroutine when the girl is not staring in a haunt.
 	- Removed BeginChasing prefix, it looked to have been interfering with other mods that adjust the AI.

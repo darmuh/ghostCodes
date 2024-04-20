@@ -44,7 +44,7 @@ namespace ghostCodes
             GetMonitorVals(StartOfRound.Instance.deadlineMonitorBGImage, out Color deadlineMonitorColor);
             GetMonitorVals(StartOfRound.Instance.profitQuotaMonitorBGImage, out Color quotaMonitorColor);
 
-            List<string> messages = gcConfig.monitorMessages.Value.Split(',').ToList();
+            List<string> messages = ModConfig.monitorMessages.Value.Split(',').ToList();
 
             SignalTranslator.OddSignalMessage(messages, out string message1);
             SignalTranslator.OddSignalMessage(messages, out string message2);

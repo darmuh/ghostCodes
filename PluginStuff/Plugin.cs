@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace ghostCodes
 {
-    [BepInPlugin("darmuh.ghostCodes", "ghostCodes", "2.0.3")]
+    [BepInPlugin("darmuh.ghostCodes", "ghostCodes", "2.0.4")]
 
     public class Plugin : BaseUnityPlugin
     {
@@ -16,20 +16,20 @@ namespace ghostCodes
         {
             public const string PLUGIN_GUID = "darmuh.ghostCodes";
             public const string PLUGIN_NAME = "ghostCodes";
-            public const string PLUGIN_VERSION = "2.0.3";
+            public const string PLUGIN_VERSION = "2.0.4";
         }
 
         internal static new ManualLogSource GC;
 
         //variables
         
-        internal bool bypassGGE = false;
-        internal bool ghostCodeSent = false;
-        internal float groupSanity = 0f;
-        internal float maxSanity = 0f;
+        public bool bypassGGE { get; internal set; } = false;
+        public bool ghostCodeSent { get; internal set; } = false;
+        public float groupSanity { get; internal set; } = 0f;
+        public float maxSanity { get; internal set; } = 0f;
         internal int playersAtStart = 0;
-        internal int codeCount = 0;
-        internal int randGC = 0;
+        public int codeCount { get; internal set; } = 0;
+        public int randGC { get; internal set; } = 0;
         internal PlayerControllerB[] players;
 
         //Terminal Instance
@@ -52,7 +52,7 @@ namespace ghostCodes
             Plugin.GC = base.Logger;
             Plugin.GC.LogInfo((object)$"{PluginInfo.PLUGIN_NAME} have been detected in the terminal, version {PluginInfo.PLUGIN_VERSION}");
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-            gcConfig.SetConfigSettings();
+            ModConfig.SetConfigSettings();
 
 
             //start of networking stuff
@@ -76,7 +76,7 @@ namespace ghostCodes
 
         public static void MoreLogs(string message)
         {
-            if (gcConfig.extensiveLogging.Value)
+            if (ModConfig.extensiveLogging.Value)
                 Plugin.GC.LogInfo(message);
             else
                 return;

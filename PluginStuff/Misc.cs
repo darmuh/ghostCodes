@@ -1,10 +1,26 @@
 ﻿
+using GameNetcodeStuff;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ghostCodes
 {
     internal class Misc
     {
+        internal static List<PlayerControllerB> GetAllLivingPlayers()
+        {
+            List<PlayerControllerB> allPlayers = new List<PlayerControllerB>();
+
+            Plugin.MoreLogs("Getting alive players");
+            foreach (PlayerControllerB player in Plugin.instance.players)
+            {
+                if (!player.isPlayerDead && player.isPlayerControlled)
+                    allPlayers.Add(player);
+            }
+
+            return allPlayers;
+        }
+
         internal static void LogTime()
         {
             string clockTime = HUDManager.Instance.clockNumber.text;

@@ -6,18 +6,18 @@ namespace ghostCodes
     {
         internal static void CheckForHauntedPlayerInShower()
         {
-            if (!DressGirl.girlIsChasing) //config
+            if (!DressGirl.girlIsChasing && !ModConfig.ggShowerCheck.Value)
                 return;
-
-            if(!IsShowerEffective())
-            {
-                Plugin.MoreLogs("The shower is not washing the ghostGirl's mark off!!!");
-                return;
-            }
 
             ShowerTrigger shower = FindObjectOfType<ShowerTrigger>();
             if (shower == null)
                 return;
+
+            if (!IsShowerEffective())
+            {
+                Plugin.MoreLogs("The shower is not washing the ghostGirl's mark off!!!");
+                return;
+            }
 
             if (shower.playersInShower.Count != 0 && shower.playersInShower.Contains(Plugin.instance.DressGirl.hauntingPlayer) && shower.showerOn)
             {
@@ -29,7 +29,7 @@ namespace ghostCodes
 
         private static bool IsShowerEffective()
         {
-            return Bools.IsThisEffective(gcConfig.ggShowerStopChasingChance.Value);
+            return Bools.IsThisEffective(ModConfig.ggShowerStopChasingChance.Value);
         }
     }
 }

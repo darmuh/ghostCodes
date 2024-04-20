@@ -47,13 +47,16 @@
     </Reference>
     <Reference Include="com.github.zehsteam.ToilHead">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\dontloadpls\Zehs-ToilHead\com.github.zehsteam.ToilHead.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Facepunch.Steamworks.Win64">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Facepunch.Steamworks.Win64.dll</HintPath>
     </Reference>
     <Reference Include="FacilityMeltdown">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\dontloadpls\loaforc-FacilityMeltdown\FacilityMeltdown\FacilityMeltdown.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="FootballEntity">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\dontloadpls\Kittenji-Football\FootballEntity.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="netstandard">
@@ -113,15 +116,17 @@
   <ItemGroup>
     <Compile Include="Compatibility\ToilHead.cs" />
     <Compile Include="Interactions\Blastdoors.cs" />
+    <Compile Include="Interactions\Items.cs" />
     <Compile Include="Interactions\Teleporters.cs" />
     <Compile Include="Interactions\TerminalAdditions.cs" />
+    <Compile Include="Interactions\WalkieStuff.cs" />
     <Compile Include="PluginStuff\Bools.cs" />
     <Compile Include="CodeStuff\CodeActions.cs" />
     <Compile Include="CodeStuff\CodeHandling.cs" />
     <Compile Include="Compatibility\FacilityMeltdown.cs" />
     <Compile Include="PluginStuff\Coroutines.cs" />
     <Compile Include="Interactions\Doors.cs" />
-    <Compile Include="PluginStuff\gcConfig.cs" />
+    <Compile Include="PluginStuff\ModConfig.cs" />
     <Compile Include="Patches\GamePatchStuff.cs" />
     <Compile Include="GhostGirlEnhanced\DressGirl.cs" />
     <Compile Include="PluginStuff\InitPlugin.cs" />

@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Linq;
 using GameNetcodeStuff;
 using static ghostCodes.TerminalPatchStuff;
+using ghostCodes.Interactions;
 
 namespace ghostCodes
 {
@@ -27,17 +28,17 @@ namespace ghostCodes
 
             if (__rpc_exec_stage == __RpcExecStage.Server && (networkManager.IsHost || networkManager.IsServer))
             {
-                Plugin.GC.LogInfo($"Server: Syncing actions between players...");
+                Plugin.MoreLogs($"Server: Syncing actions between players...");
 
             }
 
             else if (__rpc_exec_stage != __RpcExecStage.Server && (networkManager.IsHost || networkManager.IsServer))
             {
-                Plugin.GC.LogInfo($"Exec stage not server");
+                Plugin.MoreLogs($"Exec stage not server");
             }
             else
             {
-                Plugin.GC.LogInfo("no conditions met");
+                Plugin.MoreLogs("no conditions met");
             }
 
             GGFlickerClientRpc();
@@ -68,6 +69,36 @@ namespace ghostCodes
                     Plugin.MoreLogs("flickering lights for HOST");
                 }
             }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void BreatheOnWalkiesServerRpc()
+        {
+            if (Plugin.instance.DressGirl == null)
+                return;
+
+            Plugin.MoreLogs($"SERVER: ghost breathing on all walkies");
+            BreatheOnWalkiesClientRpc();
+        }
+
+        [ClientRpc]
+        public void BreatheOnWalkiesClientRpc()
+        {
+            WalkieStuff.BreatheOnWalkiesFunc();
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void GarbleWalkiesServerRpc()
+        {
+
+            Plugin.MoreLogs($"SERVER: garbling all walkies");
+            GarbleWalkiesClientRpc();
+        }
+
+        [ClientRpc]
+        public void GarbleWalkiesClientRpc()
+        {
+            WalkieStuff.GarbleAllWalkiesFunc();
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -119,7 +150,7 @@ namespace ghostCodes
         [ServerRpc(RequireOwnership = false)]
         public void AlarmLightsServerRpc(bool normal)
         {
-            if (!gcConfig.rfRLcolorChange.Value)
+            if (!ModConfig.rfRLcolorChange.Value)
                 return;
 
             Plugin.MoreLogs("AlarmLights color ServerRpc");
@@ -141,7 +172,7 @@ namespace ghostCodes
                 {
                     if (normalLights == false)
                     {
-                        Color32 configColor = Misc.ParseColorFromString(gcConfig.rfRLcolorValue.Value);
+                        Color32 configColor = Misc.ParseColorFromString(ModConfig.rfRLcolorValue.Value);
                         for (int i = 0; i < RoundManager.Instance.allPoweredLights.Count; i++)
                         {
                             RoundManager.Instance.allPoweredLights[i].color = configColor;

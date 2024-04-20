@@ -59,7 +59,7 @@ namespace ghostCodes
         {
             static void Postfix(DressGirlAI __instance)
             {
-                if (!gcConfig.ghostGirlEnhanced.Value)
+                if (!ModConfig.ghostGirlEnhanced.Value)
                     return;
 
                 if (__instance == null)
@@ -85,7 +85,7 @@ namespace ghostCodes
         {
             static void Postfix(DressGirlAI __instance)
             {
-                if (gcConfig.fixGhostGirlBreakers.Value)
+                if (ModConfig.fixGhostGirlBreakers.Value)
                 {
                     Plugin.MoreLogs("Fixing lightbreaker Rpc");
                     __instance.FlipLightsBreakerClientRpc();
@@ -101,7 +101,7 @@ namespace ghostCodes
                 
                 DressGirl.BreakersFix(__instance);
 
-                if (!gcConfig.ghostGirlEnhanced.Value)
+                if (!ModConfig.ghostGirlEnhanced.Value)
                     return;
 
                 RapidFire.startRapidFire = true;
@@ -116,7 +116,7 @@ namespace ghostCodes
         {
             static void Postfix(DressGirlAI __instance)
             {
-                if (!gcConfig.ghostGirlEnhanced.Value)
+                if (!ModConfig.ghostGirlEnhanced.Value)
                     return;
 
                 RapidFire.startRapidFire = false;
