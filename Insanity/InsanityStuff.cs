@@ -157,7 +157,7 @@ namespace ghostCodes
         // Method to apply the death bonus
         private static float ApplyDeathBonus(ref float groupSanity, float maxSanity)
         {
-            int deadPlayers = Plugin.instance.players.Count(player => player.isPlayerDead);
+            int deadPlayers = Plugin.instance.players.Count(player => player.isPlayerDead && player.isPlayerControlled);
 
             for (int i = 0; i < deadPlayers; i++)
             {

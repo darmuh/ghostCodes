@@ -54,14 +54,6 @@ namespace ghostCodes
                 HandleNodeSpecialLogic(node);
             }
 
-            private static void CheckForSpookyText()
-            {
-                if(spookyColors)
-                {
-                    SpookyTerminalColors(false);
-                }
-            }
-
             internal static void HandleNodeSpecialLogic(TerminalNode node)
             {
                 if (ghostCodeNodes == null)

@@ -163,6 +163,9 @@ namespace ghostCodes
             if (myTerminalObjects.Count == 0)
                 return false;
 
+            if (myTerminalObjects[randomObjectNum] == null)
+                return false;
+
             if (myTerminalObjects[randomObjectNum].gameObject == null)
                 return false;
 

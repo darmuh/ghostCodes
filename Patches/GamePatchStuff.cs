@@ -21,7 +21,7 @@ namespace ghostCodes
                     InitPlugin.StartTheRound();
                 }
                 else
-                    Plugin.MoreLogs("Patch failed");
+                    Plugin.MoreLogs("Codes should not be generated...");
             }
         }
         [HarmonyPatch(typeof(DressGirlAI), "Start")]

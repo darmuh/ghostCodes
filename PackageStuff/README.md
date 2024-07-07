@@ -1,5 +1,9 @@
 # ghostCodes by darmuh
 
+## Updated for v55 update in version 2.0.6
+
+## **For client-side only use, disable ModNetworking in config (found in the "__NETWORKING" section)**
+
 ## Description
 
 There's a ghost in the terminal and it's sending random broadcast codes to mess with the facility!
