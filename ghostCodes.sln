@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34316.72
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ghostCodes", "ghostCodes.csproj", "{D54996EA-9C7B-47CF-B5CB-FDFE2C657F71}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D54996EA-9C7B-47CF-B5CB-FDFE2C657F71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D54996EA-9C7B-47CF-B5CB-FDFE2C657F71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D54996EA-9C7B-47CF-B5CB-FDFE2C657F71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D54996EA-9C7B-47CF-B5CB-FDFE2C657F71}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {19C10AB0-9ECD-4319-B48B-968F686953DD}
+	EndGlobalSection
+EndGlobal
