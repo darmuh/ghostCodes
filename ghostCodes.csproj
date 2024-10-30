@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ghostCodes</RootNamespace>
     <AssemblyName>ghostCodes</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -23,16 +23,27 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>portable</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>PackageStuff\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+  <PropertyGroup>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>embedded</DebugType>
+    <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
+  </PropertyGroup>
+  <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
+    <Exec Command="netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')" />
+  </Target>
   <ItemGroup>
     <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all" />
     <Reference Include="0Harmony">
@@ -60,8 +71,15 @@
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\dontloadpls\Kittenji-Football\FootballEntity.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="LethalConfig">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\dontloadpls\AinaVT-LethalConfig\LethalConfig\LethalConfig.dll</HintPath>
+    </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\netstandard.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenLib">
+      <HintPath>..\..\publicDevLibrary\OpenLib\_Release Files\OpenLib.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -118,19 +136,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compatibility\LethalConfigStuff.cs" />
     <Compile Include="Compatibility\ToilHead.cs" />
+    <Compile Include="Configs\InsanityConfig.cs" />
+    <Compile Include="Configs\InteractionsConfig.cs" />
+    <Compile Include="Configs\SoloAssistConfig.cs" />
     <Compile Include="Interactions\Blastdoors.cs" />
+    <Compile Include="Interactions\Cruiser.cs" />
     <Compile Include="Interactions\Items.cs" />
     <Compile Include="Interactions\Teleporters.cs" />
     <Compile Include="Interactions\TerminalAdditions.cs" />
     <Compile Include="Interactions\WalkieStuff.cs" />
+    <Compile Include="Patches\OpenLibEvents.cs" />
     <Compile Include="PluginStuff\Bools.cs" />
     <Compile Include="CodeStuff\CodeActions.cs" />
     <Compile Include="CodeStuff\CodeHandling.cs" />
     <Compile Include="Compatibility\FacilityMeltdown.cs" />
     <Compile Include="PluginStuff\Coroutines.cs" />
     <Compile Include="Interactions\Doors.cs" />
-    <Compile Include="PluginStuff\ModConfig.cs" />
+    <Compile Include="Configs\ModConfig.cs" />
     <Compile Include="Patches\GamePatchStuff.cs" />
     <Compile Include="GhostGirlEnhanced\DressGirl.cs" />
     <Compile Include="PluginStuff\InitPlugin.cs" />
@@ -140,8 +164,10 @@
     <Compile Include="PluginStuff\Misc.cs" />
     <Compile Include="NetworkedStuff\NetHandler.cs" />
     <Compile Include="NetworkedStuff\NetObject.cs" />
+    <Compile Include="PluginStuff\ModeSettings.cs" />
     <Compile Include="PluginStuff\NumberStuff.cs" />
     <Compile Include="PluginStuff\Plugin.cs" />
+    <Compile Include="Configs\SetupConfig.cs" />
     <Compile Include="PluginStuff\StringStuff.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CodeStuff\CodeStuff.cs" />
@@ -150,20 +176,26 @@
     <Compile Include="Interactions\ShowerStuff.cs" />
     <Compile Include="Interactions\SignalTranslator.cs" />
     <Compile Include="Interactions\SoundSystem.cs" />
-    <Compile Include="Patches\TerminalPatchStuff.cs" />
     <Compile Include="Interactions\Turrets.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ghostngo" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ideas.txt" />
     <Content Include="PackageStuff\icon.png" />
+    <Content Include="reported issues.txt" />
     <Content Include="stuff.txt" />
+    <Content Include="ToDo.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Assets\zap" />
+    <EmbeddedResource Include="Assets\charge" />
+    <EmbeddedResource Include="Assets\giggles" />
     <None Include="PackageStuff\CHANGELOG.md" />
     <None Include="PackageStuff\manifest.json" />
     <None Include="PackageStuff\README.md" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

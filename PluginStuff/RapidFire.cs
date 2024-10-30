@@ -1,5 +1,4 @@
-﻿using ghostCodes.Compatibility;
-using System.Runtime.CompilerServices;
+﻿using ghostCodes.Configs;
 using static ghostCodes.Bools;
 using static ghostCodes.Compatibility.FacilityMeltdown;
 
@@ -13,7 +12,7 @@ namespace ghostCodes
         internal static void RapidFireCheck()
         {
 
-            if (startRapidFire && ModConfig.insanityRapidFire.Value)
+            if (startRapidFire && SetupConfig.RapidFireMaxHours.Value > 0)
             {
                 Plugin.GC.LogInfo("max insanity level reached!!! startRapidFire TRUE");
                 StartOfRound.Instance.StartCoroutine(Coroutines.RapidFireStart(StartOfRound.Instance));
@@ -38,10 +37,10 @@ namespace ghostCodes
 
         internal static void HandleLights()
         {
-            if (Plugin.instance.facilityMeltdown && !meltdown)
+            if (Plugin.instance.FacilityMeltdown && !meltdown)
                 meltdown = CheckForMeltdown();
 
-            if (ModConfig.ModNetworking.Value && ModConfig.rfRapidLights.Value && !lightsFlickering && !meltdown)
+            if (ModConfig.ModNetworking.Value && SetupConfig.RapidLights.Value && !lightsFlickering && !meltdown)
             {
                 StartOfRound.Instance.StartCoroutine(Coroutines.AlarmLights());
                 Plugin.MoreLogs("networking enabled, sending alarm lights");
@@ -51,15 +50,12 @@ namespace ghostCodes
 
         internal static void TimeCheck(int startHour, int currentHour)
         {
-            if (!ModConfig.GGEbypass.Value && !ModConfig.ghostGirlEnhanced.Value)
+            if (SetupConfig.GhostCodesSettings.HauntingsMode)
                 return;
 
-            if (!Plugin.instance.bypassGGE)
-                return;
-
-            if (startHour + ModConfig.rapidFireMaxHours.Value <= currentHour)
+            if (startHour + SetupConfig.RapidFireMaxHours.Value <= currentHour)
             {
-                Plugin.MoreLogs("rapidFireMaxHours hit, entering cooldown...");
+                Plugin.MoreLogs("RapidFireMaxHours hit, entering cooldown...");
                 endAllCodes = true;
                 InitPlugin.RestartPlugin();
             }
@@ -67,30 +63,29 @@ namespace ghostCodes
 
         internal static void CheckInsanityToContinue()
         {
-            if (!ModConfig.gcInsanity.Value)
+            if (!SetupConfig.GhostCodesSettings.InsanityMode)
                 return;
 
-            if (!ModConfig.ghostGirlEnhanced.Value || Plugin.instance.bypassGGE)
-                InsanityStuff.GetAllSanity(); //last check to make sure sanity levels are within required levels
+            InsanityStuff.GetAllSanity(); //last check to make sure sanity levels are within required levels
         }
 
         internal static void CountSentCodes()
         {
-            if(!ModConfig.ghostGirlEnhanced.Value || !ModConfig.ggIgnoreCodeCount.Value || Plugin.instance.bypassGGE)
-                Plugin.instance.codeCount++;
+            if (!SetupConfig.GhostCodesSettings.HauntingsMode || SetupConfig.HauntingsCountCodes.Value)
+                Plugin.instance.CodeCount++;
         }
 
         internal static bool LoopBreakers()
         {
             if (StartOfRound.Instance.shipIsLeaving)
             {
-                Plugin.MoreLogs($"Ship is leaving, {Plugin.instance.codeCount} codes were sent.");
+                Plugin.MoreLogs($"Ship is leaving, {Plugin.instance.CodeCount} codes were sent.");
                 startRapidFire = false;
                 Coroutines.rapidFireStart = false;
                 return true;
             }
 
-            if (ModConfig.ghostGirlEnhanced.Value && StartOfRound.Instance.localPlayerController.isPlayerDead)
+            if (SetupConfig.GhostCodesSettings.HauntingsMode && StartOfRound.Instance.localPlayerController.isPlayerDead)
             {
                 Plugin.MoreLogs("you died, stopping any logic you were calling");
                 startRapidFire = false;
@@ -98,9 +93,9 @@ namespace ghostCodes
                 return true;
             }
 
-            if(StartOfRound.Instance.inShipPhase)
+            if (StartOfRound.Instance.inShipPhase)
             {
-                Plugin.MoreLogs($"Ship has already left, {Plugin.instance.codeCount} codes were sent.");
+                Plugin.MoreLogs($"Ship has already left, {Plugin.instance.CodeCount} codes were sent.");
                 startRapidFire = false;
                 Coroutines.rapidFireStart = false;
                 return true;

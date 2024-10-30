@@ -1,7 +1,5 @@
 ﻿using GameNetcodeStuff;
-using System.Runtime.Remoting.Messaging;
-using System.Xml.Linq;
-using UnityEngine;
+using ghostCodes.Configs;
 using static ghostCodes.CodeStuff;
 using static ghostCodes.Coroutines;
 
@@ -14,7 +12,7 @@ namespace ghostCodes
 
         internal static bool IsCodeSent()
         {
-            return Plugin.instance.ghostCodeSent;
+            return Plugin.instance.CodeSent;
         }
 
         internal static bool IsInsideFactory()
@@ -29,16 +27,13 @@ namespace ghostCodes
 
         internal static bool ShouldRunCodeLooper()
         {
-            if (!ModConfig.ghostGirlEnhanced.Value)
-                return true;
-
-            if (Plugin.instance.bypassGGE)
+            if (SetupConfig.GhostCodesSettings.CurrentMode.ToLower() != "hauntings")
                 return true;
 
             if (!ModConfig.ModNetworking.Value)
                 return true;
 
-            if(Plugin.instance.Terminal == null)
+            if (Plugin.instance.Terminal == null)
             {
                 Plugin.MoreLogs("Terminal instance null");
                 return false;
@@ -66,7 +61,7 @@ namespace ghostCodes
             if (StartOfRound.Instance.inShipPhase)
                 return true;
 
-            if (Plugin.instance.codeCount > Plugin.instance.randGC)
+            if (Plugin.instance.CodeCount > Plugin.instance.RandCodeAmount)
                 return true;
 
             return false;
@@ -77,13 +72,13 @@ namespace ghostCodes
             if (endAllCodes || GhostCodesShouldNotBePresentEver())
                 return false;
 
-            if (!ModConfig.ghostGirlEnhanced.Value || Plugin.instance.bypassGGE)
+            if (SetupConfig.GhostCodesSettings.CurrentMode.ToLower() != "hauntings")
                 return GameNetworkManager.Instance.gameHasStarted;
-            else if(Plugin.instance.DressGirl == null)
+            else if (Plugin.instance.DressGirl == null)
             {
                 Plugin.MoreLogs("dressgirl instance is null");
                 return false;
-            }   
+            }
             else
                 return GameNetworkManager.Instance.gameHasStarted && Plugin.instance.DressGirl.hauntingLocalPlayer == StartOfRound.Instance.localPlayerController;
         }
@@ -96,7 +91,7 @@ namespace ghostCodes
             if (StartOfRound.Instance.shipIsLeaving || StartOfRound.Instance.allPlayersDead)
                 return false;
 
-            if (!ModConfig.ghostGirlEnhanced.Value || Plugin.instance.bypassGGE)
+            if (SetupConfig.GhostCodesSettings.CurrentMode.ToLower() != "hauntings")
                 return true;
             else
             {
@@ -114,7 +109,7 @@ namespace ghostCodes
 
                 return true;
             }
-                
+
         }
 
         internal static bool DressGirlStartCodes()
@@ -131,9 +126,18 @@ namespace ghostCodes
             return true;
         }
 
-        internal static bool isThisaMine(int randomObjectNum)
+        internal static bool IsThisaMine(int randomObjectNum)
         {
-            if(myTerminalObjects.Count == 0) 
+            if (randomObjectNum < 0)
+                return false;
+
+            if (myTerminalObjects.Count == 0)
+                return false;
+
+            if (myTerminalObjects[randomObjectNum] == null)
+                return false;
+
+            if (myTerminalObjects[randomObjectNum].gameObject == null)
                 return false;
 
             if (myTerminalObjects[randomObjectNum].GetComponent<Landmine>() != null)
@@ -143,9 +147,18 @@ namespace ghostCodes
 
         }
 
-        internal static bool isThisaTurret(int randomObjectNum)
+        internal static bool IsThisaTurret(int randomObjectNum)
         {
+            if (randomObjectNum < 0)
+                return false;
+
             if (myTerminalObjects.Count == 0)
+                return false;
+
+            if (myTerminalObjects[randomObjectNum] == null)
+                return false;
+
+            if (myTerminalObjects[randomObjectNum].gameObject == null)
                 return false;
 
             if (myTerminalObjects[randomObjectNum].gameObject.name.Contains("TurretScript"))
@@ -155,7 +168,7 @@ namespace ghostCodes
 
         }
 
-        internal static bool isThisaBigDoor(int randomObjectNum)
+        internal static bool IsThisaBigDoor(int randomObjectNum)
         {
             if (randomObjectNum < 0)
                 return false;
@@ -195,7 +208,7 @@ namespace ghostCodes
 
         internal static bool CheckForPlayerName(string playerName)
         {
-            foreach(PlayerControllerB player in Plugin.instance.players)
+            foreach (PlayerControllerB player in Plugin.instance.players)
             {
                 if (playerName.Contains(player.playerUsername))
                     return true;

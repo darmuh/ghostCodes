@@ -1,7 +1,7 @@
 ﻿using GameNetcodeStuff;
+using ghostCodes.Configs;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -15,6 +15,9 @@ namespace ghostCodes
         internal static bool activeShipDoorsEvent = false;
         internal static bool activeShipLightsEvent = false;
         internal static bool activeShockTerminalEvent = false;
+        internal static System.Random Rand = new();
+
+        internal static bool leverChanged = false;
 
         internal static void SuckPlayersOutOfShip()
         {
@@ -44,11 +47,11 @@ namespace ghostCodes
             GetMonitorVals(StartOfRound.Instance.deadlineMonitorBGImage, out Color deadlineMonitorColor);
             GetMonitorVals(StartOfRound.Instance.profitQuotaMonitorBGImage, out Color quotaMonitorColor);
 
-            List<string> messages = ModConfig.monitorMessages.Value.Split(',').ToList();
+            List<string> messages = [.. InteractionsConfig.AllMonitorMessages.Value.Split(',')];
 
             SignalTranslator.OddSignalMessage(messages, out string message1);
             SignalTranslator.OddSignalMessage(messages, out string message2);
-            
+
             float time = NumberStuff.GetFloat(1f, 10f);
             float glitch = NumberStuff.GetFloat(0.2f, 0.7f);
 
@@ -60,7 +63,7 @@ namespace ghostCodes
             SetMonitorVals(StartOfRound.Instance.profitQuotaMonitorBGImage, Color.black);
             SetTextVals(StartOfRound.Instance.profitQuotaMonitorText, Color.red, message1);
             SetTextVals(StartOfRound.Instance.deadlineMonitorText, Color.red, message2);
-            
+
             yield return new WaitForSeconds(time);
 
             SetMonitorVals(StartOfRound.Instance.deadlineMonitorBGImage, deadlineMonitorColor);
@@ -103,17 +106,17 @@ namespace ghostCodes
             return;
         }
 
-        internal static void ShockTerminalUser()
+        internal static void ShockTerminal()
         {
             if (!Bools.IsAnyPlayerUsingTerminal(out PlayerControllerB player))
                 return;
 
             Plugin.MoreLogs("shocking terminal user!");
-            SoundManager.Instance.PlaySoundAroundLocalPlayer(StartOfRound.Instance.hitPlayerSFX, 0.9f);
+            NetHandler.Instance.ShockTerminalSoundServerRpc();
             Plugin.instance.Terminal.QuitTerminal();
             HUDManager.Instance.ShakeCamera(ScreenShakeType.VeryStrong);
             float newHealth = player.health * 0.90f;
-            player.health = (int)newHealth;
+            player.health = (int)Mathf.Clamp(newHealth, 0, 100);
         }
 
         internal static void ToggleShipDoors()
@@ -130,7 +133,7 @@ namespace ghostCodes
             // Invoke the onInteract event if the button and event are found
             if (interactTrigger != null)
             {
-                UnityEvent<PlayerControllerB> onInteractEvent = interactTrigger.onInteract as UnityEvent<PlayerControllerB>;
+                UnityEvent<PlayerControllerB> onInteractEvent = interactTrigger.onInteract;
 
                 onInteractEvent?.Invoke(GameNetworkManager.Instance.localPlayerController);
             }
@@ -148,10 +151,42 @@ namespace ghostCodes
             // Invoke the onInteract event if the button and event are found
             if (interactTrigger != null)
             {
-                UnityEvent<PlayerControllerB> onInteractEvent = interactTrigger.onInteract as UnityEvent<PlayerControllerB>;
+                UnityEvent<PlayerControllerB> onInteractEvent = interactTrigger.onInteract;
 
                 onInteractEvent?.Invoke(GameNetworkManager.Instance.localPlayerController);
             }
+        }
+
+        internal static void HeavyLeverFunc()
+        {
+            StartMatchLever startMatchLever = Object.FindObjectOfType<StartMatchLever>();
+            if(Rand.Next(0,100) > 70)
+            {
+                startMatchLever.triggerScript.timeToHoldSpeedMultiplier = Random.Range(1.5f, 5f);
+                Plugin.Spam($"timetoholdspeedmultiplier boost!");
+            }
+            else
+            {
+                startMatchLever.triggerScript.timeToHoldSpeedMultiplier = Random.Range(0.05f, 0.5f);
+                Plugin.Spam($"timetoholdspeedmultiplier slowed!");
+            }
+
+            startMatchLever.triggerScript.holdTip = "[ This lever has a ghostly presence... ]";
+            leverChanged = true;
+        }
+
+        internal static void ResetLever()
+        {
+            if(!leverChanged)
+                return;
+
+            StartMatchLever startMatchLever = Object.FindObjectOfType<StartMatchLever>();
+            if (startMatchLever == null)
+                return;
+
+            startMatchLever.triggerScript.timeToHoldSpeedMultiplier = 1;
+            startMatchLever.triggerScript.holdTip = "";
+            leverChanged = false;
         }
 
         internal static void MessWithShipDoors()
@@ -175,7 +210,7 @@ namespace ghostCodes
         internal static IEnumerator MessWithShipDoorsFunc()
         {
             activeShipDoorsEvent = true;
-            int count = NumberStuff.GetInt(2, 7);
+            int count = NumberStuff.GetInt(1, 10);
 
             for (int i = 0; i < count; i++)
             {
@@ -190,15 +225,15 @@ namespace ghostCodes
         internal static IEnumerator MessWithShipLightsFunc()
         {
             activeShipLightsEvent = true;
-            int count = NumberStuff.GetInt(2,7);
-            
-            for(int i = 0; i < count; i++)
+            int count = NumberStuff.GetInt(1, 10);
+
+            for (int i = 0; i < count; i++)
             {
                 ToggleShipLights();
                 float time = NumberStuff.GetFloat(0.4f, 3f);
                 yield return new WaitForSeconds(time);
             }
-            
+
             activeShipLightsEvent = false;
         }
 

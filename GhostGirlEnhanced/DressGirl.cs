@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using System.Linq;
-using GameNetcodeStuff;
+﻿using GameNetcodeStuff;
+using ghostCodes.Configs;
+using UnityEngine;
 
 namespace ghostCodes
 {
@@ -24,7 +24,7 @@ namespace ghostCodes
 
         internal static void GGrapidFireChecks()
         {
-            if (Plugin.instance.DressGirl == null || !ModConfig.ghostGirlEnhanced.Value || Plugin.instance.bypassGGE)
+            if (Plugin.instance.DressGirl == null || !SetupConfig.GhostCodesSettings.HauntingsMode)
                 return;
 
             Plugin.MoreLogs("Checking for rapidFire ending events");
@@ -35,10 +35,10 @@ namespace ghostCodes
 
         private static void DancingCheck()
         {
-            if (!ModConfig.ggEmoteCheck.Value || !girlIsChasing)
+            if (InteractionsConfig.EmoteStopChasing.Value > 1 || !girlIsChasing)
                 return;
 
-            if(!Bools.IsThisEffective(ModConfig.ggEmoteStopChasingChance.Value))
+            if (!Bools.IsThisEffective(InteractionsConfig.EmoteStopChasing.Value))
             {
                 Plugin.MoreLogs("Ghost girl doesn't want to see you dance!");
                 return;
@@ -47,7 +47,7 @@ namespace ghostCodes
             int playersEmoting = NumberStuff.GetNumberPlayersEmoting();
             int alivePlayers = NumberStuff.GetAlivePlayers();
 
-            if(Bools.AreEnoughPlayersDancing(alivePlayers, playersEmoting, ModConfig.ggEmoteStopChasePlayers.Value))
+            if (Bools.AreEnoughPlayersDancing(alivePlayers, playersEmoting, InteractionsConfig.EmoteStopChaseRequiredPlayers.Value))
             {
                 Plugin.MoreLogs("Enough players emoting, stopping chase");
                 StopGirlFromChasing();
@@ -55,7 +55,7 @@ namespace ghostCodes
             }
 
             Plugin.MoreLogs("You might wanna keep running...");
-                
+
         }
 
         internal static void StopGirlFromChasing()
@@ -77,11 +77,11 @@ namespace ghostCodes
 
         internal static void EndAllGirlStuff()
         {
-            if(girlIsChasing)
+            if (girlIsChasing)
             {
                 StopGirlFromChasing();
             }
-            if(Plugin.instance.DressGirl.staringInHaunt)
+            if (Plugin.instance.DressGirl.staringInHaunt)
             {
                 GirlDisappear();
             }
@@ -90,10 +90,10 @@ namespace ghostCodes
 
         internal static void BreakersFix(DressGirlAI instance)
         {
-            if (!ModConfig.fixGhostGirlBreakers.Value || instance.currentBehaviourStateIndex == 1 || instance.timesChased != 1)
+            if (!SetupConfig.FixGhostGirlBreakers.Value || instance.currentBehaviourStateIndex == 1 || instance.timesChased != 1)
                 return;
 
-            if (Random.Range(0, 100) < ModConfig.ggVanillaBreakerChance.Value)
+            if (Random.Range(0, 100) < SetupConfig.VanillaBreakersChance.Value)
             {
                 instance.FlipLightsBreakerServerRpc();
                 Plugin.GC.LogInfo("patched updated breaker chance for vanilla");

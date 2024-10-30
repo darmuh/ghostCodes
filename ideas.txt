@@ -1,0 +1,14 @@
+﻿Corrupting the terminal, being unable to use it
+Corrupting the store, unable to buy
+Corrupting the credits, also unable to buy, see 0 credits (not real, will give the actual credits at the end of round)
+Corrupting the cameras, being unable to see the main camera.
+Corrupting the bodycam (openbodycam compat?) not being able to see the bodycam.
+Corrupting the lever, unable to leave until auto leaves at 12pm (and/or meltdown)
+Corrupting the hydraulic door, unable to close, or open and close randomly
+Corrupted dropship, makes the dropship land giving something random, or nothing (no credits spend).
+	50% = nothing
+	35% = 1 item
+	10% = 2 items
+	5% = 3 items
+Activate random held item
+Old birds stuff

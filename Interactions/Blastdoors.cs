@@ -1,7 +1,7 @@
 ﻿using System.Collections;
+using UnityEngine;
 using static ghostCodes.CodeStuff;
 using Random = UnityEngine.Random;
-using UnityEngine;
 
 namespace ghostCodes
 {

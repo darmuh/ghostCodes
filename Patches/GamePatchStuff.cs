@@ -1,12 +1,13 @@
-﻿using BepInEx.Bootstrap;
+﻿using ghostCodes.Configs;
+using ghostCodes.Patches;
 using HarmonyLib;
 using static ghostCodes.Bools;
-using Random = UnityEngine.Random;
 
 namespace ghostCodes
 {
     public class GamePatchStuff
     {
+        /*
         [HarmonyPatch(typeof(RoundManager), "SetBigDoorCodes")]
         public class StartRoundPatch : RoundManager
         {
@@ -21,9 +22,21 @@ namespace ghostCodes
                     InitPlugin.StartTheRound();
                 }
                 else
-                    Plugin.MoreLogs("Codes should not be generated...");
+                    Plugin.WARNING("Codes should not be generated, ship is in orbit!");
             }
         }
+        */
+
+        [HarmonyPatch(typeof(StartOfRound), "PassTimeToNextDay")]
+        public class NextDayPatch
+        {
+            static void Postfix()
+            {
+                Plugin.Spam("Next day detected!");
+                OpenLibEvents.GhostCodesReset.Invoke();
+            }
+        }
+
         [HarmonyPatch(typeof(DressGirlAI), "Start")]
         public class DressGirlExists : DressGirlAI //Start
         {
@@ -34,32 +47,12 @@ namespace ghostCodes
             }
         }
 
-        [HarmonyPatch(typeof(ShipTeleporter), "Awake")]
-        public class TeleporterInit : ShipTeleporter
-        {
-            static void Postfix(ShipTeleporter __instance)
-            {
-                if (__instance.isInverseTeleporter)
-                {
-                    Plugin.instance.InverseTP = __instance;
-                    Plugin.MoreLogs("InverseTP instance detected and set.");
-                }
-                    
-                else
-                {
-                    Plugin.instance.NormalTP = __instance;
-                    Plugin.MoreLogs("NormalTP instance detected and set.");
-                }
-                    
-            }
-        }
-
         [HarmonyPatch(typeof(DressGirlAI), "SetHauntStarePosition")]
         public class StaringInHauntPatch : DressGirlAI
         {
             static void Postfix(DressGirlAI __instance)
             {
-                if (!ModConfig.ghostGirlEnhanced.Value)
+                if (SetupConfig.GhostCodesSettings.CurrentMode.ToLower() != "hauntings")
                     return;
 
                 if (__instance == null)
@@ -85,7 +78,7 @@ namespace ghostCodes
         {
             static void Postfix(DressGirlAI __instance)
             {
-                if (ModConfig.fixGhostGirlBreakers.Value)
+                if (SetupConfig.FixGhostGirlBreakers.Value)
                 {
                     Plugin.MoreLogs("Fixing lightbreaker Rpc");
                     __instance.FlipLightsBreakerClientRpc();
@@ -98,10 +91,10 @@ namespace ghostCodes
         {
             static void Postfix(DressGirlAI __instance)
             {
-                
+
                 DressGirl.BreakersFix(__instance);
 
-                if (!ModConfig.ghostGirlEnhanced.Value)
+                if (SetupConfig.GhostCodesSettings.CurrentMode.ToLower() != "hauntings")
                     return;
 
                 RapidFire.startRapidFire = true;
@@ -114,9 +107,9 @@ namespace ghostCodes
         [HarmonyPatch(typeof(DressGirlAI), "StopChasing")]
         public class TheChaseEnds : DressGirlAI
         {
-            static void Postfix(DressGirlAI __instance)
+            static void Postfix()
             {
-                if (!ModConfig.ghostGirlEnhanced.Value)
+                if (SetupConfig.GhostCodesSettings.CurrentMode.ToLower() != "hauntings")
                     return;
 
                 RapidFire.startRapidFire = false;
@@ -125,26 +118,13 @@ namespace ghostCodes
             }
         }
 
-        [HarmonyPatch(typeof(GameNetworkManager), "Start")]
-        public class GameStartPatch
+        [HarmonyPatch(typeof(VehicleController), "Awake")]
+        public class GetVehicleController //Get Instance
         {
-            public static void Postfix()
+            static void Postfix(VehicleController __instance)
             {
-                CompatibilityCheck();
-            }
-
-            private static void CompatibilityCheck()
-            {
-                if (Chainloader.PluginInfos.ContainsKey("me.loaforc.facilitymeltdown"))
-                {
-                    Plugin.MoreLogs("Facility Meltdown mod detected!");
-                    Plugin.instance.facilityMeltdown = true;
-                }
-                if (Chainloader.PluginInfos.ContainsKey("com.github.zehsteam.ToilHead"))
-                {
-                    Plugin.MoreLogs("ToilHeads mod detected!");
-                    Plugin.instance.toilHead = true;
-                }
+                Plugin.instance.Cruiser = __instance;
+                Plugin.MoreLogs("Cruiser instance detected.");
             }
         }
     }

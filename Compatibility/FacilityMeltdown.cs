@@ -6,7 +6,7 @@ namespace ghostCodes.Compatibility
     {
         internal static bool CheckForMeltdown()
         {
-            if (!Plugin.instance.facilityMeltdown)
+            if (!Plugin.instance.FacilityMeltdown)
                 return false;
 
             if (MeltdownAPI.MeltdownStarted)
@@ -14,7 +14,7 @@ namespace ghostCodes.Compatibility
                 Plugin.MoreLogs("Meltdown detected.");
                 return true;
             }
-                
+
             else
                 return false;
         }

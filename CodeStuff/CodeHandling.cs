@@ -1,22 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using static ghostCodes.CodeStuff;
 using static ghostCodes.CodeActions;
+using static ghostCodes.CodeStuff;
 using static ghostCodes.NumberStuff;
 
 namespace ghostCodes
 {
     internal class CodeHandling
     {
-        internal static List<ActionPercentage> possibleActions = new List<ActionPercentage>();
-        internal static List<Action> chosenActions = new List<Action>();
-        
+        internal static List<ActionPercentage> possibleActions = [];
+        internal static List<Action> chosenActions = [];
+
         internal static void HandleGhostCodeSending(StartOfRound instance)
         {
             Misc.LogTime();
-            GetObjectNum(out int randomObjectNum);
-            chosenActions.Clear();
-            InitPossibleActions(instance, randomObjectNum);
+            if (TryGetObjectNum(out int randomObjectNum))
+            {
+                chosenActions.Clear();
+                InitPossibleActions(instance, randomObjectNum);
+            }
+            else
+                Plugin.WARNING("Unable to get randomObjectNum!");
+
             if (possibleActions.Count < 1)
                 return;
 
@@ -57,6 +62,9 @@ namespace ghostCodes
             }
             else
             {
+                if (randomObjectNum == -1)
+                    return;
+
                 myTerminalObjects[randomObjectNum].CallFunctionFromTerminal();
                 Plugin.GC.LogInfo("No Special action chosen, calling function from terminal");
             }

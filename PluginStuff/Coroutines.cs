@@ -1,15 +1,16 @@
-﻿using System.Collections;
+﻿using GameNetcodeStuff;
+using ghostCodes.Configs;
+using System.Collections;
 using UnityEngine;
-using Random = UnityEngine.Random;
-using static ghostCodes.NumberStuff;
-using static ghostCodes.CodeStuff;
-using static ghostCodes.CodeHandling;
 using static ghostCodes.Bools;
-using static ghostCodes.RapidFire;
-using static ghostCodes.InsanityStuff;
-using static ghostCodes.DressGirl;
+using static ghostCodes.CodeHandling;
+using static ghostCodes.CodeStuff;
 using static ghostCodes.Compatibility.FacilityMeltdown;
-using GameNetcodeStuff;
+using static ghostCodes.DressGirl;
+using static ghostCodes.InsanityStuff;
+using static ghostCodes.NumberStuff;
+using static ghostCodes.RapidFire;
+using Random = UnityEngine.Random;
 
 namespace ghostCodes
 {
@@ -17,14 +18,15 @@ namespace ghostCodes
     {
         internal static bool rapidFireStart = false;
         internal static bool codeLooperStarted = false; //enusre only one instance of coroutine being run
+        internal static bool activeFlicker = false;
 
         internal static IEnumerator InitEnumerator(StartOfRound instance)
         {
-            int firstWait = GetFirstWait();
+            int firstWait = GetWait(SetupConfig.RandomIntervals.Value, SetupConfig.FirstRandIntervalMin.Value, SetupConfig.FirstRandIntervalMax.Value, SetupConfig.FirstSetInterval.Value);
             InitPlugin.CodesInit();
-            Plugin.MoreLogs($"Codes Amount: {Plugin.instance.randGC}");
+            Plugin.MoreLogs($"Codes Amount: {Plugin.instance.RandCodeAmount}");
 
-            if (ModConfig.ghostGirlEnhanced.Value && ModConfig.ModNetworking.Value && !Plugin.instance.bypassGGE)
+            if (SetupConfig.GhostCodesSettings.HauntingsMode && ModConfig.ModNetworking.Value)
             {
                 Plugin.MoreLogs($"The ghost girl has been enhanced, prepare for your next haunting! >:)");
                 TerminalAdditions.CreateAllNodes();
@@ -45,12 +47,12 @@ namespace ghostCodes
 
         internal static IEnumerator RestartEnum(StartOfRound instance)
         {
-            int restartWait = GetInt(20, 90);
+            int restartWait = GetInt(20, 100);
             yield return new WaitForSeconds(restartWait);
-            int firstWait = GetFirstWait();
-            Plugin.MoreLogs($"Codes: {Plugin.instance.codeCount} / {Plugin.instance.randGC}");
-            
-            if (ModConfig.ghostGirlEnhanced.Value && ModConfig.ModNetworking.Value && !Plugin.instance.bypassGGE)
+            int firstWait = GetWait(SetupConfig.RandomIntervals.Value, SetupConfig.FirstRandIntervalMin.Value, SetupConfig.FirstRandIntervalMax.Value, SetupConfig.FirstSetInterval.Value);
+            Plugin.MoreLogs($"Codes: {Plugin.instance.CodeCount} / {Plugin.instance.RandCodeAmount}");
+
+            if (SetupConfig.GhostCodesSettings.HauntingsMode && ModConfig.ModNetworking.Value)
             {
                 Plugin.MoreLogs($"The ghost girl has been enhanced, prepare for your next haunting! >:)");
             }
@@ -68,7 +70,7 @@ namespace ghostCodes
                 Plugin.MoreLogs("Ghost Girl Enhanced is disabled and you are not the host.");
             }
 
-            
+
         }
 
         internal static IEnumerator CodeLooper(StartOfRound instance)
@@ -87,9 +89,9 @@ namespace ghostCodes
 
                     if (!IsCodeSent())
                     {
-                        float randomWaitNum = GetSecondWait();
+                        float randomWaitNum = GetWait(SetupConfig.RandomIntervals.Value, SetupConfig.SecondRandIntervalMin.Value, SetupConfig.SecondRandIntervalMax.Value, SetupConfig.SecondSetInterval.Value);
 
-                        if (ModConfig.gcInsanity.Value)
+                        if (SetupConfig.GhostCodesSettings.InsanityMode)
                         {
                             ApplyInsanityMode(instance, ref randomWaitNum);
                             if (startRapidFire)
@@ -98,38 +100,38 @@ namespace ghostCodes
                                 codeLooperStarted = false;
                                 yield break;
                             }
-                                
+
                         }
 
                         yield return new WaitForSeconds(randomWaitNum);
                         HandleGhostCodeSending(instance);
-                        Plugin.instance.codeCount++;
-                        Plugin.instance.ghostCodeSent = true;
-                        Plugin.MoreLogs($"Code Sent, count: {Plugin.instance.codeCount}");
+                        Plugin.instance.CodeCount++;
+                        Plugin.instance.CodeSent = true;
+                        Plugin.MoreLogs($"Code Sent, count: {Plugin.instance.CodeCount}");
                     }
                     else
                     {
-                        float randomWaitNum = GetWaitAfterCode();
+                        float randomWaitNum = GetWait(SetupConfig.RandomIntervals.Value, SetupConfig.RandIntervalACMin.Value, SetupConfig.RandIntervalACMax.Value, SetupConfig.SetIntervalAC.Value);
                         Plugin.MoreLogs($"ghostCode was just sent, waiting {randomWaitNum}");
 
-                        if (ModConfig.gcInsanity.Value)
+                        if (SetupConfig.GhostCodesSettings.InsanityMode)
                         {
                             ApplyInsanityMode(instance, ref randomWaitNum);
                         }
 
                         yield return new WaitForSeconds(randomWaitNum);
-                        Plugin.instance.ghostCodeSent = false;
+                        Plugin.instance.CodeSent = false;
                     }
 
                     if (StartOfRound.Instance.shipIsLeaving)
                     {
-                        Plugin.MoreLogs($"Ship is leaving, {Plugin.instance.codeCount} codes were sent.");
+                        Plugin.MoreLogs($"Ship is leaving, {Plugin.instance.CodeCount} codes were sent.");
                         codeLooperStarted = false;
                         yield break;
                     }
                 }
 
-                Plugin.MoreLogs($"the ghost is bored of sending codes, {Plugin.instance.codeCount} codes were sent.");
+                Plugin.MoreLogs($"the ghost is bored of sending codes, {Plugin.instance.CodeCount} codes were sent.");
                 codeLooperStarted = false;
                 yield break;
             }
@@ -170,11 +172,11 @@ namespace ghostCodes
                         {
                             for (int i = 0; i < possibleActions.Count && KeepSendingCodes(); i++)
                             {
-                                RapidFireStoppers(startTime,TimeOfDay.Instance.hour);
+                                RapidFireStoppers(startTime, TimeOfDay.Instance.hour);
                                 HandleRapidFireCodeChoices(instance, -1);
                                 yield return new WaitForSeconds(Random.Range(0.5f, 3f)); //rapidFire code cooldowns
                             }
-                        }  
+                        }
                         else
                         {
                             for (int i = 0; i < myTerminalObjects.Count && KeepSendingCodes(); i++)
@@ -186,7 +188,7 @@ namespace ghostCodes
                         }
 
                         CountSentCodes();
-                        Plugin.instance.ghostCodeSent = true;
+                        Plugin.instance.CodeSent = true;
                     }
                     else
                     {
@@ -194,16 +196,16 @@ namespace ghostCodes
                         float cooldown = Random.Range(1f, 4f);
                         RapidFireStoppers(startTime, TimeOfDay.Instance.hour);
                         yield return new WaitForSeconds(cooldown);
-                        Plugin.instance.ghostCodeSent = false;
+                        Plugin.instance.CodeSent = false;
                     }
 
                     if (LoopBreakers())
                         yield break;
-                        
+
                 }
                 if (!(KeepSendingCodes()))
                     Plugin.GC.LogInfo($"end of rapidFire....");
-                
+
                 if (!startRapidFire && KeepSendingCodes() && !endAllCodes)
                 {
                     ReturnFromRapidFire();
@@ -217,7 +219,7 @@ namespace ghostCodes
                     startRapidFire = false;
                     rapidFireStart = false;
                     yield break;
-                }     
+                }
 
             }
             startRapidFire = false;
@@ -258,7 +260,7 @@ namespace ghostCodes
             if (breakerBox == null)
                 yield break;
 
-            if (Plugin.instance.facilityMeltdown)
+            if (Plugin.instance.FacilityMeltdown)
                 meltdown = CheckForMeltdown();
 
             NetHandler.Instance.AlarmLightsServerRpc(false);
@@ -267,7 +269,7 @@ namespace ghostCodes
             {
                 if (StartOfRound.Instance.localPlayerController.isInsideFactory)
                     NetHandler.Instance.GGFlickerServerRpc();
-                yield return new WaitForSeconds(Random.Range(ModConfig.rfRLmin.Value, ModConfig.rfRLmax.Value));
+                yield return new WaitForSeconds(Random.Range(SetupConfig.RapidLightsMin.Value, SetupConfig.RapidLightsMax.Value));
             }
             NetHandler.Instance.AlarmLightsServerRpc(true);
             yield return new WaitForSeconds(1);
@@ -292,16 +294,16 @@ namespace ghostCodes
             while (Plugin.instance.DressGirl.staringInHaunt)
             {
                 float timeWait2 = Random.Range(1f, 4f);
-                if (!Plugin.instance.ghostCodeSent && !girlIsChasing)
+                if (!Plugin.instance.CodeSent && !girlIsChasing)
                 {
                     HandleGhostCodeSending(instance);
-                    Plugin.instance.ghostCodeSent = true;
+                    Plugin.instance.CodeSent = true;
                 }
                 else
                 {
                     Plugin.GC.LogInfo($"ghostCode was just sent, waiting {timeWait2}");
                     yield return new WaitForSeconds(timeWait2);
-                    Plugin.instance.ghostCodeSent = false;
+                    Plugin.instance.CodeSent = false;
                 }
 
                 if (LoopBreakers())

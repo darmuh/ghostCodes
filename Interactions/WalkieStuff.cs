@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using static UnityEngine.Object;
 
 namespace ghostCodes.Interactions
 {
@@ -16,6 +15,7 @@ namespace ghostCodes.Interactions
 
             if (activeBreathingWalkies)
                 return;
+
             float waitTime = NumberStuff.GetFloat(1f, 6f);
             Plugin.MoreLogs("Transmitting breathing noise");
 
@@ -24,7 +24,7 @@ namespace ghostCodes.Interactions
             GarbleWalkies(true);
             StartOfRound.Instance.StartCoroutine(DelayedReturnFromGarble(waitTime));
             StartOfRound.Instance.StartCoroutine(DelayedReturnFromBreathing());
-            
+
         }
 
         internal static void GarbleAllWalkiesFunc()
@@ -46,7 +46,8 @@ namespace ghostCodes.Interactions
         {
             foreach (WalkieTalkie walkie in WalkieTalkie.allWalkieTalkies)
             {
-                walkie.target.PlayOneShot(clip, vol);
+                if (!walkie.deactivated)
+                    walkie.target.PlayOneShot(clip, vol);
             }
         }
 
@@ -57,13 +58,14 @@ namespace ghostCodes.Interactions
 
             foreach (WalkieTalkie walkie in WalkieTalkie.allWalkieTalkies)
             {
-                walkie.playingGarbledVoice = state;
+                if (!walkie.deactivated)
+                    walkie.playingGarbledVoice = state;
             }
         }
 
         internal static IEnumerator DelayedReturnFromGarble(float waitTime)
         {
-            
+
             yield return new WaitForSeconds(waitTime);
             GarbleWalkies(false);
             activeGarble = false;

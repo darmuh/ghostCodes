@@ -1,19 +1,29 @@
-﻿using Random = UnityEngine.Random;
+﻿using GameNetcodeStuff;
 using static ghostCodes.CodeStuff;
-using GameNetcodeStuff;
 
 namespace ghostCodes
 {
     internal class NumberStuff
     {
+        internal static System.Random Rand = new();
         internal static int GetInt(int num1, int num2)
         {
-            return Random.Range(num1, num2);
+            return Rand.Next(num1, num2);
         }
 
         internal static float GetFloat(float num1, float num2)
         {
-            return Random.Range(num1, num2);
+            return UnityEngine.Random.Range(num1, num2);
+        }
+
+        internal static float GetClampedInsanityPercent(float originalPercentage, float multiplier)
+        {
+            if (originalPercentage * multiplier >= 100f)
+            {
+                return 100f;
+            }
+            else
+                return originalPercentage * multiplier;
         }
 
         internal static int GetAlivePlayers()
@@ -21,69 +31,42 @@ namespace ghostCodes
             int alivePlayers = 0;
 
             Plugin.MoreLogs("Getting alive players");
-            foreach(PlayerControllerB player in Plugin.instance.players)
+            foreach (PlayerControllerB player in Plugin.instance.players)
             {
-                if(!player.isPlayerDead && player.isPlayerControlled)
+                if (!player.isPlayerDead && player.isPlayerControlled)
                     alivePlayers++;
             }
 
             return alivePlayers;
         }
 
-        internal static int GetFirstWait()
+        internal static int GetWait(bool useRandom, int min, int max, int setInterval)
         {
-            int firstWait;
+            int wait;
 
-            if (ModConfig.useRandomIntervals.Value)
+            if (useRandom)
             {
-                firstWait = GetInt(ModConfig.gcFirstRandIntervalMin.Value, ModConfig.gcFirstRandIntervalMax.Value);
-                Plugin.MoreLogs("Using random intervals for first wait");
+                wait = GetInt(min, max);
+                Plugin.Spam("using random intervals for wait");
             }
             else
-                firstWait = ModConfig.gcFirstSetInterval.Value;
+                wait = setInterval;
 
-            return firstWait;
-
-
+            return wait;
         }
 
-        internal static int GetSecondWait()
-        {
-            int secondWait;
-
-            if (ModConfig.useRandomIntervals.Value)
-            {
-                secondWait = GetInt(ModConfig.gcSecondRandIntervalMin.Value, ModConfig.gcSecondRandIntervalMax.Value);
-                Plugin.MoreLogs("Using random intervals for second wait");
-            }
-            else
-                secondWait = ModConfig.gcSecondSetInterval.Value;
-
-            return secondWait;
-        }
-
-        internal static int GetWaitAfterCode()
-        {
-            int waitAfterCode;
-            if (ModConfig.useRandomIntervals.Value)
-            {
-                waitAfterCode = GetInt(ModConfig.gcRandIntervalACMin.Value, ModConfig.gcRandIntervalACMax.Value);
-                Plugin.MoreLogs("Using random intervals for after code wait");
-            }
-            else
-                waitAfterCode = ModConfig.gcSetIntervalAC.Value;
-
-            return waitAfterCode;
-        }
-
-        internal static void GetObjectNum(out int randomObjectNum)
+        internal static bool TryGetObjectNum(out int randomObjectNum)
         {
             if (myTerminalObjects.Count == 0)
-                randomObjectNum = - 1;
-            else            
-                randomObjectNum = Random.Range(0, myTerminalObjects.Count-1);
-
-            return;
+            {
+                randomObjectNum = -1;
+                return false;
+            }
+            else
+            {
+                randomObjectNum = Rand.Next(0, myTerminalObjects.Count);
+                return true;
+            }
         }
 
         internal static int GetNumberPlayersEmoting()
@@ -92,7 +75,7 @@ namespace ghostCodes
 
             foreach (PlayerControllerB player in Plugin.instance.players)
             {
-                if(player.performingEmote)
+                if (player.performingEmote)
                     numberPlayersEmoting++;
             }
 

@@ -1,4 +1,5 @@
-﻿using static UnityEngine.Object;
+﻿using ghostCodes.Configs;
+using static UnityEngine.Object;
 
 namespace ghostCodes
 {
@@ -6,7 +7,7 @@ namespace ghostCodes
     {
         internal static void CheckForHauntedPlayerInShower()
         {
-            if (!DressGirl.girlIsChasing && !ModConfig.ggShowerCheck.Value)
+            if (!DressGirl.girlIsChasing && InteractionsConfig.ShowerStopChasing.Value < 1)
                 return;
 
             ShowerTrigger shower = FindObjectOfType<ShowerTrigger>();
@@ -29,7 +30,7 @@ namespace ghostCodes
 
         private static bool IsShowerEffective()
         {
-            return Bools.IsThisEffective(ModConfig.ggShowerStopChasingChance.Value);
+            return Bools.IsThisEffective(InteractionsConfig.ShowerStopChasing.Value);
         }
     }
 }

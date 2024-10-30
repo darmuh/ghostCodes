@@ -1,169 +1,212 @@
-﻿using System;
-using System.Collections;
+﻿using GameNetcodeStuff;
+using ghostCodes.Configs;
+using ghostCodes.Interactions;
+using System;
 using System.Collections.Generic;
-using Random = UnityEngine.Random;
 using UnityEngine;
-using static ghostCodes.CodeStuff;
+using static ghostCodes.Configs.InteractionsConfig;
+using static ghostCodes.Blastdoors;
 using static ghostCodes.Bools;
 using static ghostCodes.CodeHandling;
-using static ghostCodes.Blastdoors;
-using static ghostCodes.Mines;
+using static ghostCodes.CodeStuff;
 using static ghostCodes.Doors;
-using static ghostCodes.Turrets;
 using static ghostCodes.Lights;
+using static ghostCodes.Mines;
 using static ghostCodes.RapidFire;
 using static ghostCodes.ShipStuff;
 using static ghostCodes.Teleporters;
-using GameNetcodeStuff;
-using ghostCodes.Interactions;
+using static ghostCodes.Turrets;
+using Random = UnityEngine.Random;
+using ghostCodes.PluginStuff;
 
 namespace ghostCodes
 {
     internal class CodeActions
     {
+        internal static System.Random Rand = new();
         internal static void InitPossibleActions(StartOfRound instance, int randomObjectNum = -1)
         {
             possibleActions.Clear();
-            
+
             NetworkingRequiredActions();
-            DressGirlRequiredActions();
             ShipStuff();
-            MessWithItems();
+            GhostGirlRequired();
             AddRegularDoorStuff();
-            
+            CruiserStuff();
+            Maininteractions();
+
             if (randomObjectNum < 0)
                 return;
 
-            AddRapidFireActions(instance, randomObjectNum);
             TerminalObjectActions(instance, randomObjectNum);
             ExternalModCheck();
         }
 
-        private static void MessWithWalkies()
+        private static void Maininteractions()
         {
-            if (WalkieTalkie.allWalkieTalkies.Count == 0 || !ModConfig.walkieSectionStuff.Value) 
-                return;
+            if (AffectAllBatteries.Value > 0)
+                possibleActions.Add(new ActionPercentage("AffectAllBatteries", () => Items.AdjustAllPlayersBattery(), AffectAllBatteries.Value));
 
-            Plugin.MoreLogs("Adding enabled walkie stuff");
+            if (AffectRandomPlayerBatteries.Value > 0)
+                possibleActions.Add(new ActionPercentage("AffectRandomPlayerBatteries", () => Items.AffectRandomPlayersBatterys(), AffectRandomPlayerBatteries.Value));
 
-            if(ModConfig.gcGarbleWalkies.Value)
-                possibleActions.Add(new ActionPercentage("GarbleWalkies", () => NetHandler.Instance.GarbleWalkiesServerRpc(), ModConfig.gcGarbleWalkiesChance.Value));
+            if(HauntFactoryScrap.Value > 0)
+                possibleActions.Add(new ActionPercentage("HauntFactoryScrap", () => Items.HauntItemUse(false), HauntFactoryScrap.Value));
 
-            if (ModConfig.ggBreatheOnWalkies.Value || Plugin.instance.DressGirl == null )
-                possibleActions.Add(new ActionPercentage("BreatheOnWalkies", () => NetHandler.Instance.BreatheOnWalkiesServerRpc(), ModConfig.ggBreatheOnWalkiesChance.Value));
+            if (HauntHeldScrap.Value > 0)
+                possibleActions.Add(new ActionPercentage("HauntHeldScrap", () => Items.HauntItemUse(true), HauntHeldScrap.Value));
+
         }
 
-        private static void MessWithItems()
+        private static void MessWithWalkies()
         {
-            if (!ModConfig.itemSectionStuff.Value)
+            if (WalkieTalkie.allWalkieTalkies.Count == 0 || !SetupConfig.GhostCodesSettings.HauntingsMode)
                 return;
 
-            if(ModConfig.gcDrainAllBatteries.Value)
-                possibleActions.Add(new ActionPercentage("DrainAllBatteries", () => Items.DrainAllPlayersBattery(), ModConfig.gcDrainAllBatteriesChance.Value));
+            Plugin.Spam("Adding enabled walkie stuff");
 
-            if(ModConfig.gcDrainHauntedPlayerBatteries.Value && Plugin.instance.DressGirl != null)
-                possibleActions.Add(new ActionPercentage("DrainHauntedPlayerBatteries", () => Items.DrainHauntedPlayersBatterys(), ModConfig.gcDrainHauntedPlayerBatteriesChance.Value));
+            if (GarbleWalkies.Value > 0)
+                possibleActions.Add(new ActionPercentage("GarbleWalkies", () => NetHandler.Instance.GarbleWalkiesServerRpc(), GarbleWalkies.Value));
 
-            if (ModConfig.gcDrainRandomPlayerBatteries.Value)
-                possibleActions.Add(new ActionPercentage("DrainRandomPlayerBatteries", () => Items.DrainRandomPlayersBatterys(), ModConfig.gcDrainRandomPlayerBatteriesChance.Value));
+            if (BreatheOnWalkies.Value > 0)
+                possibleActions.Add(new ActionPercentage("BreatheOnWalkies", () => NetHandler.Instance.BreatheOnWalkiesServerRpc(), BreatheOnWalkies.Value));
+        }
+
+        private static void GhostGirlRequired()
+        {
+            if (!SetupConfig.GhostCodesSettings.HauntingsMode)
+                return;
+
+            if (PlayerLights.Value > 0 && !startRapidFire)
+                possibleActions.Add(new ActionPercentage("ggFlashlight", () => GGFlashlight(), PlayerLights.Value));
+
+            if (AffectHauntedPlayerBatteries.Value > 0)
+                possibleActions.Add(new ActionPercentage("AffectHauntedPlayerBatteries", () => Items.AffectHauntedPlayersBatterys(), AffectHauntedPlayerBatteries.Value));
+
+            MessWithWalkies();
 
         }
 
         private static void ShipStuff()
         {
-            if (!AreAnyPlayersInShip() || !ModConfig.shipstuffSection.Value)
+            if (!AreAnyPlayersInShip())
                 return;
 
-            //Plugin.MoreLogs("players detected on ship");
+            Plugin.Spam("players detected on ship");
 
             //if (gcConfig.emptyShipEvent.Value)
-                //possibleActions.Add(new ActionPercentage("EmptyShipOfPlayers", () => SuckPlayersOutOfShip(), gcConfig.emptyShipChance.Value));
+            //possibleActions.Add(new ActionPercentage("EmptyShipOfPlayers", () => SuckPlayersOutOfShip(), gcConfig.emptyShipChance.Value));
 
-            if(ModConfig.lightsOnShipEvent.Value)
-                possibleActions.Add(new ActionPercentage("MessWithShipLights", () => MessWithShipLights(), ModConfig.lightsOnShipChance.Value));
+            if (LightsOnShip.Value > 0)
+                possibleActions.Add(new ActionPercentage("MessWithShipLights", () => MessWithShipLights(), LightsOnShip.Value));
 
-            if(ModConfig.doorsOnShipEvent.Value)
-                possibleActions.Add(new ActionPercentage("MessWithShipDoors", () => MessWithShipDoors(), ModConfig.doorsOnShipChance.Value));
+            if (DoorsOnShip.Value > 0)
+                possibleActions.Add(new ActionPercentage("MessWithShipDoors", () => MessWithShipDoors(), DoorsOnShip.Value));
 
-            if(ModConfig.ModNetworking.Value && ModConfig.shockTerminalUserEvent.Value && IsAnyPlayerUsingTerminal(out PlayerControllerB player))
+            if (ModConfig.ModNetworking.Value && ShockTerminalUser.Value > 0 && IsAnyPlayerUsingTerminal(out PlayerControllerB player))
             {
-                possibleActions.Add(new ActionPercentage("Shock Terminal User", () => ShockTerminalUser(), ModConfig.shockTerminalUserChance.Value));
+                possibleActions.Add(new ActionPercentage("Shock Terminal User", () => ShockTerminal(), ShockTerminalUser.Value));
                 Plugin.MoreLogs(player.playerUsername + " detected using terminal");
-            } 
+            }
 
-            if(ModConfig.monitorsOnShipEvent.Value && ModConfig.ModNetworking.Value)
-                possibleActions.Add(new ActionPercentage("MessWithMonitors", () => NetHandler.Instance.MessWithMonitorsServerRpc(), ModConfig.monitorsOnShipChance.Value));
+            if (MonitorsOnShip.Value > 0 && ModConfig.ModNetworking.Value)
+                possibleActions.Add(new ActionPercentage("MessWithMonitors", () => NetHandler.Instance.MessWithMonitorsServerRpc(), MonitorsOnShip.Value));
 
-            if(ModConfig.normalTpEvent.Value && Plugin.instance.NormalTP != null)
+            if (TeleportPlayer.Value > 0 && OpenLib.Common.Teleporter.NormalTP != null)
             {
                 Plugin.MoreLogs("Added MessWithNormalTP");
-                possibleActions.Add(new ActionPercentage("MessWithNormalTP", () => InteractWithAnyTP(0), ModConfig.normalTpChance.Value));
+                possibleActions.Add(new ActionPercentage("MessWithNormalTP", () => InteractWithAnyTP(0), TeleportPlayer.Value));
             }
-                
 
-            if (ModConfig.inverseTpEvent.Value && Plugin.instance.InverseTP != null)
+            if (InverseTeleporter.Value > 0 && OpenLib.Common.Teleporter.InverseTP != null)
             {
                 Plugin.MoreLogs("Added MessWithInverseTP");
-                possibleActions.Add(new ActionPercentage("MessWithInverseTP", () => InteractWithAnyTP(1), ModConfig.inverseTpChance.Value));
+                possibleActions.Add(new ActionPercentage("MessWithInverseTP", () => InteractWithAnyTP(1), InverseTeleporter.Value));
             }
-                
+
+            if(CorruptedCredits.Value > 0 && !TerminalAdditions.credsCorrupted)
+                possibleActions.Add(new ActionPercentage("CorruptedCredits", () => TerminalAdditions.CorruptedCredits(true), CorruptedCredits.Value));
+
+            if(HeavyLever.Value > 0)
+                possibleActions.Add(new ActionPercentage("HeavyLever", () => HeavyLeverFunc(), HeavyLever.Value));
+
         }
 
         private static void AddRegularDoorStuff()
         {
-            if (!ModConfig.regularDoorsSectionStuff.Value || !AreAnyPlayersInFacility())
+            if (!AreAnyPlayersInFacility())
                 return;
 
-            if(ModConfig.openAllRegularDoorsEvent.Value)
-                possibleActions.Add(new ActionPercentage("OpenALLDoors", () => OpenOrCloseALLDoors(false), ModConfig.openAllRegularDoorsChance.Value));
+            if (ToggleAllRegularDoors.Value > 0)
+                possibleActions.Add(new ActionPercentage("ToggleAllRegularDoors", () => OpenOrCloseALLDoors(), ToggleAllRegularDoors.Value));
 
-            if (ModConfig.closeAllRegularDoorsEvent.Value)
-                possibleActions.Add(new ActionPercentage("CloseALLDoors", () => OpenOrCloseALLDoors(true), ModConfig.closeAllRegularDoorsChance.Value));
+            if (ToggleRegularDoor.Value > 0)
+                possibleActions.Add(new ActionPercentage("ToggleRegularDoor", () => OpenorClose1RandomDoor(), ToggleRegularDoor.Value));
 
-            if (ModConfig.openSingleDoorEvent.Value)
-                possibleActions.Add(new ActionPercentage("OpenONEdoor", () => OpenorClose1RandomDoor(false), ModConfig.openSingleDoorChance.Value));
+            if (LockSingleDoor.Value > 0)
+                possibleActions.Add(new ActionPercentage("LockONEdoor", () => LockorUnlockARandomDoor(true), LockSingleDoor.Value));
 
-            if (ModConfig.closeSingleDoorEvent.Value)
-                possibleActions.Add(new ActionPercentage("CloseONEdoor", () => OpenorClose1RandomDoor(true), ModConfig.closeSingleDoorChance.Value));
+            if (UnlockSingleDoor.Value > 0)
+                possibleActions.Add(new ActionPercentage("UnlockONEdoor", () => LockorUnlockARandomDoor(false), UnlockSingleDoor.Value));
 
-            if (ModConfig.lockSingleDoorEvent.Value)
-                possibleActions.Add(new ActionPercentage("LockONEdoor", () => LockorUnlockARandomDoor(true), ModConfig.lockSingleDoorChance.Value));
+            if (TryHauntSingleDoor.Value > 0)
+                possibleActions.Add(new ActionPercentage("TryHauntSingleDoor", () => HauntDoors(0), TryHauntSingleDoor.Value));
 
-            if (ModConfig.unlockSingleDoorEvent.Value)
-                possibleActions.Add(new ActionPercentage("UnlockONEdoor", () => LockorUnlockARandomDoor(false), ModConfig.unlockSingleDoorChance.Value));
+            if (TryHauntHalfAllDoors.Value > 0)
+                possibleActions.Add(new ActionPercentage("TryHauntHalfAllDoors", () => HauntDoors(50), TryHauntHalfAllDoors.Value));
 
+            if (TryHauntAllDoors.Value > 0)
+                possibleActions.Add(new ActionPercentage("TryHauntAllDoors", () => HauntDoors(100), TryHauntAllDoors.Value));
         }
 
-        private static void AddRapidFireActions(StartOfRound instance, int randomObjectNum)
+        private static void CruiserStuff()
         {
-            if (!startRapidFire)
+            if (Plugin.instance.Cruiser == null)
                 return;
 
-            if(!ModConfig.gcIgnoreTurrets.Value && isThisaTurret(randomObjectNum))
-                possibleActions.Add(new ActionPercentage("rfTurret", () => HandleTurretAction(randomObjectNum), ModConfig.turretInsaneBChance.Value));
-
-            if (!ModConfig.gcIgnoreLandmines.Value && isThisaMine(randomObjectNum))
-                possibleActions.Add(new ActionPercentage("rfMine", () => HandleMineAction(randomObjectNum), ModConfig.mineInsaneBChance.Value));
-            
-            if(!ModConfig.gcIgnoreDoors.Value && isThisaBigDoor(randomObjectNum))
-                possibleActions.Add(new ActionPercentage("rfHungryDoor", () => HandleHungryDoor(randomObjectNum, instance), ModConfig.hungryDoorIChance.Value));
-        }
-
-        private static void DressGirlRequiredActions()
-        {
-            if (Plugin.instance.DressGirl == null || !ModConfig.ModNetworking.Value)
+            if (!Plugin.instance.Cruiser.ignitionStarted)
                 return;
 
+            Plugin.MoreLogs("Adding cruiser interactions!!");
 
-            possibleActions.Add(new ActionPercentage("ggFlashlight", () => GGFlashlight(), ModConfig.ggPlayerLightsPercent.Value));
+            if (ChangeCruiserRadio.Value > 0)
+                possibleActions.Add(new ActionPercentage("ChangeCruiserRadio", () => Plugin.instance.Cruiser.ChangeRadioStation(), ChangeCruiserRadio.Value));
 
-            MessWithWalkies();
+            if (CruiserEjectDriver.Value > 0)
+                possibleActions.Add(new ActionPercentage("CruiserEjectDriver", () => Plugin.instance.Cruiser.SpringDriverSeatServerRpc(), CruiserEjectDriver.Value));
+
+            if (CruiserUseBoost.Value > 0 && Plugin.instance.Cruiser.IsOwner)
+                possibleActions.Add(new ActionPercentage("CruiserUseBoost", () => Plugin.instance.Cruiser.UseTurboBoostLocalClient(), CruiserUseBoost.Value));
+
+            if (CruiserPush.Value > 0)
+                possibleActions.Add(new ActionPercentage("CruiserPush", () => Cruiser.Push(), CruiserPush.Value));
+
+            if(ToggleCruiserDoors.Value > 0)
+                possibleActions.Add(new ActionPercentage("CruiserDoors", () => Cruiser.Doors(), ToggleCruiserDoors.Value));
+
+            if (ToggleCruiserLights.Value > 0)
+                possibleActions.Add(new ActionPercentage("ToggleCruiserLights", () => Cruiser.Headlights(1), ToggleCruiserLights.Value));
+
+            if (FlickerCruiserLights.Value > 0)
+            {
+                possibleActions.Add(new ActionPercentage("FlickerCruiserLights", () => Cruiser.Headlights(Rand.Next(11)), FlickerCruiserLights.Value));
+            }  
+
+            if (ToggleCruiserHood.Value > 0)
+                possibleActions.Add(new ActionPercentage("ToggleCruiserHood", () => Plugin.instance.Cruiser.ToggleHoodOpenLocalClient(), ToggleCruiserHood.Value));
+
+            if (CruiserWindshield.Value > 0)
+                possibleActions.Add(new ActionPercentage("CruiserWindshield", () => Cruiser.Windshield(), CruiserWindshield.Value));
+
+            if(CruiserShiftGears.Value > 0)
+                possibleActions.Add(new ActionPercentage("CruiserShiftGears", () => Cruiser.GearShift(), CruiserShiftGears.Value));
+
         }
 
         private static void ExternalModCheck()
         {
             Plugin.MoreLogs("Checking for any external mods to utilize ghost codes on");
-            if(Plugin.instance.toilHead)
+            if (Plugin.instance.ToilHead)
                 Compatibility.ToilHead.CheckForToilHeadObjects();
         }
 
@@ -172,7 +215,8 @@ namespace ghostCodes
             if (!ModConfig.ModNetworking.Value)
                 return;
 
-            possibleActions.Add(new ActionPercentage("facilityLights", () => FlipLights(), ModConfig.ggCodeBreakerChance.Value));
+            if (FlipBreaker.Value > 0)
+                possibleActions.Add(new ActionPercentage("facilityLights", () => FlipLights(), FlipBreaker.Value));
         }
 
         private static void TerminalObjectActions(StartOfRound instance, int randomObjectNum)
@@ -181,47 +225,46 @@ namespace ghostCodes
             if (myTerminalObjects.Count > 0)
                 possibleActions.Add(new ActionPercentage("DefaultCodes", () => DefaultTerminalAction(randomObjectNum), 100));
 
-            if (!ModConfig.gcIgnoreDoors.Value && isThisaBigDoor(randomObjectNum))
-                possibleActions.Add(new ActionPercentage("hungryDoor", () => HandleHungryDoor(randomObjectNum, instance), ModConfig.hungryDoorNChance.Value));
-            if (!ModConfig.gcIgnoreTurrets.Value && isThisaTurret(randomObjectNum))
-                possibleActions.Add(new ActionPercentage("normalTurret", () => HandleTurretAction(randomObjectNum), ModConfig.turretNormalBChance.Value));
-            if (!ModConfig.gcIgnoreLandmines.Value && isThisaMine(randomObjectNum))
-                possibleActions.Add(new ActionPercentage("normalMine", () => HandleMineAction(randomObjectNum), ModConfig.mineNormalBChance.Value));
+            if (!SetupConfig.IgnoreDoors.Value && IsThisaBigDoor(randomObjectNum))
+                possibleActions.Add(new ActionPercentage("hungryDoor", () => HandleHungryDoor(randomObjectNum, instance), HungryBlastDoor.Value));
+            if (!SetupConfig.IgnoreTurrets.Value && IsThisaTurret(randomObjectNum))
+                possibleActions.Add(new ActionPercentage("normalTurret", () => HandleTurretAction(randomObjectNum), TurretBerserk.Value));
+            if (!SetupConfig.IgnoreLandmines.Value && IsThisaMine(randomObjectNum))
+                possibleActions.Add(new ActionPercentage("normalMine", () => HandleMineAction(randomObjectNum), MineBoom.Value));
         }
 
         internal static void DefaultTerminalAction(int randomObjectNum)
         {
+            if (randomObjectNum == -1)
+                return;
+
             myTerminalObjects[randomObjectNum].CallFunctionFromTerminal();
         }
     }
 
     // Helper class to represent an action with its percentage
-    public class ActionPercentage
+    public class ActionPercentage(string name, Action action, float percentage)
     {
-        public Action Action { get; }
-        public float Percentage { get; }
-        public string Name { get; set; }
-
-        public ActionPercentage(string name, Action action, float percentage)
-        {
-            Name = name;
-            Action = action;
-            Percentage = percentage;
-        }
+        public Action Action { get; } = action;
+        public float Percentage { get; } = percentage;
+        public string Name { get; set; } = name;
 
 
         // Helper method to choose actions from a list based on percentages
         public static List<Action> ChooseActionsFromPercentages(List<ActionPercentage> actions)
         {
             Shuffle(actions);
-            List<Action> chosenActions = new List<Action>();
+            List<Action> chosenActions = [];
             int numActions = 0;
 
             foreach (var action in actions)
             {
                 float randomValue = Random.Range(0f, 100f);
+                float chance = action.Percentage;
+                if (startRapidFire)
+                    chance = NumberStuff.GetClampedInsanityPercent(chance, InsanityConfig.InsanityModeMultiplier.Value);
 
-                if (numActions < 3 && (randomValue <= action.Percentage || Mathf.Approximately(action.Percentage, 100f)))
+                if (numActions < 3 && (randomValue <= chance || Mathf.Approximately(chance, 100f)))
                 {
                     chosenActions.Add(action.Action);
                     numActions++;

@@ -1,0 +1,24 @@
+﻿Other:
+- Terminal Screen Glitch -> probably need to do the thing zaggy was mentioning
+- GhostGirl Goodbye (have ghostgirl appear at opening of ship when it is leaving if she is not actively chasing)
+- Haunted apparatus, whoever holds a stolen apparatus will now be the haunted player
+
+Steps: -> function created -> added config items -> added to interactions pool -> tested interaction -> tested interaction as non-host
+
+New Interactions:
+HauntedDoor stuff (vanilla compat) -> functions created -> added config items -> added to interactions pool -> tested as host with no issues
+CruiserInteractions -> functions created -> added config items -> added to interactions pool -> tested as host no issues
+	Good to go: ChangeCruiserRadio, CruiserEjectDriver, CruiserUseBoost, ToggleCruiserHood, CruiserWindshield, ToggleCruiserLights, FlickerCruiserLights, PushCruiser, Open/Close Doors, GearShift
+Corrupted Credits -> function created -> added config item -> added to interactions pool -> tested as host no issues
+Heavy lever -> function created -> added config item -> added to interactions pool -> tested as host no issues
+Use handheld item at random -> function created -> added config item -> added to interactions pool -> 
+Use item (in facility) not being held at random -> function created -> added config item -> added to interactions pool -> 
+Corrupted Dropship, lands without purchasing anything
+Old birds (activate/deactivate?)
+Panic (heavy screenshake/giggling/slow movement)
+Broken ship door (won't close)
+Corrupted Cameras/Bodycam -> Zaggy says i'll need to do this thru editor
+
+
+
+Steps towards implementation = function created -> added config items -> added to interactions pool -> tested interaction -> tested interaction as non-host

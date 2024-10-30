@@ -1,0 +1,35 @@
+﻿1-	@darmuh This was logging even though the Turret stuff is disabled
+	[20:20:27.7240633] [Error  : Unity Log] NullReferenceException
+	Stack trace:
+	ghostCodes.Bools.isThisaTurret (System.Int32 randomObjectNum) (at <24031e090e6943cd8a53d20e134dbc7c>:IL_00021)
+	ghostCodes.CodeActions.TerminalObjectActions (StartOfRound instance, System.Int32 randomObjectNum) (at <24031e090e6943cd8a53d20e134dbc7c>:IL_000a2)
+	ghostCodes.CodeActions.InitPossibleActions (StartOfRound instance, System.Int32 randomObjectNum) (at <24031e090e6943cd8a53d20e134dbc7c>:IL_0003c)
+	ghostCodes.CodeHandling.HandleGhostCodeSending (StartOfRound instance) (at <24031e090e6943cd8a53d20e134dbc7c>:IL_0001a)
+	ghostCodes.Coroutines+<CodeLooper>d__4.MoveNext () (at <24031e090e6943cd8a53d20e134dbc7c>:IL_00106)
+	UnityEngine.SetupCoroutine.InvokeMoveNext (System.Collections.IEnumerator enumerator, System.IntPtr returnValueAddress) (at <e27997765c1848b09d8073e5d642717a>:IL_00026)
+
+	[20:20:27.7240633] [Error  : Unity Log] NullReferenceException
+	Stack trace:
+	ghostCodes.Bools.isThisaTurret (System.Int32 randomObjectNum) (at <24031e090e6943cd8a53d20e134dbc7c>:IL_00021)
+	ghostCodes.CodeActions.TerminalObjectActions (StartOfRound instance, System.Int32 randomObjectNum) (at <24031e090e6943cd8a53d20e134dbc7c>:IL_000a2)
+	ghostCodes.CodeActions.InitPossibleActions (StartOfRound instance, System.Int32 randomObjectNum) (at <24031e090e6943cd8a53d20e134dbc7c>:IL_0003c)
+	ghostCodes.CodeHandling.HandleGhostCodeSending (StartOfRound instance) (at <24031e090e6943cd8a53d20e134dbc7c>:IL_0001a)
+	ghostCodes.Coroutines+<CodeLooper>d__4.MoveNext () (at <24031e090e6943cd8a53d20e134dbc7c>:IL_00106)
+	UnityEngine.SetupCoroutine.InvokeMoveNext (System.Collections.IEnumerator enumerator, System.IntPtr returnValueAddress) (at <e27997765c1848b09d8073e5d642717a>:IL_00026)
+	Collapse
+
+2-	idk if i already sended this, but it seems that ghostCodes isn't as frequent as it should be because of these errors, i see a lot of events in solo but barely any in multiplayer
+
+	[02:04:33.3773029] [Error  : Unity Log] NullReferenceException: Object reference not set to an instance of an object
+	Stack trace:
+	ghostCodes.Bools.AreAnyPlayersInShip () (at <24031e090e6943cd8a53d20e134dbc7c>:IL_00036)
+	ghostCodes.CodeActions.ShipStuff () (at <24031e090e6943cd8a53d20e134dbc7c>:IL_00001)
+	ghostCodes.CodeActions.InitPossibleActions (StartOfRound instance, System.Int32 randomObjectNum) (at <24031e090e6943cd8a53d20e134dbc7c>:IL_00018)
+	ghostCodes.CodeHandling.HandleGhostCodeSending (StartOfRound instance) (at <24031e090e6943cd8a53d20e134dbc7c>:IL_0001a)
+	ghostCodes.Coroutines+<GhostGirlEnhanced>d__9.MoveNext () (at <24031e090e6943cd8a53d20e134dbc7c>:IL_00071)
+	UnityEngine.SetupCoroutine.InvokeMoveNext (System.Collections.IEnumerator enumerator, System.IntPtr returnValueAddress) (at <e27997765c1848b09d8073e5d642717a>:IL_00026)
+	UnityEngine.MonoBehaviour:StartCoroutine(IEnumerator)
+	ghostCodes.StaringInHauntPatch:Postfix(DressGirlAI)
+	DressGirlAI:SetHauntStarePosition(Vector3, Single)
+	DressGirlAI:TryFindingHauntPosition(Boolean, Boolean)
+	DressGirlAI:Update()

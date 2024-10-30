@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using ghostCodes.Configs;
+using HarmonyLib;
 using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
@@ -6,39 +7,40 @@ using GameObject = UnityEngine.GameObject;
 
 namespace ghostCodes
 {
-    [HarmonyPatch]
-    public class NetObject
+    internal class NetObject
     {
-
-        [HarmonyPostfix, HarmonyPatch(typeof(GameNetworkManager), nameof(GameNetworkManager.Start))]
-        public static void Init()
+        internal static void Init()
         {
-            if (ModConfig.ModNetworking.Value)
-            {
-                if (networkPrefab != null)
-                    return;
+            if (!ModConfig.ModNetworking.Value)
+                return;
 
-                var MainAssetBundle = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ghostCodes.ghostngo"));
-                networkPrefab = (GameObject)MainAssetBundle.LoadAsset("ghostngo");
-                networkPrefab.AddComponent<NetHandler>();
+            if (networkPrefab != null)
+                return;
 
-                NetworkManager.Singleton.AddNetworkPrefab(networkPrefab);
-            }
-            
+            Plugin.Spam("Assets:");
+            string[] names = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+            foreach(string name in names)
+                Plugin.Spam(name);
+
+            var MainAssetBundle = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ghostCodes.ghostngo"));
+            networkPrefab = (GameObject)MainAssetBundle.LoadAsset("ghostngo");
+            networkPrefab.AddComponent<NetHandler>();
+
+            NetworkManager.Singleton.AddNetworkPrefab(networkPrefab);
+
         }
 
-        [HarmonyPostfix, HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Awake))]
-        static void SpawnNetworkHandler()
+        internal static void SpawnNetworkHandler()
         {
-            if (ModConfig.ModNetworking.Value)
+            if (!ModConfig.ModNetworking.Value)
+                return;
+            
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-                if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-                {
-                    var networkHandlerHost = Object.Instantiate(networkPrefab, Vector3.zero, Quaternion.identity);
-                    networkHandlerHost.GetComponent<NetworkObject>().Spawn();
-                }
+                var networkHandlerHost = Object.Instantiate(networkPrefab, Vector3.zero, Quaternion.identity);
+                networkHandlerHost.GetComponent<NetworkObject>().Spawn();
             }
-           
+
         }
 
         static GameObject networkPrefab;
