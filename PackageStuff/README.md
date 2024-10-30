@@ -1,6 +1,6 @@
 # ghostCodes v2.5.0
 
-## WARNING: This mod has been completely reworked as of version 2.5.0 and is still under development! Please report any issues on github or via the modding discord. 
+## WARNING: This mod has been completely reworked as of version 2.5.0 and is still under development! Please report any issues on github or via the modding discord.
 
 ## **For client-side only use, disable ModNetworking in config (found in the "__NETWORKING" section)**
 
