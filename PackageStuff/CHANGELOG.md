@@ -1,5 +1,9 @@
 ## Change Log
 
+### [2.0.5] **CURRENT VERSION**
+- Hotfix for issue discovered with reboot command causing base-game player teleport function not to work.
+	- Small tweak was made for how the terminal is locked out from other players.
+
 ### [2.0.4] **CURRENT VERSION**
 - Removed [rapidFireCooldown] config option and adjusted [rapidFireMaxHours] to be configured to include the entire day if no cooldown is wanted.
 - Added check to make sure commands are only created for actual players for the deathNote feature.

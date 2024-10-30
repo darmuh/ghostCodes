@@ -202,7 +202,7 @@ namespace ghostCodes
 
             //GGE Mode Specific
             GGEbypass = MakeBool("Ghost Girl Enhanced", "GGEbypass", true, "Enable or Disable bypassing Ghost Girl Enhanced on moons listed in GGEbypassList."); 
-            GGEbypassList = MakeString("Ghost Girl Enhanced", "GGEbypassList", "Vow,Offense,March", "When using Ghost Girl Enhanced mode, this comma-separated list of moons will be bypassed for the next enabled mode (set to moons that the ghost girl cant spawn on by default).");
+            GGEbypassList = MakeString("Ghost Girl Enhanced", "GGEbypassList", "Vow,Offense,March,Embrion", "When using Ghost Girl Enhanced mode, this comma-separated list of moons will be bypassed for the next enabled mode (set to moons that the ghost girl cant spawn on by default).");
             gcGhostGirlOnly = MakeBool("Ghost Girl Enhanced", "gcGhostGirlOnly", false, "When enabled, any config options listed in [gcGhostGirlOnlyList] will be set to disabled when GhostGirlEnhanced Mode is not active.");
             gcGhostGirlOnlyList = MakeString("Ghost Girl Enhanced", "gcGhostGirlOnlyList", "ggShowerCheck,ggDeathNote,gcRebootTerminal", "when gcGhostGirlOnly is enabled, this comma-separated list of config options will be disabled when landing on moons in [GGEbypassList].");
             modifiedConfigItemsList = MakeString("Ghost Girl Enhanced", "modifiedConfigItemsList", "", "===[[[***DONT TOUCH THIS***]]]=== when gcGhostGirlOnly is enabled, this list is used to set config items back to what they were before being modified by [gcGhostGirlOnlyList].");
@@ -225,7 +225,7 @@ namespace ghostCodes
             ggDeathNote = MakeBool("Ghost Girl Interactions", "ggDeathNote", true, "Enable or Disable typing a name in the terminal to transfer the ghost girl to another player.");
             ggDeathNoteChance = MakeClampedInt("Ghost Girl Interactions", "ggDeathNoteChance", 65, "How effective typing a player's name in the terminal is to transfer the haunting.", 0, 100);
             ggDeathNoteMaxStrikes = MakeClampedInt("Ghost Girl Interactions", "ggDeathNoteMaxStrikes", 3, "Amount of times you can attempt to use the death note to transfer hauntings, use -1 for infinite attempts.", -1, 25);
-            ggDeathNoteFailChase = MakeBool("Ghost Girl Interactions", "ggDeathNoteFailChase", true, "Enable or Disable trigger a ghost girl chase on failed attempt to transfer hauntings.");
+            ggDeathNoteFailChase = MakeBool("Ghost Girl Interactions", "ggDeathNoteFailChase", true, "Enable or Disable triggering a ghost girl chase on failed attempt to transfer the haunting.");
 
             //Terminal Reboot
             gcRebootTerminal = MakeBool("Terminal Reboot", "gcRebootTerminal", true, "Enable or Disable adding a reboot command to fight back against ghostCodes by rebooting the terminal.");
