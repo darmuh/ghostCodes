@@ -1,6 +1,11 @@
 ## Change Log
 
-### [2.0.5] **CURRENT VERSION**
+### [2.0.6] **CURRENT VERSION**
+ - Recompiled for use with V55 Game Update.
+ - Updated project to utilize plugin version number wherever possible, including compiling the assembly with the version number.
+	- Now when I update the version number in one spot, it'll update it everywhere (except the changelog, keeping that manual)
+
+### [2.0.5]
 - Hotfix for issue discovered with reboot command causing base-game player teleport function not to work.
 	- Small tweak was made for how the terminal is locked out from other players.
 

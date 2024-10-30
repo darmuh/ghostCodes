@@ -45,7 +45,6 @@ namespace ghostCodes
                 yield break;
 
             Plugin.MoreLogs("Start of spooky terminal reboot coroutine.");
-            //GetUseKey(out string useKeyString);
             SpookyTerminalColors(true);
             TerminalResetSound();
             yield return new WaitForSeconds(1);
@@ -56,7 +55,6 @@ namespace ghostCodes
             SetTerminalText(reboot_1);
             Plugin.instance.Terminal.QuitTerminal();
             yield return new WaitForEndOfFrame();
-            //Plugin.instance.Terminal.terminalTrigger.hoverTip = "Rebooting Terminal (DISABLED)";
             IsTerminalUsable(false);
             Plugin.instance.Terminal.terminalUIScreen.gameObject.SetActive(true);
             Plugin.instance.Terminal.screenText.caretPosition = Plugin.instance.Terminal.screenText.text.Length;
@@ -71,17 +69,9 @@ namespace ghostCodes
             endAllCodes = false;
             SetTerminalText("\n\n\n\n\n\n\n\n\n\t\t>>Reboot Completed.<<\n\n\n\n");
             IsTerminalUsable(true);
-            
-            //Plugin.instance.Terminal.terminalTrigger.hoverTip = $"Access terminal : [{useKeyString}]";
             SpookyTerminalColors(false);
             rebootCommandExpired = true;
             InitPlugin.RestartPlugin();
-        }
-
-        private static void GetUseKey(out string useKey)
-        {
-            useKey = StartOfRound.Instance.localPlayerController.playerActions.m_Movement_Interact.GetBindingDisplayString();
-            return;
         }
 
         internal static IEnumerator RebootLoadingTextLoop()
