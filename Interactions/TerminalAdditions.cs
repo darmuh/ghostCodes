@@ -89,7 +89,10 @@ namespace ghostCodes
 
         internal static void SpookyTerminalColors(bool state)
         {
-            if(state)
+            if (Plugin.instance.Terminal.screenText == null || Plugin.instance.Terminal.topRightText == null) //null reference handling
+                return;
+
+            if (state)
             {
                 Plugin.instance.Terminal.screenText.textComponent.color = Color.red;
                 Plugin.instance.Terminal.topRightText.color = Color.red;
@@ -101,6 +104,12 @@ namespace ghostCodes
                 Plugin.instance.Terminal.topRightText.color = Color.green;
                 Plugin.instance.Terminal.screenText.caretColor = Color.green;
             }
+        }
+
+        internal static IEnumerator DelayedReturnToNormalText()
+        {
+            yield return new WaitForSeconds(3);
+            SpookyTerminalColors(false);
         }
 
         internal static void TerminalResetSound()
@@ -209,6 +218,8 @@ namespace ghostCodes
             {
                 string newText = $"\n\n\n\n\n\nI don't know anyone by that name! Guess you're stuck with me ^.^\n\n";
                 SetTerminalText(newText);
+                SpookyTerminalColors(true);
+                Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
                 return;
             }
 
@@ -217,6 +228,7 @@ namespace ghostCodes
                 string newText = $"\n\n\n\n\n\nYou're not getting rid of me that easy! :3\n\n";
                 SetTerminalText(newText);
                 SpookyTerminalColors(true);
+                Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
                 return;
             }
             else if (changeToPlayer.isPlayerControlled && !changeToPlayer.isPlayerDead)
@@ -227,6 +239,7 @@ namespace ghostCodes
                 SetTerminalText(newText);
                 SpookyTerminalColors(true);
                 deathNoteStrikes++;
+                Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
                 Plugin.MoreLogs("You should not be haunted anymore.");
                 return; // make sure you only skip if really necessary
             }
@@ -236,6 +249,7 @@ namespace ghostCodes
                 SetTerminalText(newText);
                 SpookyTerminalColors(true);
                 Plugin.MoreLogs("picked player is likely dead, this is an else statement");
+                Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
                 return;
             }
         }

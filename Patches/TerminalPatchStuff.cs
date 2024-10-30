@@ -28,7 +28,7 @@ namespace ghostCodes
                     Plugin.MoreLogs("node is null");
                     return;
                 }
-                SpookyTerminalColors(false);
+                //SpookyTerminalColors(false);
                 Plugin.MoreLogs("Handling node.");
                 HandleNodeSpecialLogic(node);
             }
