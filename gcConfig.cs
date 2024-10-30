@@ -73,7 +73,13 @@ namespace ghostCodes
         //ghostGirl stuff
         //public static ConfigEntry<bool> gcGhostGirl; //enable/disable ghostGirl interactions
         //public static ConfigEntry<bool> gcOnlyGhostGirl; //toggle ONLY interacting when ghostGirl is present
+        public static ConfigEntry<bool> GGEbypass;
+        public static ConfigEntry<string> GGEbypassList;
+        public static ConfigEntry<bool> ggCanSendMessages;
+        public static ConfigEntry<string> signalMessages;
         public static ConfigEntry<int> ggPlayerLightsPercent; //chance that flashlights toggle
+
+        //rapidFire stuff
         public static ConfigEntry<bool> rfRapidLights;
         public static ConfigEntry<float> rfRLmin;
         public static ConfigEntry<float> rfRLmax;
@@ -116,9 +122,14 @@ namespace ghostCodes
             //GhostGirl Interactions
             //gcConfig.gcGhostGirl = Plugin.instance.Config.Bind<bool>("General", "gcGhostGirl", true, "Toggle ghost girl interactions with insanity & normal ghost codes modes");
             gcConfig.ghostGirlEnhanced = Plugin.instance.Config.Bind<bool>("General", "ghostGirlEnhanced", true, "Ghost Girl Enhanced Mode, will replace insanity & normal ghost codes modes");
+            gcConfig.GGEbypassList = Plugin.instance.Config.Bind("Ghost Girl", "GGEbypassList", "Vow, Offense, March", "Comma-separated list of moons Ghost Girl Enhanced mode will be bypassed for another mode (set to moons that ghostgirl cant spawn on by default).");
+            gcConfig.GGEbypass = Plugin.instance.Config.Bind<bool>("Ghost Girl", "GGEbypass", true, "Enable or Disable bypassing Ghost Girl Enhanced on moons listed in GGEbypassList.");
+
             //gcConfig.gcOnlyGhostGirl = Plugin.instance.Config.Bind<bool>("Ghost Girl", "gcGhostGirl", false, "Toggle so that ghost codes ONLY interact with the ghost girl enemy ai");
             gcConfig.ggPlayerLightsPercent = Plugin.instance.Config.Bind("Ghost Girl", "ggPlayerLightsPercent", 45, new ConfigDescription("Set the percentage chance that the ghostGirl will flicker a player's lights during a ghostCode event.", new AcceptableValueRange<int>(0, 100)));
             gcConfig.fixGhostGirlBreakers = Plugin.instance.Config.Bind<bool>("Ghost Girl", "fixGhostGirlBreakers", true, "Fix the vanilla code so that the ghost girl can flip the breakers at the start of a chase.");
+            gcConfig.signalMessages = Plugin.instance.Config.Bind("Ghost Girl", "signalMessages", "RUN, LETS PLAY, BOO, FIND ME, I SEE YOU", "Comma-separated list of messages the ghostGirl will send over the signal translator when sending a code.");
+            gcConfig.ggCanSendMessages = Plugin.instance.Config.Bind<bool>("Ghost Girl", "ggCanSendMessages", true, "Enable or Disable ghost girl using the signal translator to send messages during special codes.");
 
             //Turret Berserk Stuff
             gcConfig.turretNormalBChance = Plugin.instance.Config.Bind("Turret", "turretNormalBChance", 20, new ConfigDescription("How rare it is for the turret to go berserk from a normal ghostCode.", new AcceptableValueRange<int>(0, 100)));

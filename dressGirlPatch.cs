@@ -1,16 +1,8 @@
 ﻿using HarmonyLib;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static ghostCodes.ghostCodesPatch;
 using Random = UnityEngine.Random;
 using UnityEngine;
-using System.Threading;
-using System.Net;
-using Unity.Netcode;
 using GameNetcodeStuff;
 
 namespace ghostCodes

@@ -3,15 +3,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Object = UnityEngine.Object;
-using Steamworks.ServerList;
-using static Unity.Collections.AllocatorManager;
-using JetBrains.Annotations;
-using GameNetcodeStuff;
 
 namespace ghostCodes
 {
@@ -19,6 +13,7 @@ namespace ghostCodes
     {
         public static bool ghostCodeSent = false;
         public static bool startRapidFire = false;
+        public static bool bypassGGE = false;
         public static float groupSanity = 0f;
         public static float maxSanity = 0f;
         public static int playersAtStart = 0;
@@ -45,6 +40,11 @@ namespace ghostCodes
                     if (StartOfRound.Instance.currentLevel.name == "CompanyBuildingLevel" || StartOfRound.Instance.currentLevel.riskLevel == "Safe")
                         return;
 
+                    List<string> noGhostPlanets = gcConfig.GGEbypassList.Value.Split(',').ToList();
+
+                    if (gcConfig.GGEbypass.Value && (noGhostPlanets.Any(planet => StartOfRound.Instance.currentLevel.PlanetName.Contains(planet))))
+                        bypassGGE = true;
+
                     maxSanity = 0f;
                     codeCount = 0;
                     ghostCodeSent = false;
@@ -58,7 +58,7 @@ namespace ghostCodes
                     }
                         
 
-                    if (gcConfig.gcInsanityMode.Value && !gcConfig.ghostGirlEnhanced.Value)
+                    if (gcConfig.gcInsanityMode.Value || bypassGGE)
                         getUsableSanityPercents();
 
                     TerminalAccessibleObject[] array = Object.FindObjectsOfType<TerminalAccessibleObject>();
@@ -103,6 +103,7 @@ namespace ghostCodes
 
             static void getPlayersAtStart()
             {
+                playersAtStart = 0;
                 for(int i = 0; i < StartOfRound.Instance.allPlayerScripts.Count(); i++)
                 {
                     if (StartOfRound.Instance.allPlayerScripts[i].isPlayerControlled)
@@ -117,7 +118,7 @@ namespace ghostCodes
             {
                 int firstWait = Random.Range(gcConfig.gcFirstRandIntervalMin.Value, gcConfig.gcFirstRandIntervalMax.Value);
                 randGC = Random.Range(gcConfig.gcMinCodes.Value, gcConfig.gcMaxCodes.Value);
-                if (gcConfig.ghostGirlEnhanced.Value && gcConfig.ModNetworking.Value)
+                if (gcConfig.ghostGirlEnhanced.Value && gcConfig.ModNetworking.Value && !bypassGGE)
                 {
                     Plugin.GC.LogInfo($"The ghost girl has been enhanced >:)");
                 }
@@ -137,7 +138,7 @@ namespace ghostCodes
             {
                 randGC = Random.Range(gcConfig.gcMinCodes.Value, gcConfig.gcMaxCodes.Value);
 
-                if (gcConfig.ghostGirlEnhanced.Value && gcConfig.ModNetworking.Value)
+                if (gcConfig.ghostGirlEnhanced.Value && gcConfig.ModNetworking.Value && !bypassGGE)
                 {
                     Plugin.GC.LogInfo($"The ghost girl has been enhanced >:)");
                 }
@@ -171,7 +172,7 @@ namespace ghostCodes
                     wPercentL3 = gcConfig.waitPercentL3.Value / 100f;
 
 
-                //Plugin.GC.LogInfo("Insanity mode percents set >:)");
+                Plugin.GC.LogInfo("Insanity mode percents set >:)");
 
             }
 
@@ -703,7 +704,7 @@ namespace ghostCodes
 
             public static bool CanSendCodes()
             {
-                if (!gcConfig.ghostGirlEnhanced.Value)
+                if (!gcConfig.ghostGirlEnhanced.Value || bypassGGE)
                     return GameNetworkManager.Instance.gameHasStarted && myTerminalObjects.Count > 0;
                 else
                     return GameNetworkManager.Instance.gameHasStarted && myTerminalObjects.Count > 0 && dressGirlPatch.hauntedPlayer == StartOfRound.Instance.localPlayerController;
@@ -711,7 +712,7 @@ namespace ghostCodes
 
             public static bool ShouldContinueSendingCodes()
             {
-                if(!gcConfig.ghostGirlEnhanced.Value)
+                if(!gcConfig.ghostGirlEnhanced.Value || bypassGGE)
                     return !StartOfRound.Instance.allPlayersDead && codeCount < randGC && !StartOfRound.Instance.shipIsLeaving;
                 else
                     return !StartOfRound.Instance.allPlayersDead && codeCount < randGC && !StartOfRound.Instance.shipIsLeaving && !dressGirlPatch.hauntedPlayer.isPlayerDead;
@@ -833,6 +834,21 @@ namespace ghostCodes
                 }
             }
 
+            private static string OddSignalMessage(out string message)
+            {
+                List<string> messages = gcConfig.signalMessages.Value.Split(',').ToList();
+                int rand = Random.Range(0, messages.Count);
+                message = messages[rand];
+                return message;
+            }
+
+            private static void MessWithSignalTranslator()
+            {
+                string message;
+                OddSignalMessage(out message);
+                HUDManager.Instance.UseSignalTranslatorServerRpc(message);
+            }
+
             private static void ggFlashlight()
             {
                 NetHandler.Instance.ggFlickerServerRpc();
@@ -846,7 +862,8 @@ namespace ghostCodes
                     turretobj.SwitchTurretMode(3);
                     turretobj.EnterBerserkModeClientRpc((int)GameNetworkManager.Instance.localPlayerController.playerClientId);
                     turretobj.EnterBerserkModeServerRpc((int)GameNetworkManager.Instance.localPlayerController.playerClientId);
-                    HUDManager.Instance.UseSignalTranslatorServerRpc(">");
+                    if(gcConfig.ggCanSendMessages.Value)
+                        MessWithSignalTranslator();
                     Plugin.GC.LogInfo("Turrets do this?!?");
                 }
                 else
@@ -862,7 +879,8 @@ namespace ghostCodes
                     Landmine landmine = StartPatch.myTerminalObjects[randomObjectNum].gameObject.GetComponent<Landmine>();
                     landmine.ExplodeMineClientRpc();
                     landmine.ExplodeMineServerRpc();
-                    HUDManager.Instance.UseSignalTranslatorServerRpc("*");
+                    if (gcConfig.ggCanSendMessages.Value)
+                        MessWithSignalTranslator();
                     StartPatch.myTerminalObjects.Remove(myTerminalObjects[randomObjectNum]);
                     Plugin.GC.LogInfo("WHAT THE FUUUUUU-");
                 }
@@ -876,8 +894,8 @@ namespace ghostCodes
             {
                 if (StartPatch.myTerminalObjects[randomObjectNum].gameObject.name.Contains("BigDoor"))
                 {
-                    
-                    HUDManager.Instance.UseSignalTranslatorServerRpc("#");
+                    if (gcConfig.ggCanSendMessages.Value)
+                        MessWithSignalTranslator();
                     Plugin.GC.LogInfo("The door is hungy");
                     instance.StartCoroutine(hungryDoor(instance, randomObjectNum));
                 }
@@ -889,9 +907,10 @@ namespace ghostCodes
 
             public static void FlipLights()
             {
-                    HUDManager.Instance.UseSignalTranslatorServerRpc("^ ^");
-                    Plugin.GC.LogInfo("who turned out the lights??");
-                    NetHandler.Instance.ggFacilityLightsServerRpc();
+                if (gcConfig.ggCanSendMessages.Value)
+                    MessWithSignalTranslator();
+                Plugin.GC.LogInfo("who turned out the lights??");
+                NetHandler.Instance.ggFacilityLightsServerRpc();
             }
 
             static IEnumerator hungryDoor(Terminal instance, int randomObjectNum)

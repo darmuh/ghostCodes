@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace ghostCodes
 {
-    [BepInPlugin("darmuh.ghostCodes", "ghostCodes", "1.5.0")]
+    [BepInPlugin("darmuh.ghostCodes", "ghostCodes", "1.5.1")]
 
     public class Plugin : BaseUnityPlugin
     {
@@ -16,7 +16,7 @@ namespace ghostCodes
         {
             public const string PLUGIN_GUID = "darmuh.ghostCodes";
             public const string PLUGIN_NAME = "ghostCodes";
-            public const string PLUGIN_VERSION = "1.5.0";
+            public const string PLUGIN_VERSION = "1.5.1";
         }
 
         internal static new ManualLogSource GC;
