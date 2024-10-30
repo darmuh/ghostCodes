@@ -32,7 +32,6 @@ namespace ghostCodes
             else
             {
                 Plugin.GC.LogInfo("Codes should resume during next haunting");
-                DressGirl.performingAction = false;
                 Coroutines.rapidFireStart = false;
             }
         }

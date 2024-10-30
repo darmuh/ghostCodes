@@ -1,24 +1,27 @@
 ﻿using BepInEx.Bootstrap;
 using HarmonyLib;
 using static ghostCodes.Bools;
+using Random = UnityEngine.Random;
 
 namespace ghostCodes
 {
     public class GamePatchStuff
     {
-        [HarmonyPatch(typeof(StartOfRound), "OnShipLandedMiscEvents")]
-        public class StartPatch : StartOfRound
+        [HarmonyPatch(typeof(RoundManager), "SetBigDoorCodes")]
+        public class StartRoundPatch : RoundManager
         {
 
             static void Postfix()
             {
-                if (!StartOfRound.Instance.shipHasLanded)
+                if (!StartOfRound.Instance.inShipPhase)
                 {
                     if (StartOfRound.Instance.currentLevel.name == "CompanyBuildingLevel" || StartOfRound.Instance.currentLevel.riskLevel == "Safe")
                         return;
 
                     InitPlugin.StartTheRound();
                 }
+                else
+                    Plugin.MoreLogs("Patch failed");
             }
         }
         [HarmonyPatch(typeof(DressGirlAI), "Start")]
@@ -51,8 +54,8 @@ namespace ghostCodes
             }
         }
 
-        [HarmonyPatch(typeof(DressGirlAI), "Update")]
-        public class OnUpdatePatch : DressGirlAI
+        [HarmonyPatch(typeof(DressGirlAI), "SetHauntStarePosition")]
+        public class StaringInHauntPatch : DressGirlAI
         {
             static void Postfix(DressGirlAI __instance)
             {
@@ -65,6 +68,8 @@ namespace ghostCodes
                     return;
                 }
 
+                if (!__instance.staringInHaunt)
+                    return;
 
                 if (CanSendCodes() && DressGirlStartCodes())
                 {
@@ -91,26 +96,16 @@ namespace ghostCodes
         [HarmonyPatch(typeof(DressGirlAI), "BeginChasing")]
         public class TheChaseBegins
         {
-            static bool Prefix(DressGirlAI __instance)
-            {
-                if (gcConfig.fixGhostGirlBreakers.Value)
-                {
-                    Plugin.MoreLogs("Fixing breakers");
-                    DressGirl.BreakersFix(__instance);
-                    return false;
-                }
-                else
-                    return true;
-            }
-
             static void Postfix(DressGirlAI __instance)
             {
+                
+                DressGirl.BreakersFix(__instance);
+
                 if (!gcConfig.ghostGirlEnhanced.Value)
                     return;
 
                 RapidFire.startRapidFire = true;
                 DressGirl.girlIsChasing = true;
-                //DressGirl.hauntStare = __instance.staringInHaunt;
                 Plugin.MoreLogs("Girl has begun chasing, setting rapidFire to TRUE");
                 StartOfRound.Instance.StartCoroutine(Coroutines.RapidFireStart(StartOfRound.Instance));
             }

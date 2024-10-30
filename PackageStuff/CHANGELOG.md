@@ -1,6 +1,17 @@
 ## Change Log
 
-### [2.0.2] **CURRENT VERSION**
+### [2.0.3] **CURRENT VERSION**
+- Reworked ghost girl enhanced handling patches to address some null reference errors that were breaking the mod in certain profiles (thank you Lunxara)
+	- Removed DressGirl AI Update patch and ended ghostgirlenhanced coroutine when the girl is not staring in a haunt.
+	- Removed BeginChasing prefix, it looked to have been interfering with other mods that adjust the AI.
+		- Vanilla breaker fix is now done via a postfix. This means the lights will always flicker briefly before they completely go out (depending on the odds if they do of course).
+	- Coroutines will now run when the ghostgirl calls different interactions
+		- The regular ghost girl enhanced coroutine is called when the girl is staring in haunt.
+		- The rapidFire codes will be called when the girl is actively chasing (this is unchanged).
+	- ghost codes will now be initialized directly after the blast door codes have been generated,
+		- This is much sooner than before, so please adjust your interval configs accordingly.
+
+### [2.0.2]
  - Fixed incorrect configuration information related to gcGhostGirlOnly & gcGhostGirlOnlyList
 	- Also fixed some issues discovered with handling leading spaces.
 	- Updated default configuration option to remove spaces after commas anyway.
