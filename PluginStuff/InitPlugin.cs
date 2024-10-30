@@ -1,4 +1,6 @@
 ﻿using BepInEx.Configuration;
+using HarmonyLib;
+using Steamworks.Ugc;
 using System.Collections.Generic;
 using System.Linq;
 using static ghostCodes.Bools;
@@ -7,8 +9,8 @@ namespace ghostCodes
 {
     internal class InitPlugin
     {
-        internal static Dictionary<string,ConfigEntry<bool>> identifiedCommands = new Dictionary<string,ConfigEntry<bool>>();
-        internal static List<ConfigEntry<bool>> modifiedCommands = new List<ConfigEntry<bool>>();
+        internal static Dictionary<ConfigEntry<bool>, bool> modifiedCommands = new Dictionary<ConfigEntry<bool>, bool>();
+        internal static List<ConfigEntry<bool>> bannedConfigItems = new List<ConfigEntry<bool>>();
         internal static void StartTheRound()
         {
             NetworkingCheck();
@@ -33,17 +35,17 @@ namespace ghostCodes
 
         internal static void GhostGirlEnhancedBypassInit()
         {
-            if (!gcConfig.GGEbypass.Value)
+            if (!ModConfig.GGEbypass.Value || !ModConfig.ghostGirlEnhanced.Value)
                 return;
 
             Plugin.MoreLogs("Initializing GhostGirlEnhanced Bypass List");
 
-            List<string> noGhostPlanets = gcConfig.GGEbypassList.Value
+            List<string> noGhostPlanets = ModConfig.GGEbypassList.Value
                                       .Split(',')
                                       .Select(item => item.TrimStart())
                                       .ToList();
 
-            if (gcConfig.GGEbypass.Value && (noGhostPlanets.Any(planet => StartOfRound.Instance.currentLevel.PlanetName.Contains(planet))))
+            if (ModConfig.GGEbypass.Value && (noGhostPlanets.Any(planet => StartOfRound.Instance.currentLevel.PlanetName.Contains(planet))))
             {
                 Plugin.instance.bypassGGE = true;
                 Plugin.MoreLogs("Ghost Girl Enhanced is being bypassed on this moon");
@@ -53,20 +55,83 @@ namespace ghostCodes
 
         }
 
+        private static void BannedConfigItems()
+        {
+            Plugin.MoreLogs("initializing banned config items to NOT modify with [gcGhostGirlOnlyList]");
+            bannedConfigItems.Clear();
+            bannedConfigItems.Add(ModConfig.ModNetworking);
+            bannedConfigItems.Add(ModConfig.ghostGirlEnhanced);
+            bannedConfigItems.Add(ModConfig.useRandomIntervals);
+            bannedConfigItems.Add(ModConfig.gcGhostGirlOnly);
+            bannedConfigItems.Add(ModConfig.gcInsanity);
+            bannedConfigItems.Add(ModConfig.GGEbypass);
+        }
+
+        private static void DeserializeConfigOptions(string serializedData)
+        {
+
+            if (!ModConfig.gcGhostGirlOnly.Value)
+                return;
+
+            // Clear existing configOptions dictionary
+            modifiedCommands.Clear();
+
+            // Deserialize the serialized data into dictionary
+            var pairs = serializedData.Split(';');
+            foreach (var pair in pairs)
+            {
+                var keyValue = pair.Split('=');
+                if (keyValue.Length == 2)
+                {
+                    foreach (var item in Plugin.instance.Config)
+                    {
+                        if(item.Key.Key == keyValue[0] && bool.TryParse(keyValue[1], out bool boolValue))
+                        {
+                            if (Plugin.instance.Config.TryGetEntry<bool>(item.Value.Definition, out ConfigEntry<bool> entry) && entry.Value != boolValue)
+                            {
+                                Plugin.MoreLogs($"Resetting {keyValue[0]} to {keyValue[1]}");
+                                entry.Value = boolValue;
+                            }
+                            else
+                                Plugin.MoreLogs("Correct value assigned to {keyValue[0]}");
+                        }
+
+                    }
+                }
+            }
+        }
+
+        private static string SerializeConfigOptions()
+        {
+            // Serialize the dictionary into a delimited string
+            return string.Join(";", modifiedCommands.Select(kv => $"{kv.Key.Definition.Key}={kv.Value}"));
+        }
+
+        private static void SaveModifiedListToConfig()
+        {
+            // Serialize the dictionary into a format that can be stored in the configuration
+            ModConfig.modifiedConfigItemsList.Value = SerializeConfigOptions();
+
+            Plugin.MoreLogs("Config options saved to config");
+        }
+
         internal static void GhostGirlOnlyCheck()
         {
             // Check if the feature is enabled
-            if (!gcConfig.gcGhostGirlOnly.Value)
+            if (!ModConfig.gcGhostGirlOnly.Value)
                 return;
+
+            BannedConfigItems();
+            DeserializeConfigOptions(ModConfig.modifiedConfigItemsList.Value);
 
             Plugin.MoreLogs("Checking gcGhostGirlOnlyList");
 
-            List<string> ghostGirlOnly = gcConfig.gcGhostGirlOnlyList.Value.Split(',')
+            List<string> ghostGirlOnly = ModConfig.gcGhostGirlOnlyList.Value.Split(',')
                                       .Select(item => item.TrimStart())
                                       .ToList();
 
             // Check if ghost girl enhancement is disabled or bypassed
-            if (!gcConfig.ghostGirlEnhanced.Value || Plugin.instance.bypassGGE)
+            if (!ModConfig.ghostGirlEnhanced.Value || Plugin.instance.bypassGGE)
             {
                 Plugin.MoreLogs("Disabling interactions that require a ghost girl from gcGhostGirlOnlyList.");
                 foreach (var item in Plugin.instance.Config)
@@ -78,8 +143,8 @@ namespace ghostCodes
                         // Try to get the config entry and set it to false if it's not already false
                         if (Plugin.instance.Config.TryGetEntry<bool>(item.Value.Definition, out ConfigEntry<bool> entry) && entry.Value)
                         {
+                            modifiedCommands.Add(entry,entry.Value);
                             entry.Value = false;
-                            modifiedCommands.Add(entry);
                             Plugin.MoreLogs($"Setting: {item.Key.Key} to false");
                         }
                     }
@@ -95,7 +160,7 @@ namespace ghostCodes
                     if (ghostGirlOnly.Contains(item.Key.Key))
                     {
                         // Try to get the config entry and restore its original value if it was modified
-                        if (Plugin.instance.Config.TryGetEntry<bool>(item.Value.Definition, out ConfigEntry<bool> entry) && modifiedCommands.Contains(entry))
+                        if (Plugin.instance.Config.TryGetEntry<bool>(item.Value.Definition, out ConfigEntry<bool> entry) && modifiedCommands.ContainsKey(entry))
                         {
                             entry.Value = true;
                             modifiedCommands.Remove(entry);
@@ -108,6 +173,8 @@ namespace ghostCodes
             {
                 Plugin.GC.LogError("Issue with ghost girl only list encountered...");
             }
+
+            SaveModifiedListToConfig();
         }
 
         internal static void CodesInit()
@@ -130,15 +197,15 @@ namespace ghostCodes
             CodeStuff.GetUsableCodes();
             CodeStuff.GetRandomCodeAmount();
 
-            if (gcConfig.soloAssist.Value)
+            if (ModConfig.soloAssist.Value)
                 InsanityStuff.InitsoloAssist();
         }
 
         internal static void NetworkingCheck()
         {
-            if (!gcConfig.ModNetworking.Value)
+            if (!ModConfig.ModNetworking.Value)
             {
-                gcConfig.ghostGirlEnhanced.Value = false;
+                ModConfig.ghostGirlEnhanced.Value = false;
                 Plugin.MoreLogs("Forcing Ghost Girl Enhanced Mode to FALSE");
             }
         }

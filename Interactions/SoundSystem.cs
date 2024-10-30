@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static ghostCodes.Bools;
 
 namespace ghostCodes
 {
@@ -12,7 +13,7 @@ namespace ghostCodes
         internal static void InsanityAmbient()
         {
             int rand = NumberStuff.GetInt(0, 100);
-            if (gcConfig.gcAddInsanitySounds.Value <= rand)
+            if (ModConfig.gcAddInsanitySounds.Value <= rand)
                 return;
 
             SoundManager.Instance.PlayAmbientSound(syncedForAllPlayers: true, SoundManager.Instance.playingInsanitySoundClipOnServer);
@@ -20,9 +21,12 @@ namespace ghostCodes
 
         internal static void HandleCodeEffects()
         {
+            if (!AreAnyPlayersInShip())
+                return;
+
             Terminal term = Plugin.instance.Terminal;
 
-            if (!gcConfig.ModNetworking.Value)
+            if (!ModConfig.ModNetworking.Value)
             {
                 NetworkingDisabledSounds(term);
                 BroadcastEffectLocal(term);
@@ -36,8 +40,12 @@ namespace ghostCodes
 
         private static void NetworkingEnabledSounds()
         {
-            if (!gcConfig.gcEnableTerminalSound.Value)
+            if (!ModConfig.gcEnableTerminalSound.Value)
                 return;
+
+            if (ModConfig.gcTerminalSoundChance.Value < NumberStuff.GetInt(0, 100))
+                return;
+
             InitSounds();
 
             int num = NumberStuff.GetInt(0, allSounds.Count - 1);
@@ -47,7 +55,10 @@ namespace ghostCodes
 
         private static void NetworkingDisabledSounds(Terminal term)
         {
-            if (term == null || !gcConfig.gcEnableTerminalSound.Value || !gcConfig.gcUseTerminalAlarmSound.Value)
+            if (term == null || !ModConfig.gcEnableTerminalSound.Value || !ModConfig.gcUseTerminalAlarmSound.Value)
+                return;
+
+            if (ModConfig.gcTerminalSoundChance.Value < NumberStuff.GetInt(0, 100))
                 return;
 
             term.PlayTerminalAudioServerRpc(3);
@@ -57,7 +68,7 @@ namespace ghostCodes
 
         private static void BroadcastEffectLocal(Terminal term)
         {
-            if (term == null || !gcConfig.enableBroadcastEffect.Value)
+            if (term == null || !ModConfig.enableBroadcastEffect.Value)
                 return;
 
             term.PlayBroadcastCodeEffect();
@@ -66,7 +77,7 @@ namespace ghostCodes
 
         private static void BroadcastEffectNet()
         {
-            if (!gcConfig.enableBroadcastEffect.Value)
+            if (!ModConfig.enableBroadcastEffect.Value)
                 return;
 
             NetHandler.Instance.TermBroadcastFXServerRpc();
@@ -75,7 +86,7 @@ namespace ghostCodes
 
         private static void BaseGirlSounds()
         {
-            if (Plugin.instance.DressGirl == null || !gcConfig.gcUseGirlSounds.Value)
+            if (Plugin.instance.DressGirl == null || !ModConfig.gcUseGirlSounds.Value)
                 return;
 
             List<AudioClip> ghostAudios = new List<AudioClip> { Plugin.instance.DressGirl.breathingSFX, Plugin.instance.DressGirl.heartbeatMusic.clip };
@@ -102,7 +113,7 @@ namespace ghostCodes
 
         private static void AddBaseAlarmSound()
         {
-            if (!gcConfig.gcUseTerminalAlarmSound.Value && gcConfig.ModNetworking.Value)
+            if (!ModConfig.gcUseTerminalAlarmSound.Value && ModConfig.ModNetworking.Value)
                 return;
 
             allSounds.Add(Plugin.instance.Terminal.syncedAudios[3]);

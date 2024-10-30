@@ -31,9 +31,9 @@ namespace ghostCodes
 
             foreach (var obj in myTerminalObjects)
             {
-                if (!(obj.gameObject.name.Contains("Landmine") && gcConfig.gcIgnoreLandmines.Value) &&
-                    !(obj.gameObject.name.Contains("TurretScript") && gcConfig.gcIgnoreTurrets.Value) &&
-                    !(obj.gameObject.name.Contains("BigDoor") && gcConfig.gcIgnoreDoors.Value))
+                if (!(obj.gameObject.name.Contains("Landmine") && ModConfig.gcIgnoreLandmines.Value) &&
+                    !(obj.gameObject.name.Contains("TurretScript") && ModConfig.gcIgnoreTurrets.Value) &&
+                    !(obj.gameObject.name.Contains("BigDoor") && ModConfig.gcIgnoreDoors.Value))
                 {
                     filteredObjects.Add(obj);
                 }
@@ -52,7 +52,7 @@ namespace ghostCodes
 
         internal static void GetRandomCodeAmount()
         {
-            Plugin.instance.randGC = GetInt(gcConfig.gcMinCodes.Value, gcConfig.gcMaxCodes.Value);
+            Plugin.instance.randGC = GetInt(ModConfig.gcMinCodes.Value, ModConfig.gcMaxCodes.Value);
         }
     }
 }

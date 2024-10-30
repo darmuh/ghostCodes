@@ -13,7 +13,7 @@ namespace ghostCodes
         internal static void RapidFireCheck()
         {
 
-            if (startRapidFire && gcConfig.insanityRapidFire.Value)
+            if (startRapidFire && ModConfig.insanityRapidFire.Value)
             {
                 Plugin.GC.LogInfo("max insanity level reached!!! startRapidFire TRUE");
                 StartOfRound.Instance.StartCoroutine(Coroutines.RapidFireStart(StartOfRound.Instance));
@@ -41,7 +41,7 @@ namespace ghostCodes
             if (Plugin.instance.facilityMeltdown && !meltdown)
                 meltdown = CheckForMeltdown();
 
-            if (gcConfig.ModNetworking.Value && gcConfig.rfRapidLights.Value && !lightsFlickering && !meltdown)
+            if (ModConfig.ModNetworking.Value && ModConfig.rfRapidLights.Value && !lightsFlickering && !meltdown)
             {
                 StartOfRound.Instance.StartCoroutine(Coroutines.AlarmLights());
                 Plugin.MoreLogs("networking enabled, sending alarm lights");
@@ -51,33 +51,32 @@ namespace ghostCodes
 
         internal static void TimeCheck(int startHour, int currentHour)
         {
-            if (!gcConfig.GGEbypass.Value && !gcConfig.ghostGirlEnhanced.Value)
+            if (!ModConfig.GGEbypass.Value && !ModConfig.ghostGirlEnhanced.Value)
                 return;
 
             if (!Plugin.instance.bypassGGE)
                 return;
 
-            if (startHour + gcConfig.rapidFireMaxHours.Value <= currentHour)
+            if (startHour + ModConfig.rapidFireMaxHours.Value <= currentHour)
             {
+                Plugin.MoreLogs("rapidFireMaxHours hit, entering cooldown...");
                 endAllCodes = true;
                 InitPlugin.RestartPlugin();
             }
-
-
         }
 
         internal static void CheckInsanityToContinue()
         {
-            if (!gcConfig.gcInsanity.Value)
+            if (!ModConfig.gcInsanity.Value)
                 return;
 
-            if (!gcConfig.ghostGirlEnhanced.Value || Plugin.instance.bypassGGE)
+            if (!ModConfig.ghostGirlEnhanced.Value || Plugin.instance.bypassGGE)
                 InsanityStuff.GetAllSanity(); //last check to make sure sanity levels are within required levels
         }
 
         internal static void CountSentCodes()
         {
-            if(!gcConfig.ghostGirlEnhanced.Value || !gcConfig.ggIgnoreCodeCount.Value || Plugin.instance.bypassGGE)
+            if(!ModConfig.ghostGirlEnhanced.Value || !ModConfig.ggIgnoreCodeCount.Value || Plugin.instance.bypassGGE)
                 Plugin.instance.codeCount++;
         }
 
@@ -91,7 +90,7 @@ namespace ghostCodes
                 return true;
             }
 
-            if (gcConfig.ghostGirlEnhanced.Value && StartOfRound.Instance.localPlayerController.isPlayerDead)
+            if (ModConfig.ghostGirlEnhanced.Value && StartOfRound.Instance.localPlayerController.isPlayerDead)
             {
                 Plugin.MoreLogs("you died, stopping any logic you were calling");
                 startRapidFire = false;

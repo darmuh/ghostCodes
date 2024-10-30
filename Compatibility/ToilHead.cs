@@ -1,7 +1,5 @@
 ﻿using Object = UnityEngine.Object;
-using static ghostCodes.CodeStuff;
 using System.Collections.Generic;
-using UnityEngine;
 using com.github.zehsteam.ToilHead.MonoBehaviours;
 using static ghostCodes.NumberStuff;
 using static ghostCodes.CodeHandling;
@@ -16,7 +14,7 @@ namespace ghostCodes.Compatibility
 
         internal static void CheckForToilHeadObjects()
         {
-            if (!Plugin.instance.toilHead || !gcConfig.toilHeadStuff.Value)
+            if (!Plugin.instance.toilHead || !ModConfig.toilHeadStuff.Value)
                 return;
 
             Plugin.MoreLogs("Checking for ToilHead Terminal-Accessible-Objects");
@@ -24,9 +22,15 @@ namespace ghostCodes.Compatibility
 
             if(toilHeadSprings.Count > 0 && toilHeadObjects.Count > 0)
             {
+                int randomObjectNum = GetInt(0, toilHeadSprings.Count - 1);
+                if (toilHeadObjects[randomObjectNum].inCooldown)
+                    return;
+
                 Plugin.MoreLogs("Adding toilhead actions");
-                possibleActions.Add(new ActionPercentage("toilHeadDisable", () => HandleToilHeadCodeAction(), gcConfig.toilHeadTurretDisableChance.Value));
-                possibleActions.Add(new ActionPercentage("toilHeadBerserk", () => HandleToilHeadBerserkAction(), gcConfig.toilHeadTurretBerserkChance.Value));
+                if(ModConfig.toilHeadTurretDisable.Value)
+                    possibleActions.Add(new ActionPercentage("toilHeadDisable", () => HandleToilHeadCodeAction(randomObjectNum), ModConfig.toilHeadTurretDisableChance.Value));
+                if (ModConfig.toilHeadTurretBerserk.Value)
+                    possibleActions.Add(new ActionPercentage("toilHeadBerserk", () => HandleToilHeadBerserkAction(randomObjectNum), ModConfig.toilHeadTurretBerserkChance.Value));
             }
         }
 
@@ -47,7 +51,7 @@ namespace ghostCodes.Compatibility
                 Plugin.MoreLogs($"Toilheads objects mismatch! toilHeadObjects: {toilHeadObjects.Count} toilHeadSprings: {toilHeadSprings.Count}");
         }
 
-        internal static void HandleToilHeadCodeAction()
+        internal static void HandleToilHeadCodeAction(int randomObjectNum)
         {
             if (!Plugin.instance.toilHead)
                 return;
@@ -55,13 +59,12 @@ namespace ghostCodes.Compatibility
             if (toilHeadSprings.Count == 0)
                 return;
 
-            int randomObjectNum = GetInt(0, toilHeadSprings.Count - 1);
             toilHeadObjects[randomObjectNum].CallFunctionFromTerminal(); 
             SignalTranslator.MessWithSignalTranslator();
             Plugin.MoreLogs("Turret, ON COILHEAD, disabled");
         }
 
-        internal static void HandleToilHeadBerserkAction()
+        internal static void HandleToilHeadBerserkAction(int randomObjectNum)
         {
             if (!Plugin.instance.toilHead)
                 return;
@@ -69,7 +72,6 @@ namespace ghostCodes.Compatibility
             if (toilHeadSprings.Count == 0)
                 return;
 
-            int randomObjectNum = GetInt(0, toilHeadSprings.Count - 1);
             toilHeadSprings[randomObjectNum].EnterBerserkModeServerRpc();
             SignalTranslator.MessWithSignalTranslator();
             Plugin.MoreLogs("Turret, ON COILHEAD, going BERSERK");

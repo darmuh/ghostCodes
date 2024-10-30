@@ -24,7 +24,7 @@ namespace ghostCodes
             InitPlugin.CodesInit();
             Plugin.MoreLogs($"Codes Amount: {Plugin.instance.randGC}");
 
-            if (gcConfig.ghostGirlEnhanced.Value && gcConfig.ModNetworking.Value && !Plugin.instance.bypassGGE)
+            if (ModConfig.ghostGirlEnhanced.Value && ModConfig.ModNetworking.Value && !Plugin.instance.bypassGGE)
             {
                 Plugin.MoreLogs($"The ghost girl has been enhanced, prepare for your next haunting! >:)");
                 TerminalAdditions.CreateAllNodes();
@@ -50,7 +50,7 @@ namespace ghostCodes
             int firstWait = GetFirstWait();
             Plugin.MoreLogs($"Codes: {Plugin.instance.codeCount} / {Plugin.instance.randGC}");
             
-            if (gcConfig.ghostGirlEnhanced.Value && gcConfig.ModNetworking.Value && !Plugin.instance.bypassGGE)
+            if (ModConfig.ghostGirlEnhanced.Value && ModConfig.ModNetworking.Value && !Plugin.instance.bypassGGE)
             {
                 Plugin.MoreLogs($"The ghost girl has been enhanced, prepare for your next haunting! >:)");
             }
@@ -89,7 +89,7 @@ namespace ghostCodes
                     {
                         float randomWaitNum = GetSecondWait();
 
-                        if (gcConfig.gcInsanity.Value)
+                        if (ModConfig.gcInsanity.Value)
                         {
                             ApplyInsanityMode(instance, ref randomWaitNum);
                             if (startRapidFire)
@@ -112,7 +112,7 @@ namespace ghostCodes
                         float randomWaitNum = GetWaitAfterCode();
                         Plugin.MoreLogs($"ghostCode was just sent, waiting {randomWaitNum}");
 
-                        if (gcConfig.gcInsanity.Value)
+                        if (ModConfig.gcInsanity.Value)
                         {
                             ApplyInsanityMode(instance, ref randomWaitNum);
                         }
@@ -168,7 +168,7 @@ namespace ghostCodes
 
                         if (myTerminalObjects.Count == 0)
                         {
-                            for (int i = 0; i < possibleActions.Count && !endAllCodes; i++)
+                            for (int i = 0; i < possibleActions.Count && KeepSendingCodes(); i++)
                             {
                                 RapidFireStoppers(startTime,TimeOfDay.Instance.hour);
                                 HandleRapidFireCodeChoices(instance, -1);
@@ -177,7 +177,7 @@ namespace ghostCodes
                         }  
                         else
                         {
-                            for (int i = 0; i < myTerminalObjects.Count && !endAllCodes; i++)
+                            for (int i = 0; i < myTerminalObjects.Count && KeepSendingCodes(); i++)
                             {
                                 RapidFireStoppers(startTime, TimeOfDay.Instance.hour);
                                 HandleRapidFireCodeChoices(instance, i);
@@ -202,7 +202,7 @@ namespace ghostCodes
                         
                 }
                 if (!(KeepSendingCodes()))
-                    Plugin.GC.LogInfo($"the ghost is bored of sending codes.");
+                    Plugin.GC.LogInfo($"end of rapidFire....");
                 
                 if (!startRapidFire && KeepSendingCodes() && !endAllCodes)
                 {
@@ -267,7 +267,7 @@ namespace ghostCodes
             {
                 if (StartOfRound.Instance.localPlayerController.isInsideFactory)
                     NetHandler.Instance.GGFlickerServerRpc();
-                yield return new WaitForSeconds(Random.Range(gcConfig.rfRLmin.Value, gcConfig.rfRLmax.Value));
+                yield return new WaitForSeconds(Random.Range(ModConfig.rfRLmin.Value, ModConfig.rfRLmax.Value));
             }
             NetHandler.Instance.AlarmLightsServerRpc(true);
             yield return new WaitForSeconds(1);

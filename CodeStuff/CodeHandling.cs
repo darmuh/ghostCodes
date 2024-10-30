@@ -14,9 +14,11 @@ namespace ghostCodes
         internal static void HandleGhostCodeSending(StartOfRound instance)
         {
             Misc.LogTime();
-            int randomObjectNum = GetObjectNum();
+            GetObjectNum(out int randomObjectNum);
             chosenActions.Clear();
             InitPossibleActions(instance, randomObjectNum);
+            if (possibleActions.Count < 1)
+                return;
 
             chosenActions = ActionPercentage.ChooseActionsFromPercentages(possibleActions);
             HandleChosenActions(randomObjectNum);
@@ -29,6 +31,8 @@ namespace ghostCodes
             Misc.LogTime();
             chosenActions.Clear();
             InitPossibleActions(instance, number);
+            if (possibleActions.Count < 1)
+                return;
 
             chosenActions = ActionPercentage.ChooseActionsFromPercentages(possibleActions);
             HandleChosenActions(number);

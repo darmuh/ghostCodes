@@ -15,7 +15,7 @@ namespace ghostCodes
                 return message;
             }
 
-            if(gcConfig.onlyUniqueMessages.Value && messages.Count > 1 && lastmessage != string.Empty && messages.Contains(lastmessage))
+            if(ModConfig.onlyUniqueMessages.Value && messages.Count > 1 && lastmessage != string.Empty && messages.Contains(lastmessage))
                 messages.Remove(lastmessage);
 
             int rand = Random.Range(0, messages.Count - 1);
@@ -26,13 +26,16 @@ namespace ghostCodes
 
         internal static void MessWithSignalTranslator()
         {
-            if (!gcConfig.canSendMessages.Value)
+            if (!ModConfig.canSendMessages.Value)
                 return;
 
-            if (gcConfig.onlyGGSendMessages.Value && Plugin.instance.DressGirl == null)
+            if (ModConfig.onlyGGSendMessages.Value && Plugin.instance.DressGirl == null)
                 return;
 
-            List<string> messages = gcConfig.signalMessages.Value.Split(',').ToList();
+            if (ModConfig.messageFrequency.Value < NumberStuff.GetInt(0, 100))
+                return;
+
+            List<string> messages = ModConfig.signalMessages.Value.Split(',').ToList();
 
             OddSignalMessage(messages, out string message);
             HUDManager.Instance.UseSignalTranslatorServerRpc(message);
