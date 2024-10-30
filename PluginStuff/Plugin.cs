@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace ghostCodes
 {
-    [BepInPlugin("darmuh.ghostCodes", "ghostCodes", "2.0.1")]
+    [BepInPlugin("darmuh.ghostCodes", "ghostCodes", "2.0.2")]
 
     public class Plugin : BaseUnityPlugin
     {
@@ -16,13 +16,13 @@ namespace ghostCodes
         {
             public const string PLUGIN_GUID = "darmuh.ghostCodes";
             public const string PLUGIN_NAME = "ghostCodes";
-            public const string PLUGIN_VERSION = "2.0.1";
+            public const string PLUGIN_VERSION = "2.0.2";
         }
 
         internal static new ManualLogSource GC;
 
         //variables
-        internal bool facilityMeltdown = false;
+        
         internal bool bypassGGE = false;
         internal bool ghostCodeSent = false;
         internal float groupSanity = 0f;
@@ -35,14 +35,22 @@ namespace ghostCodes
         //Terminal Instance
         internal Terminal Terminal;
 
+        //Teleporter Instances
+        internal ShipTeleporter NormalTP;
+        internal ShipTeleporter InverseTP;
+
         //Dressgirl Instance
         public DressGirlAI DressGirl;
+
+        //Compatibility Stuff
+        internal bool facilityMeltdown = false;
+        internal bool toilHead = false;
 
         private void Awake()
         {
             Plugin.instance = this;
             Plugin.GC = base.Logger;
-            Plugin.GC.LogInfo((object)"ghostCodes have been detected in the terminal, version 2.0.1");
+            Plugin.GC.LogInfo((object)$"{PluginInfo.PLUGIN_NAME} have been detected in the terminal, version {PluginInfo.PLUGIN_VERSION}");
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
             gcConfig.SetConfigSettings();
 

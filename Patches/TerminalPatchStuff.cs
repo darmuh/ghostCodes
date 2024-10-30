@@ -3,6 +3,7 @@ using HarmonyLib;
 using System.Linq;
 using static ghostCodes.TerminalAdditions;
 using static ghostCodes.Bools;
+using UnityEngine;
 
 namespace ghostCodes
 {
@@ -11,16 +12,37 @@ namespace ghostCodes
         [HarmonyPatch(typeof(Terminal), "Start")]
         public class StartTerminal : Terminal
         {
+            internal static Color screenTextDefaultColor;
+            internal static Color topRightDefaultColor;
+
             static void Postfix(Terminal __instance)
             {
                 Plugin.instance.Terminal = __instance;
                 Plugin.MoreLogs("Grabbed Terminal instance for use in mod");
+                GetTerminalDefaults();
+            }
+
+            private static void GetTerminalDefaults()
+            {
+                if (Plugin.instance.Terminal.screenText == null)
+                    return;
+
+                screenTextDefaultColor = Plugin.instance.Terminal.screenText.textComponent.color;
+
+                Plugin.MoreLogs($"screenTextDefaultColor set to {Plugin.instance.Terminal.screenText.textComponent.color}");
+
+                if (Plugin.instance.Terminal.topRightText == null)
+                    return;
+
+                topRightDefaultColor = Plugin.instance.Terminal.topRightText.color;
+                Plugin.MoreLogs($"topRightDefaultColor set to {Plugin.instance.Terminal.topRightText.color}");
             }
         }
 
         [HarmonyPatch(typeof(Terminal), "LoadNewNode")]
         public class HauntedTerminal
         {
+
             static void Postfix(TerminalNode node)
             {
                 if (node == null)
@@ -28,9 +50,16 @@ namespace ghostCodes
                     Plugin.MoreLogs("node is null");
                     return;
                 }
-                //SpookyTerminalColors(false);
                 Plugin.MoreLogs("Handling node.");
                 HandleNodeSpecialLogic(node);
+            }
+
+            private static void CheckForSpookyText()
+            {
+                if(spookyColors)
+                {
+                    SpookyTerminalColors(false);
+                }
             }
 
             internal static void HandleNodeSpecialLogic(TerminalNode node)

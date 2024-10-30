@@ -31,6 +31,26 @@ namespace ghostCodes
             }
         }
 
+        [HarmonyPatch(typeof(ShipTeleporter), "Awake")]
+        public class TeleporterInit : ShipTeleporter
+        {
+            static void Postfix(ShipTeleporter __instance)
+            {
+                if (__instance.isInverseTeleporter)
+                {
+                    Plugin.instance.InverseTP = __instance;
+                    Plugin.MoreLogs("InverseTP instance detected and set.");
+                }
+                    
+                else
+                {
+                    Plugin.instance.NormalTP = __instance;
+                    Plugin.MoreLogs("NormalTP instance detected and set.");
+                }
+                    
+            }
+        }
+
         [HarmonyPatch(typeof(DressGirlAI), "Update")]
         public class OnUpdatePatch : DressGirlAI
         {
@@ -124,6 +144,11 @@ namespace ghostCodes
                 {
                     Plugin.MoreLogs("Facility Meltdown mod detected!");
                     Plugin.instance.facilityMeltdown = true;
+                }
+                if (Chainloader.PluginInfos.ContainsKey("com.github.zehsteam.ToilHead"))
+                {
+                    Plugin.MoreLogs("ToilHeads mod detected!");
+                    Plugin.instance.toilHead = true;
                 }
             }
         }

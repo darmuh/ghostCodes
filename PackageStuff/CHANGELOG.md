@@ -1,6 +1,25 @@
 ## Change Log
 
-### [2.0.1] **CURRENT VERSION**
+### [2.0.2] **CURRENT VERSION**
+ - Fixed incorrect configuration information related to gcGhostGirlOnly & gcGhostGirlOnlyList
+	- Also fixed some issues discovered with handling leading spaces.
+	- Updated default configuration option to remove spaces after commas anyway.
+	- Reworded some other config options for, hopefully, some better clarity.
+ - Added new config section for any compatible mods that have added functionality to ghostCodes.
+	- Called "External Mod Stuff", this will be where you can find config options relating to various compatible mods.
+	- The first mod for this section is ToilHeads, which slaps a turret on top of SOME of the coilheads.
+	- Like a regular turret, ghostCodes can either disable the turret on their head or make the turret go berserk.
+	- Each action has configurable odds and can be completely disabled.
+	- Currently both ToilHeads and Facility Meltdown have direct compatibility written into this mod.
+ - Added the ability for ghostCodes to mess with the teleporters.
+	- Find the config options for these interactions in "Ship Stuff"
+	- Came with one new patch to grab teleporter instances when they spawn.
+ - Updated handling from previous hotfix so that ghostly responses will change on loading a new node again.
+	- Added some better error-handling cases so that this wont error out like in 2.0.0
+	- Also added a check when terminal first spawns to grab the default text colors, rather than assuming it is green.
+		- Want to add support for mods that change the text color at some point, as i'm not sure they will have change it this early on.
+
+### [2.0.1]
  - Hotfix to address compatibility issues with Terminal patch and other mods.
 	- Thanks to SourceShard of the modding discord for the quick report!
 	- Ghostly responses on the terminal will now always return to regular green terminal text color after 3 seconds.

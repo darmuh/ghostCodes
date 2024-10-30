@@ -45,11 +45,16 @@
     <Reference Include="BepInEx">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="com.github.zehsteam.ToilHead">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\dontloadpls\Zehs-ToilHead\com.github.zehsteam.ToilHead.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Facepunch.Steamworks.Win64">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Facepunch.Steamworks.Win64.dll</HintPath>
     </Reference>
     <Reference Include="FacilityMeltdown">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\dontloadpls\loaforc-FacilityMeltdown\FacilityMeltdown\FacilityMeltdown.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\netstandard.dll</HintPath>
@@ -106,7 +111,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compatibility\ToilHead.cs" />
     <Compile Include="Interactions\Blastdoors.cs" />
+    <Compile Include="Interactions\Teleporters.cs" />
     <Compile Include="Interactions\TerminalAdditions.cs" />
     <Compile Include="PluginStuff\Bools.cs" />
     <Compile Include="CodeStuff\CodeActions.cs" />
@@ -145,8 +152,8 @@
     <Content Include="stuff.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="PackageStuff\CHANGELOG.md" />
     <None Include="PackageStuff\manifest.json" />
-    <None Include="PackageStuff\CHAGELOG.md" />
     <None Include="PackageStuff\README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

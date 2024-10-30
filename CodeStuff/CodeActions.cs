@@ -13,6 +13,7 @@ using static ghostCodes.Turrets;
 using static ghostCodes.Lights;
 using static ghostCodes.RapidFire;
 using static ghostCodes.ShipStuff;
+using static ghostCodes.Teleporters;
 using GameNetcodeStuff;
 
 namespace ghostCodes
@@ -27,14 +28,13 @@ namespace ghostCodes
             DressGirlRequiredActions();
             ShipStuff();
             AddRegularDoorStuff();
-
             
             if (randomObjectNum < 0)
                 return;
 
             AddRapidFireActions(instance, randomObjectNum);
             TerminalObjectActions(instance, randomObjectNum);
-
+            ExternalModCheck();
         }
 
         private static void ShipStuff()
@@ -62,6 +62,19 @@ namespace ghostCodes
             if(gcConfig.monitorsOnShipEvent.Value && gcConfig.ModNetworking.Value)
                 possibleActions.Add(new ActionPercentage("MessWithMonitors", () => NetHandler.Instance.MessWithMonitorsServerRpc(), gcConfig.monitorsOnShipChance.Value));
 
+            if(gcConfig.normalTpEvent.Value && Plugin.instance.NormalTP != null)
+            {
+                Plugin.MoreLogs("Added MessWithNormalTP");
+                possibleActions.Add(new ActionPercentage("MessWithNormalTP", () => InteractWithAnyTP(0), gcConfig.normalTpChance.Value));
+            }
+                
+
+            if (gcConfig.inverseTpEvent.Value && Plugin.instance.InverseTP != null)
+            {
+                Plugin.MoreLogs("Added MessWithInverseTP");
+                possibleActions.Add(new ActionPercentage("MessWithInverseTP", () => InteractWithAnyTP(1), gcConfig.inverseTpChance.Value));
+            }
+                
         }
 
         private static void AddRegularDoorStuff()
@@ -107,6 +120,13 @@ namespace ghostCodes
                 return;
 
             possibleActions.Add(new ActionPercentage("ggFlashlight", () => GGFlashlight(), gcConfig.ggPlayerLightsPercent.Value));
+        }
+
+        private static void ExternalModCheck()
+        {
+            Plugin.MoreLogs("Checking for any external mods to utilize ghost codes on");
+            if(Plugin.instance.toilHead)
+                Compatibility.ToilHead.CheckForToilHeadObjects();
         }
 
         private static void NetworkingRequiredActions()
