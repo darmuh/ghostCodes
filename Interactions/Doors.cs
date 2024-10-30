@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -9,7 +7,7 @@ namespace ghostCodes
 {
     internal class Doors
     {
-        internal static List<DoorLock>AllDoors = [];
+        internal static List<DoorLock> AllDoors = [];
         internal static bool CustomHauntRunning = false;
         internal static System.Random Rand = new();
 
@@ -24,6 +22,9 @@ namespace ghostCodes
 
             for (int i = 0; i < AllDoors.Count; i++)
             {
+                if (AllDoors[i] == null)
+                    continue;
+
                 AllDoors[i].OpenOrCloseDoor(StartOfRound.Instance.localPlayerController);
             }
             Plugin.MoreLogs($"All {AllDoors.Count} doors have been opened or closed");
@@ -31,7 +32,10 @@ namespace ghostCodes
 
         internal static void OpenorClose1RandomDoor()
         {
+
             int doorNumber = NumberStuff.GetInt(0, AllDoors.Count);
+            if (AllDoors[doorNumber] == null)
+                return;
             AllDoors[doorNumber].OpenOrCloseDoor(StartOfRound.Instance.localPlayerController);
 
             Plugin.MoreLogs("Opened or Closed one door");
@@ -43,6 +47,10 @@ namespace ghostCodes
             for (int i = 0; i < AllDoors.Count; i++)
             {
                 int doorNumber = NumberStuff.GetInt(0, AllDoors.Count);
+
+                if (AllDoors[doorNumber] == null)
+                    continue;
+
                 if (AllDoors[doorNumber].isLocked && stateLocked)
                 {
                     AllDoors[doorNumber].UnlockDoorServerRpc();
@@ -70,6 +78,9 @@ namespace ghostCodes
 
             for (int i = 0; i < (int)count; i++)
             {
+                if (AllDoors[i] == null)
+                    continue;
+
                 MonoBehaviour mono = AllDoors[i].gameObject.GetComponent<MonoBehaviour>();
                 mono.StopAllCoroutines();
                 mono.StartCoroutine(CustomDoorHaunt(AllDoors[i]));
@@ -81,7 +92,7 @@ namespace ghostCodes
         internal static IEnumerator CustomDoorHaunt(DoorLock thisDoor)
         {
             int times = Rand.Next(9);
-            for(int i = 0; i < times; i++)
+            for (int i = 0; i < times; i++)
             {
                 float wait;
                 if (!thisDoor.isDoorOpened && Rand.Next(100) >= 92)

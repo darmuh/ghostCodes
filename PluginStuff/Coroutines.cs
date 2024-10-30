@@ -5,7 +5,6 @@ using UnityEngine;
 using static ghostCodes.Bools;
 using static ghostCodes.CodeHandling;
 using static ghostCodes.CodeStuff;
-using static ghostCodes.Compatibility.FacilityMeltdown;
 using static ghostCodes.DressGirl;
 using static ghostCodes.InsanityStuff;
 using static ghostCodes.NumberStuff;
@@ -256,26 +255,29 @@ namespace ghostCodes
 
         internal static IEnumerator AlarmLights()
         {
+            if (lightsFlickering)
+                yield break;
+
+            lightsFlickering = true;
             BreakerBox breakerBox = Object.FindObjectOfType<BreakerBox>();
             if (breakerBox == null)
                 yield break;
 
-            if (Plugin.instance.FacilityMeltdown)
-                meltdown = CheckForMeltdown();
-
+            Plugin.Spam("Starting light flicker loop");
             NetHandler.Instance.AlarmLightsServerRpc(false);
 
-            while (startRapidFire && !StartOfRound.Instance.localPlayerController.isPlayerDead && !meltdown)
+            while (startRapidFire && !StartOfRound.Instance.localPlayerController.isPlayerDead && !endAllCodes)
             {
                 if (StartOfRound.Instance.localPlayerController.isInsideFactory)
-                    NetHandler.Instance.GGFlickerServerRpc();
+                    NetHandler.Instance.FlickerLightsServerRpc(false, false);
                 yield return new WaitForSeconds(Random.Range(SetupConfig.RapidLightsMin.Value, SetupConfig.RapidLightsMax.Value));
             }
+
             NetHandler.Instance.AlarmLightsServerRpc(true);
             yield return new WaitForSeconds(1);
             if (!breakerBox.isPowerOn)
             {
-                NetHandler.Instance.GGFacilityLightsServerRpc();
+                breakerBox.SwitchBreaker(true);
                 Plugin.GC.LogInfo("returning to normal");
             }
             lightsFlickering = false;

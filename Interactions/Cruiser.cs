@@ -38,7 +38,7 @@ namespace ghostCodes.Interactions
 
         internal static void Doors()
         {
-            int num = Rand.Next(1,4);
+            int num = Rand.Next(1, 4);
             if (num == 0)
                 BackDoor();
             else if (num == 1)

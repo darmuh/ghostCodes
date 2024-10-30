@@ -8,6 +8,7 @@ namespace ghostCodes
     internal class Bools
     {
         internal static bool lightsFlickering = false;
+        internal static bool appPullInvoked = false;
         public static bool endAllCodes = false;
 
         internal static bool IsCodeSent()

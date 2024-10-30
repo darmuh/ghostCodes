@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ghostCodes.Configs;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ghostCodes.PluginStuff
@@ -44,6 +45,13 @@ namespace ghostCodes.PluginStuff
 
             if (secondaryMode.ToLower() == "none" || secondaryLevelList.Length <= 0)
             {
+                if (CurrentMode != PrimaryMode)
+                {
+                    Plugin.Spam($"Updating to primary mode! [ {PrimaryMode} ]");
+                    UpdateToMode(PrimaryMode);
+                    InteractionsConfig.MapToConfig(InteractionsConfig.PrimaryInteractions, InteractionsConfig.Settings);
+                }
+
                 SecondaryMode = "";
                 hasSecondaryMode = false;
                 return;
@@ -68,6 +76,7 @@ namespace ghostCodes.PluginStuff
             {
                 Plugin.Spam($"Updating to secondary mode! [ {SecondaryMode} ]");
                 UpdateToMode(SecondaryMode);
+                InteractionsConfig.MapToConfig(InteractionsConfig.SecondaryInteractions, InteractionsConfig.Settings);
             }
             else
             {
@@ -75,6 +84,7 @@ namespace ghostCodes.PluginStuff
                 {
                     Plugin.Spam($"Updating to primary mode! [ {PrimaryMode} ]");
                     UpdateToMode(PrimaryMode);
+                    InteractionsConfig.MapToConfig(InteractionsConfig.PrimaryInteractions, InteractionsConfig.Settings);
                 }
             }
         }

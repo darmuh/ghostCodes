@@ -18,9 +18,12 @@ namespace ghostCodes
         {
             var shockAsset = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ghostCodes.Assets.zap"));
             var chargeAsset = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ghostCodes.Assets.charge"));
-            var giggles = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ghostCodes.Assets.giggles"));
-            allGiggles = [.. giggles.LoadAllAssets<AudioClip>()];
+            var girl = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ghostCodes.Assets.girl"));
+            var terminal = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ghostCodes.Assets.terminal"));
+            allGiggles = [.. girl.LoadAllAssets<AudioClip>()];
             TerminalAdditions.Shock = (AudioClip)shockAsset.LoadAsset("negative.ogg");
+            TerminalAdditions.Success = (AudioClip)terminal.LoadAsset("complete.ogg");
+            TerminalAdditions.Reboot = (AudioClip)terminal.LoadAsset("process.ogg");
             Items.Adjuster = (AudioClip)chargeAsset.LoadAsset("positive.ogg");
 
 
@@ -127,8 +130,18 @@ namespace ghostCodes
         internal static void InitSounds()
         {
             allSounds.Clear();
-            BaseTerminalSound();
-            BaseGirlSounds();
+            if (!SetupConfig.GhostCodesSettings.HauntingsMode)
+                BaseTerminalSound(); //hopefully can add custom terminal sounds eventually
+            else
+            {
+                CustomGirlSounds();
+            }
+
+        }
+
+        internal static void CustomGirlSounds()
+        {
+            AddToSounds(allGiggles);
         }
 
         internal static void PlayTerminalSound(AudioClip clip)

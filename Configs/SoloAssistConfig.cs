@@ -8,7 +8,7 @@ namespace ghostCodes.Configs
 {
     public static class SoloAssistConfig
     {
-        public static ConfigFile SoloAssist = new(Path.Combine(Paths.ConfigPath, $"darmuh.ghostCodes.SoloAssist.cfg"), true);
+        public static ConfigFile SoloAssist = new(Path.Combine(Paths.ConfigPath, $"ghostCodes.SoloAssist.cfg"), true);
 
         // Stage 1 //
         public static ConfigEntry<int> S1percent { get; internal set; }
@@ -28,15 +28,15 @@ namespace ghostCodes.Configs
 
         internal static void Init()
         {
-            S1percent = MakeClampedInt(SoloAssist, "Stage 1", "S1percent", 50, "Percentage of Max Insanity required to hit Solo Assistance Buff during Stage 1 (beginning of day to Noon)", 0, 100);
-            S1inside = MakeClampedInt(SoloAssist, "Stage 1", "S1inside", 20, "Decrease of insanity level when inside the factory during Stage 1 (beginning of day to Noon)", 0, 40);
-            S1outside = MakeClampedInt(SoloAssist, "Stage 1", "S1outside", 25, "Decrease of insanity level when outside the factory during Stage 1 (beginning of day to Noon)", 0, 40);
-            S2percent = MakeClampedInt(SoloAssist, "Stage 2", "S2percent", 75, "Percentage of Max Insanity required to hit Solo Assistance Buff during Stage 2 (Noon to 5PM)", 0, 100);
-            S2inside = MakeClampedInt(SoloAssist, "Stage 2", "S2inside", 10, "Decrease of insanity level when inside the factory during Stage 2 (Noon to 5PM)", 0, 40);
-            S2outside = MakeClampedInt(SoloAssist, "Stage 2", "S2outside", 15, "Decrease of insanity level when outside the factory during Stage 2 (Noon to 5PM)", 0, 40);
-            S3percent = MakeClampedInt(SoloAssist, "Stage 3", "S3percent", 90, "Percentage of Max Insanity required to hit Solo Assistance Buff during Stage 3 (5PM - 10PM)", 0, 100);
-            S3inside = MakeClampedInt(SoloAssist, "Stage 3", "S3inside", 5, "Decrease of insanity level when inside the factory during Stage 3 (5PM - 10PM)", 0, 40);
-            S3outside = MakeClampedInt(SoloAssist, "Stage 3", "S3outside", 10, "Decrease of insanity level when outside the factory during Stage 3 (5PM - 10PM)", 0, 40);
+            S1percent = MakeClampedInt(SoloAssist, "Solo Stage 1", "S1percent", 50, "Percentage of Max Insanity required to hit Solo Assistance Buff during Stage 1 (beginning of day to Noon)", 0, 100);
+            S1inside = MakeClampedInt(SoloAssist, "Solo Stage 1", "S1inside", 20, "Decrease of insanity level when inside the factory during Stage 1 (beginning of day to Noon)", 0, 40);
+            S1outside = MakeClampedInt(SoloAssist, "Solo Stage 1", "S1outside", 25, "Decrease of insanity level when outside the factory during Stage 1 (beginning of day to Noon)", 0, 40);
+            S2percent = MakeClampedInt(SoloAssist, "Solo Stage 2", "S2percent", 75, "Percentage of Max Insanity required to hit Solo Assistance Buff during Stage 2 (Noon to 5PM)", 0, 100);
+            S2inside = MakeClampedInt(SoloAssist, "Solo Stage 2", "S2inside", 10, "Decrease of insanity level when inside the factory during Stage 2 (Noon to 5PM)", 0, 40);
+            S2outside = MakeClampedInt(SoloAssist, "Solo Stage 2", "S2outside", 15, "Decrease of insanity level when outside the factory during Stage 2 (Noon to 5PM)", 0, 40);
+            S3percent = MakeClampedInt(SoloAssist, "Solo Stage 3", "S3percent", 90, "Percentage of Max Insanity required to hit Solo Assistance Buff during Stage 3 (5PM - 10PM)", 0, 100);
+            S3inside = MakeClampedInt(SoloAssist, "Solo Stage 3", "S3inside", 5, "Decrease of insanity level when inside the factory during Stage 3 (5PM - 10PM)", 0, 40);
+            S3outside = MakeClampedInt(SoloAssist, "Solo Stage 3", "S3outside", 10, "Decrease of insanity level when outside the factory during Stage 3 (5PM - 10PM)", 0, 40);
 
             SoloAssist.Save();
             ModConfig.configFiles.Add(SoloAssist);

@@ -1,31 +1,13 @@
 ﻿using ghostCodes.Configs;
 using ghostCodes.Patches;
 using HarmonyLib;
+using System.Collections.Generic;
 using static ghostCodes.Bools;
 
 namespace ghostCodes
 {
     public class GamePatchStuff
     {
-        /*
-        [HarmonyPatch(typeof(RoundManager), "SetBigDoorCodes")]
-        public class StartRoundPatch : RoundManager
-        {
-
-            static void Postfix()
-            {
-                if (!StartOfRound.Instance.inShipPhase)
-                {
-                    if (StartOfRound.Instance.currentLevel.name == "CompanyBuildingLevel" || StartOfRound.Instance.currentLevel.riskLevel == "Safe")
-                        return;
-
-                    InitPlugin.StartTheRound();
-                }
-                else
-                    Plugin.WARNING("Codes should not be generated, ship is in orbit!");
-            }
-        }
-        */
 
         [HarmonyPatch(typeof(StartOfRound), "PassTimeToNextDay")]
         public class NextDayPatch
@@ -34,6 +16,51 @@ namespace ghostCodes
             {
                 Plugin.Spam("Next day detected!");
                 OpenLibEvents.GhostCodesReset.Invoke();
+            }
+        }
+
+        /*
+        [HarmonyPatch(typeof(LungProp), "EquipItem")]
+        public class ApparatusPullPatch
+        {
+            public static bool alertOnce = false;
+            static void Postfix(LungProp __instance)
+            {
+                Plugin.Spam("Apparatus has been pulled!");
+                if (!__instance.isLungDocked && !alertOnce)
+                {
+                    OpenLibEvents.ApparatusPull.Invoke();
+                    alertOnce = true;
+                }
+                    
+            }
+        } */
+
+        [HarmonyPatch(typeof(LungProp), "DisconnectFromMachinery", MethodType.Enumerator)]
+        public class ApparatusPullPatch
+        {
+            static bool instructionAdded = false;
+
+            [HarmonyTranspiler]
+            private static IEnumerable<CodeInstruction> ApparatusPullPatch_Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+
+                CodeInstruction myMethod = CodeInstruction.Call("ghostCodes.Patches.OpenLibEvents:GetInvoke");
+
+                foreach (CodeInstruction instruction in instructions)
+                {
+                    if (!instructionAdded)
+                    {
+                        Plugin.GC.LogInfo("Custom Instruction added in DisconnectFromMachinery enumerator");
+                        yield return myMethod;
+                        yield return instruction;
+                        instructionAdded = true;
+                    }
+                    else
+                        yield return instruction;
+                }
+
+                Plugin.GC.LogInfo("Transpiler Success! - Added ApparatusPull Invoke Event");
             }
         }
 

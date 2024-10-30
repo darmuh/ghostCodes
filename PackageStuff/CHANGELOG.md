@@ -1,6 +1,17 @@
 ## Change Log
 
-### [2.0.6] **CURRENT VERSION**
+### [2.5.0]
+ - Mod completely reworked and built to be used with OpenLib.
+ - Compiled with new custom sounds for the terminal, ghost girl, etc.
+ - New interactions added for the cruiser, haunted doors, ship, etc.
+ - New mode system to handle having a secondary mode for specific moons
+	- Secondary interactions config added for secondary mode when user requests this config.
+ - Config has been split into multiple configs, each one is added in-game via LethalConfig.
+ - While this mod is in an alpha state, setting extensive logging config item to true by default.
+	- Feel free to disable this but understand that it will be more difficult for me to troubleshoot any issues you encounter.
+ - For a more in-depth changelog, please see the diffs on github.
+
+### [2.0.6]
  - Recompiled for use with V55 Game Update.
  - Updated project to utilize plugin version number wherever possible, including compiling the assembly with the version number.
 	- Now when I update the version number in one spot, it'll update it everywhere (except the changelog, keeping that manual)

@@ -1,7 +1,6 @@
 ﻿using BepInEx.Configuration;
 using ghostCodes.Configs;
 using LethalConfig;
-using LethalConfig.ConfigItems;
 using System.Collections.Generic;
 using static ghostCodes.Configs.InsanityConfig;
 using static ghostCodes.Configs.SetupConfig;
@@ -24,7 +23,8 @@ namespace ghostCodes.Compatibility
         internal static void GeneratePages()
         {
             WebConfig(Setup);
-            WebConfig(InteractionsConfig.Interactions);
+            WebConfig(InteractionsConfig.PrimaryInteractions);
+            WebConfig(InteractionsConfig.SecondaryInteractions);
             WebConfig(InsanityMode);
             WebConfig(SoloAssistConfig.SoloAssist);
         }
@@ -34,8 +34,10 @@ namespace ghostCodes.Compatibility
             //code
             if (ModConfig.SetupConfigCode.Value.Length > 1)
                 ReadCompressedConfig(ref ModConfig.SetupConfigCode, Setup);
-            if (ModConfig.InteractionsConfigCode.Value.Length > 1)
-                ReadCompressedConfig(ref ModConfig.InteractionsConfigCode, InteractionsConfig.Interactions);
+            if (ModConfig.PrimaryInteractionsConfigCode.Value.Length > 1)
+                ReadCompressedConfig(ref ModConfig.PrimaryInteractionsConfigCode, InteractionsConfig.PrimaryInteractions);
+            if (ModConfig.SecondaryInteractionsConfigCode.Value.Length > 1)
+                ReadCompressedConfig(ref ModConfig.SecondaryInteractionsConfigCode, InteractionsConfig.SecondaryInteractions);
             if (ModConfig.InsanityConfigCode.Value.Length > 1)
                 ReadCompressedConfig(ref ModConfig.InsanityConfigCode, InsanityMode);
             if (ModConfig.SoloAssistConfigCode.Value.Length > 1)
@@ -45,11 +47,20 @@ namespace ghostCodes.Compatibility
 
         internal static void QueueAndLoad(List<ConfigFile> configList)
         {
-            if(!OpenLib.Plugin.instance.LethalConfig)
+            if (!OpenLib.Plugin.instance.LethalConfig)
                 return;
 
-            foreach(ConfigFile config in configList)
+            foreach (ConfigFile config in configList)
                 LethalConfigManager.QueueCustomConfigFileForLateAutoGeneration(config);
+            LethalConfigManager.RunLateAutoGeneration();
+        }
+
+        internal static void QueueAndLoad(ConfigFile config)
+        {
+            if (!OpenLib.Plugin.instance.LethalConfig)
+                return;
+
+            LethalConfigManager.QueueCustomConfigFileForLateAutoGeneration(config);
             LethalConfigManager.RunLateAutoGeneration();
         }
     }

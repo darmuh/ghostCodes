@@ -4,11 +4,11 @@ using ghostCodes.Interactions;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static ghostCodes.Configs.InteractionsConfig;
 using static ghostCodes.Blastdoors;
 using static ghostCodes.Bools;
 using static ghostCodes.CodeHandling;
 using static ghostCodes.CodeStuff;
+using static ghostCodes.Configs.InteractionsConfig;
 using static ghostCodes.Doors;
 using static ghostCodes.Lights;
 using static ghostCodes.Mines;
@@ -16,8 +16,6 @@ using static ghostCodes.RapidFire;
 using static ghostCodes.ShipStuff;
 using static ghostCodes.Teleporters;
 using static ghostCodes.Turrets;
-using Random = UnityEngine.Random;
-using ghostCodes.PluginStuff;
 
 namespace ghostCodes
 {
@@ -50,7 +48,7 @@ namespace ghostCodes
             if (AffectRandomPlayerBatteries.Value > 0)
                 possibleActions.Add(new ActionPercentage("AffectRandomPlayerBatteries", () => Items.AffectRandomPlayersBatterys(), AffectRandomPlayerBatteries.Value));
 
-            if(HauntFactoryScrap.Value > 0)
+            if (HauntFactoryScrap.Value > 0)
                 possibleActions.Add(new ActionPercentage("HauntFactoryScrap", () => Items.HauntItemUse(false), HauntFactoryScrap.Value));
 
             if (HauntHeldScrap.Value > 0)
@@ -124,11 +122,14 @@ namespace ghostCodes
                 possibleActions.Add(new ActionPercentage("MessWithInverseTP", () => InteractWithAnyTP(1), InverseTeleporter.Value));
             }
 
-            if(CorruptedCredits.Value > 0 && !TerminalAdditions.credsCorrupted)
+            if (CorruptedCredits.Value > 0 && !TerminalAdditions.credsCorrupted)
                 possibleActions.Add(new ActionPercentage("CorruptedCredits", () => TerminalAdditions.CorruptedCredits(true), CorruptedCredits.Value));
 
-            if(HeavyLever.Value > 0)
+            if (HeavyLever.Value > 0)
                 possibleActions.Add(new ActionPercentage("HeavyLever", () => HeavyLeverFunc(), HeavyLever.Value));
+
+            if (HauntedOrder.Value > 0 && Plugin.instance.Terminal.orderedItemsFromTerminal.Count == 0 && Plugin.instance.Terminal.numberOfItemsInDropship == 0)
+                possibleActions.Add(new ActionPercentage("HauntedOrder", () => HauntedOrderFunc(), HauntedOrder.Value));
 
         }
 
@@ -181,7 +182,7 @@ namespace ghostCodes
             if (CruiserPush.Value > 0)
                 possibleActions.Add(new ActionPercentage("CruiserPush", () => Cruiser.Push(), CruiserPush.Value));
 
-            if(ToggleCruiserDoors.Value > 0)
+            if (ToggleCruiserDoors.Value > 0)
                 possibleActions.Add(new ActionPercentage("CruiserDoors", () => Cruiser.Doors(), ToggleCruiserDoors.Value));
 
             if (ToggleCruiserLights.Value > 0)
@@ -190,7 +191,7 @@ namespace ghostCodes
             if (FlickerCruiserLights.Value > 0)
             {
                 possibleActions.Add(new ActionPercentage("FlickerCruiserLights", () => Cruiser.Headlights(Rand.Next(11)), FlickerCruiserLights.Value));
-            }  
+            }
 
             if (ToggleCruiserHood.Value > 0)
                 possibleActions.Add(new ActionPercentage("ToggleCruiserHood", () => Plugin.instance.Cruiser.ToggleHoodOpenLocalClient(), ToggleCruiserHood.Value));
@@ -198,7 +199,7 @@ namespace ghostCodes
             if (CruiserWindshield.Value > 0)
                 possibleActions.Add(new ActionPercentage("CruiserWindshield", () => Cruiser.Windshield(), CruiserWindshield.Value));
 
-            if(CruiserShiftGears.Value > 0)
+            if (CruiserShiftGears.Value > 0)
                 possibleActions.Add(new ActionPercentage("CruiserShiftGears", () => Cruiser.GearShift(), CruiserShiftGears.Value));
 
         }
@@ -259,13 +260,15 @@ namespace ghostCodes
 
             foreach (var action in actions)
             {
-                float randomValue = Random.Range(0f, 100f);
+                Plugin.Spam($"Checking {action.Name} against percentage");
+                int randomValue = NumberStuff.Rand.Next(101);
                 float chance = action.Percentage;
                 if (startRapidFire)
                     chance = NumberStuff.GetClampedInsanityPercent(chance, InsanityConfig.InsanityModeMultiplier.Value);
 
                 if (numActions < 3 && (randomValue <= chance || Mathf.Approximately(chance, 100f)))
                 {
+                    Plugin.Spam($"Action {action.Name} was chosen!");
                     chosenActions.Add(action.Action);
                     numActions++;
                 }
@@ -281,7 +284,7 @@ namespace ghostCodes
             while (n > 1)
             {
                 n--;
-                int k = Random.Range(0, n + 1);
+                int k = NumberStuff.Rand.Next(n);
                 T value = list[k];
                 list[k] = list[n];
                 list[n] = value;

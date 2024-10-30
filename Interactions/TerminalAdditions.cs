@@ -1,8 +1,6 @@
 ﻿using GameNetcodeStuff;
 using ghostCodes.Configs;
-using ghostCodes.Patches;
 using System.Collections;
-using System.Data.SqlTypes;
 using UnityEngine;
 using static ghostCodes.Bools;
 using static ghostCodes.NumberStuff;
@@ -14,6 +12,7 @@ namespace ghostCodes
     {
         internal static TerminalNode rebootNode;
         internal static bool rebootCommandExpired = false;
+        internal static int rebootCount;
         internal static int rebootTime;
         internal static int deathNoteStrikes = 0;
         public static bool isTerminalRebooting = false;
@@ -29,12 +28,15 @@ namespace ghostCodes
 
         //Sounds
         internal static AudioClip Shock;
+        internal static AudioClip Reboot;
+        internal static AudioClip Success;
 
         internal static void ResetBools()
         {
             isTerminalRebooting = false;
             rebootCommandExpired = false;
             spookyColors = false;
+            rebootCount = 0;
             deathNoteStrikes = 0;
         }
 
@@ -44,7 +46,7 @@ namespace ghostCodes
                 yield break;
 
             Plugin.MoreLogs("Start of spooky terminal reboot coroutine.");
-            TerminalResetSound();
+            SoundSystem.PlayTerminalSound(Reboot);
             yield return new WaitForSeconds(1);
             SetTerminalText(reboot_3);
             yield return new WaitForSeconds(1);
@@ -54,21 +56,33 @@ namespace ghostCodes
             Plugin.instance.Terminal.QuitTerminal();
             yield return new WaitForEndOfFrame();
             IsTerminalUsable(false);
+            float originalAlpha = Plugin.instance.Terminal.topRightText.alpha;
+            Plugin.instance.Terminal.topRightText.alpha = 0f;
             Plugin.instance.Terminal.terminalUIScreen.gameObject.SetActive(true);
             Plugin.instance.Terminal.screenText.caretPosition = Plugin.instance.Terminal.screenText.text.Length;
-            yield return new WaitForSeconds(1);
-            SetTerminalText(reboot_progress_1);
             endAllCodes = true;
             isTerminalRebooting = true;
+            yield return new WaitForSeconds(1);
+            SetTerminalText(reboot_progress_1);
             StartOfRound.Instance.StartCoroutine(RebootLoadingTextLoop());
             yield return new WaitForSeconds(rebootTime);
             isTerminalRebooting = false;
             DressGirl.StopGirlFromChasing();
             endAllCodes = false;
-            SetTerminalText("\n\n\n\n\n\n\n\n\n\t\t>>Reboot <color=#ebe334>Complete.</color><<\n\n\n\n"); //<color=#e6b800>darmuh</color>
+            Plugin.instance.Terminal.topRightText.alpha = originalAlpha;
+            Plugin.instance.Terminal.terminalAudio.Stop();
+            SoundSystem.PlayTerminalSound(Success);
+            SetTerminalText("\n\n\n\n\n\n\n\n\n\t\t>>Reboot <color=#ebe334>Complete.</color><<\n\n\n\n");
             IsTerminalUsable(true);
-            rebootCommandExpired = true;
             InitPlugin.RestartPlugin();
+
+            if (InteractionsConfig.TerminalRebootUses.Value > 0)
+            {
+                if (rebootCount >= InteractionsConfig.TerminalRebootUses.Value)
+                    rebootCommandExpired = true;
+                else
+                    rebootCount++;
+            }
         }
 
         internal static IEnumerator RebootLoadingTextLoop()
@@ -85,11 +99,6 @@ namespace ghostCodes
         {
             Plugin.instance.Terminal.currentText = newText;
             Plugin.instance.Terminal.screenText.text = newText;
-        }
-
-        internal static void TerminalResetSound()
-        {
-            SoundSystem.PlayTerminalSound(StartOfRound.Instance.HUDSystemAlertSFX);
         }
 
         internal static void IsTerminalUsable(bool state)
@@ -129,6 +138,9 @@ namespace ghostCodes
         {
             Plugin.MoreLogs("Handling reboot node");
 
+            if (StartOfRound.Instance.inShipPhase)
+                return "\n\n\n\n\n\n\t\tTerminal reboot is not necessary... (in orbit)\r\n";
+
             int chance = GetInt(0, 100);
             if (InteractionsConfig.TerminalReboot.Value < chance || rebootCommandExpired)
             {
@@ -147,8 +159,8 @@ namespace ghostCodes
 
         internal static string AskTerminalReboot()
         {
-            rebootTime = GetInt(30, 90);
-            return $"You have requested to reboot the terminal.\nTotal time to reboot is {rebootTime}.\n\nPlease CONFIRM or DENY.\n\n";
+            rebootTime = GetInt(30, 88);
+            return $"You have requested to reboot the terminal.\nTotal time to reboot is {rebootTime} seconds...\n\nPlease CONFIRM or DENY.\n\n";
         }
 
         internal static void CreateAllNodes()
@@ -190,7 +202,7 @@ namespace ghostCodes
 
         private static void DeathNoteFail()
         {
-            if (!InteractionsConfig.DeathNoteFailChase.Value)
+            if (!InteractionsConfig.DeathNoteFailChase.boolValue || Plugin.instance.DressGirl == null)
                 return;
 
             Plugin.MoreLogs("death note failed, beginning ghost girl chase");
@@ -258,12 +270,12 @@ namespace ghostCodes
                 Plugin.instance.Terminal.topRightText.color = OriginalColor;
                 credsCorrupted = false;
             }
-                
+
         }
 
         internal static void RestoreCreds()
         {
-            if(credsCorrupted)
+            if (credsCorrupted)
                 CorruptedCredits(false);
         }
 

@@ -11,30 +11,6 @@ namespace ghostCodes
 
         public static NetHandler Instance { get; private set; }
 
-        //[ServerRpc(RequireOwnership = false)]
-        //[ClientRpc]
-
-        [ServerRpc(RequireOwnership = false)]
-        public void GGFlickerServerRpc()
-        {
-            if (RapidFire.meltdown)
-            {
-                Instance.AlarmLightsServerRpc(true);
-                return;
-            }
-
-            GGFlickerClientRpc();
-        }
-
-        [ClientRpc]
-        public void GGFlickerClientRpc()
-        {
-            if (RapidFire.meltdown)
-                return;
-
-            RoundManager.Instance.FlickerPoweredLights(flickerFlashlights: true, disableFlashlights: false);
-        }
-
         [ServerRpc(RequireOwnership = false)]
         public void BreatheOnWalkiesServerRpc()
         {
@@ -63,22 +39,6 @@ namespace ghostCodes
         public void GarbleWalkiesClientRpc()
         {
             WalkieStuff.GarbleAllWalkiesFunc();
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void EmptyShipServerRpc()
-        {
-            if (Plugin.instance.DressGirl == null)
-                return;
-
-            Plugin.MoreLogs($"SERVER: emptying ship");
-            EmptyShipClientRpc();
-        }
-
-        [ClientRpc]
-        public void EmptyShipClientRpc()
-        {
-            StartOfRound.Instance.StartCoroutine(Coroutines.EmptyShip());
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -113,7 +73,7 @@ namespace ghostCodes
         [ServerRpc(RequireOwnership = false)]
         public void AlarmLightsServerRpc(bool normal)
         {
-            if (!SetupConfig.RapidLightsColorValue.Value.StartsWith("#"))
+            if (SetupConfig.RapidLightsColorValue.Value.ToLower() == "nochange" || SetupConfig.RapidLightsColorValue.Value.ToLower() == "default" || SetupConfig.RapidLightsColorValue.Value.Length == 0)
                 return;
 
             Plugin.MoreLogs("AlarmLights color ServerRpc");
@@ -142,20 +102,34 @@ namespace ghostCodes
             }
         }
 
-
+        //RoundManager.Instance.FlickerLights(flickerFlashlights: true, disableFlashlights: false);
         [ServerRpc(RequireOwnership = false)]
-        public void GGFacilityLightsServerRpc()
+        public void FlickerLightsServerRpc(bool flickerFlash, bool disableFlash)
         {
-            GGFacilityLightsClientRpc();
+
+            Plugin.MoreLogs($"SERVER: garbling all walkies");
+            FlickerLightsClientRpc(flickerFlash, disableFlash);
         }
 
         [ClientRpc]
-        public void GGFacilityLightsClientRpc()
+        public void FlickerLightsClientRpc(bool flickerFlash, bool disableFlash)
+        {
+            RoundManager.Instance.FlickerLights(flickerFlashlights: flickerFlash, disableFlashlights: disableFlash);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void FacilityBreakerServerRpc()
+        {
+            FacilityBreakerClientRpc();
+        }
+
+        [ClientRpc]
+        public void FacilityBreakerClientRpc()
         {
             BreakerBox breakerBox = FindObjectOfType<BreakerBox>();
             if (breakerBox != null)
             {
-                Plugin.GC.LogInfo("setting facility lights for this client");
+                Plugin.GC.LogInfo("flipping facility breaker for this client");
 
                 if (breakerBox.isPowerOn)
                 {
@@ -184,6 +158,32 @@ namespace ghostCodes
         }
 
         [ServerRpc(RequireOwnership = false)]
+        public void BatteryAdjustSoundServerRpc(int clientID)
+        {
+            BatteryAdjustSoundClientRpc(clientID);
+        }
+
+        [ClientRpc]
+        public void BatteryAdjustSoundClientRpc(int clientID)
+        {
+            PlayerControllerB player = Misc.GetAllLivingPlayers().Find(x => (int)x.actualClientId == clientID);
+            player.itemAudio.PlayOneShot(Items.Adjuster, 0.8f);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void BatteryAdjustServerRpc(int clientID)
+        {
+            BatteryAdjustClientRpc(clientID);
+        }
+
+        [ClientRpc]
+        public void BatteryAdjustClientRpc(int clientID)
+        {
+            PlayerControllerB player = Misc.GetAllLivingPlayers().Find(x => (int)x.actualClientId == clientID);
+            Items.PlayerAffectBatteries(player);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
         public void RebootTerminalSpookyServerRpc()
         {
             RebootTerminalSpookyClientRpc();
@@ -206,6 +206,25 @@ namespace ghostCodes
         public void MessWithMonitorsClientRpc()
         {
             ShipStuff.MessWithMonitors();
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void HeavyLeverServerRpc(float newValue)
+        {
+            HeavyLeverClientRpc(newValue);
+        }
+
+        [ClientRpc]
+        public void HeavyLeverClientRpc(float newValue)
+        {
+            if (ShipStuff.leverChanged)
+                return;
+
+            StartMatchLever startMatchLever = FindObjectOfType<StartMatchLever>();
+            startMatchLever.triggerScript.timeToHoldSpeedMultiplier = newValue;
+            startMatchLever.triggerScript.holdTip = "[ This lever has a ghostly presence... ]";
+            ShipStuff.leverChanged = true;
+            Plugin.Spam("HeavyLeverClient Success!");
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -236,7 +255,11 @@ namespace ghostCodes
 
         public void PlayGhostAudioonTerminal(int num)
         {
-            Plugin.instance.Terminal.terminalAudio.PlayOneShot(SoundSystem.allSounds[num]);
+            if (SoundSystem.allSounds.Count < num)
+                SoundSystem.InitSounds();
+
+            if (SoundSystem.allSounds.Count >= num)
+                Plugin.instance.Terminal.terminalAudio.PlayOneShot(SoundSystem.allSounds[num]);
         }
 
 

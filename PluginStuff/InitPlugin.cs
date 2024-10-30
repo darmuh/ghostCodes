@@ -11,7 +11,6 @@ namespace ghostCodes
             if (StartOfRound.Instance.currentLevel.name == "CompanyBuildingLevel" || StartOfRound.Instance.currentLevel.riskLevel == "Safe")
                 return;
 
-            GetPlayersAtStart();
             InitMode();
             BaseReset();
             DressGirl.InitDressGirl();
@@ -38,25 +37,26 @@ namespace ghostCodes
 
         internal static void BaseReset()
         {
+            appPullInvoked = false;
             Plugin.instance.CodeSent = false;
             RapidFire.startRapidFire = false;
-            RapidFire.meltdown = false;
             Coroutines.rapidFireStart = false;
             Coroutines.codeLooperStarted = false;
             Plugin.instance.MaxSanity = 0f;
             Plugin.instance.GroupSanity = 0f;
-            Plugin.instance.playersAtStart = 0;
+            GetPlayersAtStart();
             Plugin.instance.CodeCount = 0;
             Plugin.instance.RandCodeAmount = 0;
             ShipStuff.ResetLever();
             TerminalAdditions.RestoreCreds();
+            //GamePatchStuff.ApparatusPullPatch.alertOnce = false;
         }
 
         internal static void CodesInit()
         {
             Plugin.MoreLogs("Initializing GhostCode core variables");
             endAllCodes = false;
-            
+
 
             TerminalAdditions.ResetBools();
             CodeStuff.GetUsableCodes();

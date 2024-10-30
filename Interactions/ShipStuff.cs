@@ -24,7 +24,7 @@ namespace ghostCodes
             if (Bools.AreAnyPlayersInShip())
             {
                 Plugin.MoreLogs("Players detected in the ship!");
-                NetHandler.Instance.EmptyShipServerRpc();
+                //NetHandler.Instance.EmptyShipServerRpc();
             }
         }
 
@@ -47,7 +47,7 @@ namespace ghostCodes
             GetMonitorVals(StartOfRound.Instance.deadlineMonitorBGImage, out Color deadlineMonitorColor);
             GetMonitorVals(StartOfRound.Instance.profitQuotaMonitorBGImage, out Color quotaMonitorColor);
 
-            List<string> messages = [.. InteractionsConfig.AllMonitorMessages.Value.Split(',')];
+            List<string> messages = [.. InteractionsConfig.AllMonitorMessages.stringValue.Split(',')];
 
             SignalTranslator.OddSignalMessage(messages, out string message1);
             SignalTranslator.OddSignalMessage(messages, out string message2);
@@ -160,24 +160,21 @@ namespace ghostCodes
         internal static void HeavyLeverFunc()
         {
             StartMatchLever startMatchLever = Object.FindObjectOfType<StartMatchLever>();
-            if(Rand.Next(0,100) > 70)
+            if (Rand.Next(0, 100) > 70)
             {
-                startMatchLever.triggerScript.timeToHoldSpeedMultiplier = Random.Range(1.5f, 5f);
+                NetHandler.Instance.HeavyLeverServerRpc(Random.Range(1.5f, 5f));
                 Plugin.Spam($"timetoholdspeedmultiplier boost!");
             }
             else
             {
-                startMatchLever.triggerScript.timeToHoldSpeedMultiplier = Random.Range(0.05f, 0.5f);
+                NetHandler.Instance.HeavyLeverServerRpc(Random.Range(0.05f, 0.5f));
                 Plugin.Spam($"timetoholdspeedmultiplier slowed!");
             }
-
-            startMatchLever.triggerScript.holdTip = "[ This lever has a ghostly presence... ]";
-            leverChanged = true;
         }
 
         internal static void ResetLever()
         {
-            if(!leverChanged)
+            if (!leverChanged)
                 return;
 
             StartMatchLever startMatchLever = Object.FindObjectOfType<StartMatchLever>();
@@ -235,6 +232,46 @@ namespace ghostCodes
             }
 
             activeShipLightsEvent = false;
+        }
+
+        internal static void HauntedOrderFunc()
+        {
+            if (Plugin.instance.Terminal.orderedItemsFromTerminal.Count > 0 || Plugin.instance.Terminal.vehicleInDropship || Plugin.instance.Terminal.numberOfItemsInDropship > 0 || HasDropShipLanded())
+                return;
+
+            int itemType;
+            int itemCount = Rand.Next(1, 4);
+            List<int> newItemsOrdered = [];
+
+            if (Rand.Next(101) >= 70) //make actual items rare
+            {
+                for (int i = 0; i < itemCount; i++)
+                {
+                    itemType = Rand.Next(Plugin.instance.Terminal.buyableItemsList.Length);
+                    newItemsOrdered.Add(itemType);
+                }
+            }
+
+            Plugin.instance.Terminal.orderedItemsFromTerminal = newItemsOrdered;
+            Plugin.instance.Terminal.PlayTerminalAudioServerRpc(0);
+
+            ItemDropship itemDropship = Object.FindObjectOfType<ItemDropship>();
+
+            if (itemDropship == null)
+                return;
+
+            if (!itemDropship.shipLanded && StartOfRound.Instance.shipHasLanded)
+                itemDropship.LandShipOnServer();
+        }
+
+        internal static bool HasDropShipLanded()
+        {
+            ItemDropship itemDropship = Object.FindObjectOfType<ItemDropship>();
+
+            if (itemDropship == null)
+                return false;
+
+            return itemDropship.shipLanded;
         }
 
     }

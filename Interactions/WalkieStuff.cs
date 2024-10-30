@@ -19,7 +19,8 @@ namespace ghostCodes.Interactions
             float waitTime = NumberStuff.GetFloat(1f, 6f);
             Plugin.MoreLogs("Transmitting breathing noise");
 
-            PlayOnAllWalkies(Plugin.instance.DressGirl.breathingSFX, 0.6f);
+            int sound = NumberStuff.Rand.Next(SoundSystem.allGiggles.Count);
+            PlayOnAllWalkies(SoundSystem.allGiggles[sound], 0.6f);
             activeBreathingWalkies = true;
             GarbleWalkies(true);
             StartOfRound.Instance.StartCoroutine(DelayedReturnFromGarble(waitTime));

@@ -1,4 +1,5 @@
 ﻿using ghostCodes.Compatibility;
+using ghostCodes.Configs;
 using static OpenLib.Common.StartGame;
 
 namespace ghostCodes.Patches
@@ -6,6 +7,7 @@ namespace ghostCodes.Patches
     public class OpenLibEvents
     {
         public static OpenLib.Events.Events.CustomEvent GhostCodesReset = new();
+        public static OpenLib.Events.Events.CustomEvent ApparatusPull = new();
 
         internal static void Subscribers()
         {
@@ -13,12 +15,29 @@ namespace ghostCodes.Patches
             OpenLib.Events.EventManager.GameNetworkManagerStart.AddListener(OnGameStart);
             OpenLib.Events.EventManager.StartOfRoundAwake.AddListener(StartOfRoundAwake);
             GhostCodesReset.AddListener(InitPlugin.BaseReset);
+            ApparatusPull.AddListener(AppPull);
         }
-        
+
         internal static void StartOfRoundAwake()
         {
             StartOfRound.Instance.StartNewRoundEvent.AddListener(InitPlugin.StartTheRound);
             NetObject.SpawnNetworkHandler();
+        }
+
+        internal static void AppPull()
+        {
+            if (!SetupConfig.GhostCodesSettings.HauntingsMode && !Bools.endAllCodes)
+                Bools.endAllCodes = true;
+        }
+
+        internal static void GetInvoke()
+        {
+            if (Bools.appPullInvoked)
+                return;
+
+            Bools.appPullInvoked = true;
+            Plugin.Spam("Apparatus pull detected");
+            ApparatusPull.Invoke();
         }
 
         internal static void OnTerminalAwake(Terminal instance)

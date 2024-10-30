@@ -2,6 +2,7 @@
 - Terminal Screen Glitch -> probably need to do the thing zaggy was mentioning
 - GhostGirl Goodbye (have ghostgirl appear at opening of ship when it is leaving if she is not actively chasing)
 - Haunted apparatus, whoever holds a stolen apparatus will now be the haunted player
+- secondary interactions config -> seems to be working for the most part, will leave verification up to testers
 
 Steps: -> function created -> added config items -> added to interactions pool -> tested interaction -> tested interaction as non-host
 
@@ -9,12 +10,13 @@ New Interactions:
 HauntedDoor stuff (vanilla compat) -> functions created -> added config items -> added to interactions pool -> tested as host with no issues
 CruiserInteractions -> functions created -> added config items -> added to interactions pool -> tested as host no issues
 	Good to go: ChangeCruiserRadio, CruiserEjectDriver, CruiserUseBoost, ToggleCruiserHood, CruiserWindshield, ToggleCruiserLights, FlickerCruiserLights, PushCruiser, Open/Close Doors, GearShift
-Corrupted Credits -> function created -> added config item -> added to interactions pool -> tested as host no issues
-Heavy lever -> function created -> added config item -> added to interactions pool -> tested as host no issues
-Use handheld item at random -> function created -> added config item -> added to interactions pool -> 
-Use item (in facility) not being held at random -> function created -> added config item -> added to interactions pool -> 
-Corrupted Dropship, lands without purchasing anything
+Corrupted Credits -> function created -> added config item -> added to interactions pool -> client color is green, think this is fine for now
+Heavy lever -> function created -> added config item -> added to interactions pool -> prob good
+Use handheld item at random -> function created -> added config item -> added to interactions pool -> works for clients
+Use item (in facility) not being held at random -> function created -> added config item -> added to interactions pool -> works for clients
+Corrupted Dropship, lands without purchasing anything -> function created -> added config item -> seems good
 Old birds (activate/deactivate?)
+Steam Valves in facility functions?
 Panic (heavy screenshake/giggling/slow movement)
 Broken ship door (won't close)
 Corrupted Cameras/Bodycam -> Zaggy says i'll need to do this thru editor

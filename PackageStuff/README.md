@@ -1,6 +1,6 @@
-# ghostCodes by darmuh
+# ghostCodes v2.5.0
 
-## Updated for v55 update in version 2.0.6
+## WARNING: This mod has been completely reworked as of version 2.5.0 and is still under development! Please report any issues on github or via the modding discord. 
 
 ## **For client-side only use, disable ModNetworking in config (found in the "__NETWORKING" section)**
 
@@ -10,12 +10,11 @@ There's a ghost in the terminal and it's sending random broadcast codes to mess 
 
 This mod aims to add a fun little random element to the game. A "ghost" is in the terminal and it is causing all kinds of mayhem.
 
-With Ghost Girl Enhanced Mode, this mod gives the ghost girl some interesting powers!
-
 ### **[DISCLAIMER]**
 - If you have SEVERE EPILEPSY you should do one of the following: 
-	- disable the following configuration option by setting it to FALSE - [rfRapidLights]
-	- Raise both the following configuration options so that the lights flash slow enough not to affect your condition. - [rfRLmin] & [rfRLmax]
+	- disable the following configuration option by setting it to FALSE - [RapidLights]
+		- This setting can be found in the ghostCodes.Setup config under the section "Effects/Sound"	
+	- Raise both the following configuration options so that the lights flash slow enough not to affect your condition. - [RapidLightsMin] & [RapidLightsMax]
 - This mod will now delete old & obsolete configuration options, please make sure to adjust your config following any updates.
 - With the ModNetworking configuration option set to [TRUE], EVERYONE will need the mod. With the ModNetworking configuration option set to [FALSE], only the host needs this mod.
 	- If ModNetworking is set to [FALSE], any config settings that rely on networking will automatically be set to [FALSE]
@@ -23,32 +22,17 @@ With Ghost Girl Enhanced Mode, this mod gives the ghost girl some interesting po
 ### The Different Modes
 This Mod comes highly configurable with a variety of different modes available.
 
-**GhostGirlEnhanced (GGE)**
-- This is the main mode of this mod and requires [ModNetworking] enabled to work.
-- ghost codes will be sent during active hauntings by the ghost girl.
-- Various interactions can stop BOTH ghost codes and active hauntings.
-- ghost codes will rapidly fire during chase sequences.
-	- use [ggIgnoreCodeCount] so that codes are not counted in this mode.
-- GhostGirlEnhanced Bypass List [GGEbypassList]
-	- Any moon that is listed here will disable this mode in favor of the other modes.
-	- Good for moons that have 0% or low odds of the ghost girl spawning.
+- With the 2.5.0 rework came a simplification of the possible ghostcode configurations. There are now three clear modes to choose from:
+	- Intervals: GhostCodes will be sent to the terminal at intervals. These intervals can be set or random depending on your RandomIntervals setting.
+	- Insanity: GhostCodes will be sent to the terminal at intervals, with group insanity levels adjusting the frequency of these intervals.
+	- Hauntings: GhostCodes will be sent during hauntings from the ghost girl. When the ghost girl begins chasing a player the codes will fire rapidly.
+ - Version 2.5.0 also replaced GGEBypass with a SecondaryMode option. Now if you'd like to have a set list of moons to run a different mode you will set the mode here.
+	- For different interaction chances/configurations enable the [UseSecondaryInteractionsConfig] config item.
+ - In all modes except for hauntings, pulling the apparatus will now completely stop ghostcodes from continuing.
 
-**Insanity Mode**
-- This mode is a secondary mode which will send codes in varying frquencies depending on the calculated group Insanity Level.
-- Varying buffs and bonuses will be applied to the base-game insanity values as they are calculated for the group.
-- As the group insanity level rises, codes will be sent at more frequent intervals.
-- When group insanity levels hit maximum, codes will be sent in a rapid fire fashion (can be disabled in config).
-	- The codes will continue to send in a rapidFire fashion until group sanity levels lower from the set maximum.
-	- If [rapidFireCooldown] is enabled, codes will stop on a short cooldown when codes have been running for [rapidFireMaxHours].
-
-**Base ghostCodes Mode**
-- With the two modes above disabled, this is the third and final mode.
-- ghost codes will be sent in intervals throughout the day.
-	- Can be set to either random or set intervals based on [useRandomIntervals]
-	- The intervals can be further configured in the [Set Interval Configurations] and [Random Interval Configurations] configuration sections.
-
-### Types of ghostCodes
-- The ghost sends codes through the terminal that can do the following: (all can be enabled/disabled in config file)
+### ghostCode Interactions
+- GhostCodes has a plethora of different possible interactions. Please see the ghostCodes.Interactions config to set these to your liking.
+- Some Examples of ghostcode interactions are below:
 	- Open or Close Blast Doors
 	- Cause Blast Doors to go haywire and close/shut multiple times
 	- Disable Turrets
@@ -58,51 +42,50 @@ This Mod comes highly configurable with a variety of different modes available.
 	- Short Circuit the breaker and cut out the facility's lights
 	- Broadcast random signal translator messages
 	- Open/Close/Lock/Unlock Regular Doors within the facility
+	- Haunted Doors
 	- Mess with the doors on the ship
 	- Mess with the lights on the ship
 	- Activate either of the teleporters
 	- Disable Turrets on Toilheads (Toilhead mod required)
 	- Make Turrets on Toilheads go berserk (Toilhead mod required)
-	- Drain all players, a random player, or the currently haunted player's items' batteries (NETWORKING REQUIRED)
-	- Mess with the monitors on the ship (NETWORKING REQUIRED)
-	- Shock terminal users out of the terminal (NETWORKING REQUIRED)
-	- Ghost girl breathe on walkies (NETWORKING REQUIRED)
-	- Garble all walkie talkies (NETWORKING REQUIRED)
-- With [ModNetworking] disabled, any Networking required components in the mod will be disabled and their config options updated.
-- With [gcGhostGirlOnly] enabled, any config options listed in [gcGhostGirlOnlyList] will be set to disabled when GhostGirlEnhanced Mode is not active.
-	- Updates every time the ship lands on a moon.
-	- You may want to double check your config file at the end of a session to set it back to your preferred settings.
-- ghost codes will leave it's mark on the terminal via visuals and sounds. These are configurable:
-	- [enableBroadcastEffect]: when enabled, will display a code broadcastes symbol on the terminal when a code is sent.
-	- [gcEnableTerminalSound]: when enabled, the terminal can play a sound when a ghost code is ran.
-		- [gcTerminalSoundChance]: The chances a sound will be displayed over the terminal. 100 = every time a code is ran.
-		- [gcUseGirlSounds]: Whether or not the terminal will play ghost girl sounds on the terminal when a ghost girl is present.
-		- [gcUseTerminalAlarmSound]: Whether or not to use the Terminal Alarm Sound (With networking disabled, this is the only possible sound to play.)
-		- *Custom sounds are a planned feature, not currently implemented.*
+	- Adjust all players, a random player, or the currently haunted player's items' batteries **(NETWORKING REQUIRED)**
+	- Mess with the monitors on the ship **(NETWORKING REQUIRED)**
+	- Shock terminal users out of the terminal **(NETWORKING REQUIRED)**
+	- Ghost girl breathe on walkies **(NETWORKING REQUIRED)**
+	- Garble all walkie talkies **(NETWORKING REQUIRED)**
+	- Cruiser Interactions added in v66
 
-### Fight against the hauntings
-You can combat against ghost codes by doing the following:
- - Reboot the Terminal (takes anywhere between 30 and 60 seconds)
-	- Done by typing "reboot" in the terminal
-	- Available in all modes.
- - Emoting
-	- In Ghost Girl Enhanced mode, this will get the ghost girl to stop chasing you.
-		- This is a group activity and amount of players required is based on [ggEmoteStopChasePlayers]
-	- In Insanity Mode, each player emoting will lower group sanity levels by value determined in [emoteBuffNum]
- - Take a shower
-	- Only effective during Ghost Girl Enhanced.
-	- Wash the ghost girl mark off to stop her from chasing you.
-	- Will not stop her from continuing to haunt you after your shower.
+### Fight against the hauntings (CounterPlay)
+ - You can combat against ghost codes by doing the following:
+	 - Reboot the Terminal (takes anywhere between 30 and 90 seconds)
+		- Done by typing "reboot" in the terminal, this will make the terminal unusable for the duration of the reboot.
+		- Following a successful reboot, the ghostcodes will go away for a little while.
+		- Available in all modes. **(NETWORKING REQUIRED)**
+	 - Transfer Hauntings to another player. (Death Note)
+		- Only available in the Hauntings mode.
+		- If you are currently being haunted, you can type another player's name in the terminal to tell the ghost girl to haunt them instead.
+		- For each failed attempt an entry in your death note is removed, and you only have so many entries [DeathNoteMaxStrikes]
+		- Also every failed attempt will have the ghost girl start chasing you.
+	 - Emoting
+		- In the Hauntings mode, this will get the ghost girl to stop chasing you.
+			- This is a group activity and amount of players required is based on [EmoteStopChaseRequiredPlayers]
+		- In Insanity Mode, each player emoting will lower group sanity levels by value determined in [EmoteBuff]
+	 - Take a shower
+		- Only effective in the Hauntings Mode.
+		- Wash the ghost girl mark off to stop her from chasing you.
+		- Will not stop her from continuing to haunt you after your shower.
 
-### Other things this mod does
- - Transfer Hauntings to another player. (Death Note)
-	- If you are currently being haunted, you can type another player's name in the terminal to tell the ghost girl to haunt them instead.
-	- For each failed attempt an entry in your death note is removed, and you only have so many entries [ggDeathNoteMaxStrikes]
-	- Also every failed attempt will have the ghost girl start chasing you.
+### Other things this mod does (Misc)
+
  - When a ghost girl starts a chase, she can trigger flipping the breaker.
 	- This looks to have been an idea that was scrapped from the main game that I am patching back in.
-	- Use [fixGhostGirlBreakers] to enable and [ggVanillaBreakerChance] for the odds it'll happen.
- - When [canSendMessages] is enabled, the signal translator can send random messages from the list [signalMessages]
- - When [monitorsOnShipEvent] interaction is enabled, the ship monitors will display random messages from the list [monitorMessages]
+	- Use [FixGhostGirlBreakers] to enable and [VanillaBreakersChance] for the odds it'll happen.
+
+### Config Helpers (NEW in 2.5.0)
+ - Utilizing OpenLib's config to webpage feature, you can now generate a web page for your config item to modify it to your liking.
+	- In the future I will host an example page if you'd rather use this than run a local webpage on your computer.
+ - For steps on how to utilize this feature, please see my guide created for LethalConstellations [here](https://thunderstore.io/c/lethal-company/p/darmuh/LethalConstellations/wiki/2563-how-to-use-webconfig/)
 
 Remember: The ghost doesn't really care if it's helping or not it's just sending codes to be noticed. The more you notice it the more it likes to say hello. Have fun! :)
+
+And one final reminder that this rework is still in progress with more features planned. Please treat 2.5.0 as an alpha version for your testing enjoyment!

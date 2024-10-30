@@ -25,6 +25,9 @@ namespace ghostCodes
             if (possibleActions.Count < 1)
                 return;
 
+            if (Bools.endAllCodes)
+                return;
+
             chosenActions = ActionPercentage.ChooseActionsFromPercentages(possibleActions);
             HandleChosenActions(randomObjectNum);
             SoundSystem.InsanityAmbient();
@@ -36,7 +39,11 @@ namespace ghostCodes
             Misc.LogTime();
             chosenActions.Clear();
             InitPossibleActions(instance, number);
+
             if (possibleActions.Count < 1)
+                return;
+
+            if (Bools.endAllCodes)
                 return;
 
             chosenActions = ActionPercentage.ChooseActionsFromPercentages(possibleActions);

@@ -1,8 +1,9 @@
 {
   "name": "ghostCodes",
-  "version_number": "2.0.6",
+  "version_number": "2.5.0",
   "website_url": "https://github.com/darmuh/ghostcodes",
-  "description": "There's a ghost in the terminal and it's sending random broadcast codes to mess with the facility! Also now featuring ghost girl enhancements...",
+  "description": "(Reworked for v66!) There's a ghost in the terminal and it's sending random broadcast codes to mess with the facility!",
   "dependencies": [
+    "darmuh-OpenLib-0.2.5"
   ]
 }

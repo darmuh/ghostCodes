@@ -73,6 +73,7 @@
     </Reference>
     <Reference Include="LethalConfig">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\dontloadpls\AinaVT-LethalConfig\LethalConfig\LethalConfig.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\netstandard.dll</HintPath>
@@ -191,7 +192,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Assets\zap" />
     <EmbeddedResource Include="Assets\charge" />
-    <EmbeddedResource Include="Assets\giggles" />
+    <EmbeddedResource Include="Assets\girl" />
+    <EmbeddedResource Include="Assets\terminal" />
     <None Include="PackageStuff\CHANGELOG.md" />
     <None Include="PackageStuff\manifest.json" />
     <None Include="PackageStuff\README.md" />

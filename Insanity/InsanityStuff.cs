@@ -123,7 +123,7 @@ namespace ghostCodes
         // Start of Insanity Bonus Handling Logic
         private static Tuple<float, float> ApplyBonuses(ref float groupSanity, float maxSanity)
         {
-            Plugin.MoreLogs("Applying bonuses & debuffs");
+            Plugin.MoreLogs($"Applying bonuses & debuffs\nplayersAtStart = {Plugin.instance.playersAtStart}");
             // Apply solo assist bonus if conditions are met
             if (SetupConfig.SoloAssist.Value && Plugin.instance.playersAtStart == 1)
             {

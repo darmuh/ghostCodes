@@ -1,7 +1,6 @@
 ﻿using GameNetcodeStuff;
 using ghostCodes.Configs;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using static ghostCodes.Misc;
 
@@ -24,7 +23,7 @@ namespace ghostCodes.Interactions
                     Plugin.MoreLogs("Player is on the ship, not changing battery status");
                 }
                 else
-                    PlayerAffectAllBatteries(player);
+                    NetHandler.Instance.BatteryAdjustServerRpc((int)player.actualClientId);
 
             }
         }
@@ -37,7 +36,7 @@ namespace ghostCodes.Interactions
             if (Plugin.instance.DressGirl.hauntingPlayer.isInHangarShipRoom)
                 return;
 
-            PlayerAffectAllBatteries(Plugin.instance.DressGirl.hauntingPlayer);
+            PlayerAffectBatteries(Plugin.instance.DressGirl.hauntingPlayer);
             Plugin.MoreLogs("haunted player battery drain called");
         }
 
@@ -48,18 +47,27 @@ namespace ghostCodes.Interactions
             if (allPlayers[randomPlayer].isInHangarShipRoom)
                 return;
 
-            PlayerAffectAllBatteries(allPlayers[randomPlayer]);
+            NetHandler.Instance.BatteryAdjustServerRpc((int)allPlayers[randomPlayer].actualClientId);
             Plugin.MoreLogs($"Draining battery of {allPlayers[randomPlayer].playerUsername}");
         }
 
-        internal static void PlayerAffectAllBatteries(PlayerControllerB player)
+        internal static void PlayerAffectBatteries(PlayerControllerB player)
         {
             if (player == null)
                 return;
 
             foreach (GrabbableObject item in player.ItemSlots)
             {
-                ItemAdjustBattery(item, player);
+                if (item == null)
+                    continue;
+
+                if (!item.isPocketed)
+                    ItemAdjustBattery(item, player);
+                else
+                {
+                    if (Rand.Next(101) >= 50)
+                        ItemAdjustBattery(item, player);
+                }
             }
         }
 
@@ -74,7 +82,7 @@ namespace ghostCodes.Interactions
                 Plugin.MoreLogs($"Current Battery: {item.insertedBattery.charge}");
                 float adjuster = item.insertedBattery.charge * (InteractionsConfig.BatteryPercentageModifier.Value / 100f);
                 float newCharge;
-                if(Rand.Next(2) == 0)
+                if (Rand.Next(2) == 0)
                 {
                     newCharge = item.insertedBattery.charge - adjuster;
                     newCharge = Mathf.Clamp(newCharge, 0, 100);
@@ -84,25 +92,20 @@ namespace ghostCodes.Interactions
                     newCharge = item.insertedBattery.charge + adjuster;
                     newCharge = Mathf.Clamp(newCharge, 0, 100);
                 }
-                    
-                player.itemAudio.PlayOneShot(Adjuster, 0.8f);
+
+                NetHandler.Instance.BatteryAdjustSoundServerRpc((int)player.actualClientId);
                 item.insertedBattery.charge = newCharge;
                 Plugin.MoreLogs($"New Battery: {item.insertedBattery.charge}");
             }
         }
 
-        internal static void AllScrapItemsList()
-        {
-            AllItems = [.. Object.FindObjectsOfType<GrabbableObject>()];
-        }
-
         internal static void HauntItemUse(bool isHeld)
         {
-            AllScrapItemsList();
+            List<GrabbableObject> SoundMakers = [.. Object.FindObjectsOfType<GrabbableObject>()];
 
-            if(isHeld)
+            if (isHeld)
             {
-                foreach(GrabbableObject item in AllItems)
+                foreach (GrabbableObject item in SoundMakers)
                 {
                     if (item.isHeld && item.scrapValue > 0 && Rand.Next(101) >= 50)
                         item.ActivateItemServerRpc(true, true);
@@ -110,7 +113,7 @@ namespace ghostCodes.Interactions
             }
             else
             {
-                foreach (GrabbableObject item in AllItems)
+                foreach (GrabbableObject item in SoundMakers)
                 {
                     if (item.isInFactory && item.scrapValue > 0 && Rand.Next(101) >= 50)
                         item.ActivateItemServerRpc(true, true);

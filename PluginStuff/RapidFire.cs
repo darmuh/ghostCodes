@@ -1,13 +1,11 @@
 ﻿using ghostCodes.Configs;
 using static ghostCodes.Bools;
-using static ghostCodes.Compatibility.FacilityMeltdown;
 
 namespace ghostCodes
 {
     internal class RapidFire
     {
         internal static bool startRapidFire = false;
-        internal static bool meltdown = false;
 
         internal static void RapidFireCheck()
         {
@@ -37,14 +35,16 @@ namespace ghostCodes
 
         internal static void HandleLights()
         {
-            if (Plugin.instance.FacilityMeltdown && !meltdown)
-                meltdown = CheckForMeltdown();
+            //if (Plugin.instance.FacilityMeltdown && !meltdown)
+            //meltdown = CheckForMeltdown();
 
-            if (ModConfig.ModNetworking.Value && SetupConfig.RapidLights.Value && !lightsFlickering && !meltdown)
+            if (!ModConfig.ModNetworking.Value || !NetObject.NetObjectExists())
+                return;
+
+            if (SetupConfig.RapidLights.Value && !lightsFlickering && !endAllCodes)
             {
                 StartOfRound.Instance.StartCoroutine(Coroutines.AlarmLights());
                 Plugin.MoreLogs("networking enabled, sending alarm lights");
-                lightsFlickering = true;
             }
         }
 

@@ -4,14 +4,15 @@
     {
         internal static void GGFlashlight()
         {
-            NetHandler.Instance.GGFlickerServerRpc();
+            NetHandler.Instance.FlickerLightsServerRpc(true, false);
+            Plugin.MoreLogs("nosfaratu is that you??");
         }
 
         internal static void FlipLights()
         {
             SignalTranslator.MessWithSignalTranslator();
             Plugin.MoreLogs("who turned out the lights??");
-            NetHandler.Instance.GGFacilityLightsServerRpc();
+            NetHandler.Instance.FacilityBreakerServerRpc();
         }
     }
 }
