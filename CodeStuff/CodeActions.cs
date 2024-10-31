@@ -27,17 +27,17 @@ namespace ghostCodes
             possibleActions.Clear();
 
             NetworkingRequiredActions();
+            ExternalModCheck();
+            CruiserStuff();
             ShipStuff();
             GhostGirlRequired();
             AddRegularDoorStuff();
-            CruiserStuff();
             Maininteractions();
 
             if (randomObjectNum < 0)
                 return;
 
             TerminalObjectActions(instance, randomObjectNum);
-            ExternalModCheck();
         }
 
         private static void Maininteractions()
@@ -54,6 +54,8 @@ namespace ghostCodes
             if (HauntHeldScrap.Value > 0)
                 possibleActions.Add(new ActionPercentage("HauntHeldScrap", () => Items.HauntItemUse(true), HauntHeldScrap.Value));
 
+            if (InteractionsConfig.SignalTranslator.Value > 0)
+                possibleActions.Add(new ActionPercentage("SignalTranslator", () => SignalTranslator.MessWithSignalTranslator(), InteractionsConfig.SignalTranslator.Value));
         }
 
         private static void MessWithWalkies()
@@ -208,7 +210,16 @@ namespace ghostCodes
         {
             Plugin.MoreLogs("Checking for any external mods to utilize ghost codes on");
             if (Plugin.instance.ToilHead)
-                Compatibility.ToilHead.CheckForToilHeadObjects();
+            {
+                if (Compatibility.ToilHead.CheckForToilHeadObjects())
+                {
+                    Plugin.MoreLogs("Adding toilhead actions");
+                    if (ToilHeadTurretDisable.Value > 0)
+                        possibleActions.Add(new ActionPercentage("toilHeadDisable", () => Compatibility.ToilHead.HandleToilHeadCodeAction(), ToilHeadTurretDisable.Value));
+                    if (ToilHeadTurretBerserk.Value > 0)
+                        possibleActions.Add(new ActionPercentage("toilHeadBerserk", () => Compatibility.ToilHead.HandleToilHeadBerserkAction(), ToilHeadTurretBerserk.Value));
+                }
+            }
         }
 
         private static void NetworkingRequiredActions()
@@ -228,10 +239,10 @@ namespace ghostCodes
 
             if (!SetupConfig.IgnoreDoors.Value && IsThisaBigDoor(randomObjectNum))
                 possibleActions.Add(new ActionPercentage("hungryDoor", () => HandleHungryDoor(randomObjectNum, instance), HungryBlastDoor.Value));
-            if (!SetupConfig.IgnoreTurrets.Value && IsThisaTurret(randomObjectNum))
-                possibleActions.Add(new ActionPercentage("normalTurret", () => HandleTurretAction(randomObjectNum), TurretBerserk.Value));
-            if (!SetupConfig.IgnoreLandmines.Value && IsThisaMine(randomObjectNum))
-                possibleActions.Add(new ActionPercentage("normalMine", () => HandleMineAction(randomObjectNum), MineBoom.Value));
+            if (!SetupConfig.IgnoreTurrets.Value)
+                possibleActions.Add(new ActionPercentage("TurretBerserk", () => HandleTurretAction(), TurretBerserk.Value));
+            if (!SetupConfig.IgnoreLandmines.Value)
+                possibleActions.Add(new ActionPercentage("MineBoom", () => HandleMineBoom(), MineBoom.Value));
         }
 
         internal static void DefaultTerminalAction(int randomObjectNum)

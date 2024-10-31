@@ -1,27 +1,30 @@
-﻿using static ghostCodes.CodeStuff;
+﻿using System.Collections.Generic;
+using static ghostCodes.CodeStuff;
 
 namespace ghostCodes
 {
     internal class Mines
     {
-        internal static void HandleMineAction(int randomObjectNum)
+        internal static void HandleMineBoom()
         {
             if (myTerminalObjects.Count == 0)
                 return;
 
-            if (myTerminalObjects[randomObjectNum].gameObject.name.Contains("Landmine"))
+            List<TerminalAccessibleObject> mines = myTerminalObjects.FindAll(m => m.gameObject.GetComponent<Landmine>() != null && !m.gameObject.GetComponent<Landmine>().hasExploded);
+
+            if (mines.Count > 0)
             {
-                Landmine landmine = myTerminalObjects[randomObjectNum].gameObject.GetComponent<Landmine>();
+                int thismine = NumberStuff.Rand.Next(mines.Count);
+                Landmine landmine = mines[thismine].gameObject.GetComponent<Landmine>();
+                if (landmine.hasExploded)
+                    return;
+
                 landmine.ExplodeMineClientRpc();
                 landmine.ExplodeMineServerRpc();
-                SignalTranslator.MessWithSignalTranslator();
-                myTerminalObjects.Remove(myTerminalObjects[randomObjectNum]);
                 Plugin.MoreLogs("WHAT THE FUUUUUU-");
             }
             else
-            {
-                myTerminalObjects[randomObjectNum].CallFunctionFromTerminal();
-            }
+                Plugin.Spam("No landmines to go kaboom");
         }
     }
 }

@@ -29,9 +29,6 @@ namespace ghostCodes
             if (InteractionsConfig.SignalTranslator.Value < 1)
                 return;
 
-            if (InteractionsConfig.SignalTranslator.Value < NumberStuff.GetInt(0, 100))
-                return;
-
             List<string> messages = [.. InteractionsConfig.AllSignalMessages.stringValue.Split(',')];
 
             OddSignalMessage(messages, out string message);

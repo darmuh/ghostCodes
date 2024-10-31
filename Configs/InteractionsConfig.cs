@@ -85,6 +85,7 @@ namespace ghostCodes.Configs
         public static InteractionSetting OnlyUniqueMessages = new("OnlyUniqueMessages", "InteractionModifiers", typeof(bool));
         public static InteractionSetting AllSignalMessages = new("AllSignalMessages", "InteractionModifiers", typeof(string));
         public static InteractionSetting AllMonitorMessages = new("AllMonitorMessages", "InteractionModifiers", typeof(string));
+        public static InteractionSetting NoTouchItems = new("NoTouchItems", "InteractionModifiers", typeof(string));
 
         internal static void SetConfig(ConfigFile Interactions, string id = "")
         {
@@ -157,6 +158,7 @@ namespace ghostCodes.Configs
             MakeBool(Interactions, $"InteractionModifiers{id}", $"OnlyUniqueMessages{id}", true, $"Will ensure the each message sent is unique (as long as there is more than 1 message in signalMessages)."); ;
             MakeString(Interactions, $"InteractionModifiers{id}", $"AllSignalMessages{id}", $"RUN, LETS PLAY, BOO, FIND ME, I SEE YOU", $"Comma-separated list of messages the ghostGirl will send over the signal translator when sending a code."); ;
             MakeString(Interactions, $"InteractionModifiers{id}", $"AllMonitorMessages{id}", $"BEHIND YOU, HAVING FUN?, TAG YOU'RE IT, DANCE FOR ME, IM HIDING, #######, ERROR, DEATH, NO MORE SCRAP", "Comma-separated list of messages the ghostGirl can display on the ship monitors when sending a code.");
+            MakeString(Interactions, $"InteractionModifiers{id}", $"NoTouchItems{id}", "", "Comma separated list of items that ghostCodes should NOT interact with in any scenario");
 
             Interactions.Save();
             if (id.Length > 0 && OpenLib.Plugin.instance.LethalConfig)

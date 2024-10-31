@@ -14,7 +14,6 @@ namespace ghostCodes
 
             if (myTerminalObjects[randomObjectNum].gameObject.name.Contains("BigDoor"))
             {
-                SignalTranslator.MessWithSignalTranslator();
                 Plugin.MoreLogs("The door is hungy");
                 instance.StartCoroutine(HungryDoor(randomObjectNum));
             }

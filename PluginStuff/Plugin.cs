@@ -18,7 +18,7 @@ namespace ghostCodes
         {
             public const string PLUGIN_GUID = "darmuh.ghostCodes";
             public const string PLUGIN_NAME = "ghostCodes";
-            public const string PLUGIN_VERSION = "2.5.0";
+            public const string PLUGIN_VERSION = "2.5.1";
         }
 
         internal static new ManualLogSource GC;

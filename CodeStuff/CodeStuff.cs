@@ -1,7 +1,5 @@
 ﻿using ghostCodes.Configs;
 using System.Collections.Generic;
-using System.Linq;
-using Object = UnityEngine.Object;
 
 namespace ghostCodes
 {
@@ -10,44 +8,40 @@ namespace ghostCodes
         internal static List<TerminalAccessibleObject> myTerminalObjects = [];
         internal static List<TerminalAccessibleObject> filteredObjects = [];
 
-        internal static void GetUsableCodes()
+        internal static void NewUsableCode(TerminalAccessibleObject obj)
         {
-            TerminalAccessibleObject[] array = Object.FindObjectsOfType<TerminalAccessibleObject>();
-
-            if (array == null || array.Length <= 0)
+            Plugin.Spam("NewUsableCode!");
+            if (obj == null)
                 return;
 
-            myTerminalObjects = array.ToList();
-            Plugin.MoreLogs($"Initial Loaded objects count: {myTerminalObjects.Count}");
-            string listContents = string.Join(", ", myTerminalObjects);
-            Plugin.MoreLogs($"{listContents}");
-            SortUsableCodes();
-            Doors.UpdateCacheDoorsList();
+            if(myTerminalObjects.Contains(obj)) 
+                return;
+
+            if (obj.isBigDoor && SetupConfig.IgnoreDoors.Value)
+                return;
+
+            if (obj.gameObject.name.Contains("TurretScript") && SetupConfig.IgnoreTurrets.Value)
+                return;
+
+            if (obj.gameObject.name.Contains("Landmine") && SetupConfig.IgnoreLandmines.Value)
+                return;
+
+            Plugin.MoreLogs($"{obj.gameObject.name} added to myTerminalObjects listing");
+                myTerminalObjects.Add(obj);
+
+            Plugin.MoreLogs($"myTerminalObjects count: [ {myTerminalObjects.Count} ]");
         }
 
-        internal static void SortUsableCodes()
+        internal static void RemoveUsableCode(TerminalAccessibleObject obj)
         {
-            filteredObjects.Clear();
-
-            foreach (var obj in myTerminalObjects)
-            {
-                if (!(obj.gameObject.name.Contains("Landmine") && SetupConfig.IgnoreLandmines.Value) &&
-                    !(obj.gameObject.name.Contains("TurretScript") && SetupConfig.IgnoreTurrets.Value) &&
-                    !(obj.gameObject.name.Contains("BigDoor") && SetupConfig.IgnoreDoors.Value))
-                {
-                    filteredObjects.Add(obj);
-                }
-            }
-
-            myTerminalObjects = filteredObjects;
-
-            if (myTerminalObjects.Count < 0)
+            Plugin.Spam("RemoveUsableCode!");
+            if (!myTerminalObjects.Contains(obj))
                 return;
 
-            Plugin.MoreLogs($"Final filtered myTerminalObjects({myTerminalObjects.Count}):");
-            string listContents2 = string.Join(", ", myTerminalObjects);
-            Plugin.MoreLogs($"{listContents2}");
-
+            Plugin.Spam("Removing item from myTerminalObjects");
+            myTerminalObjects.Remove(obj);
+            
+            Plugin.Spam($"myTerminalObjects count: [ {myTerminalObjects.Count} ]");
         }
     }
 }

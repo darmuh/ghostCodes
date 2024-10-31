@@ -19,22 +19,23 @@ namespace ghostCodes
             }
         }
 
-        /*
-        [HarmonyPatch(typeof(LungProp), "EquipItem")]
-        public class ApparatusPullPatch
+        [HarmonyPatch(typeof(TerminalAccessibleObject), "Start")]
+        public class TerminalAccessibleObject_StartPatch
         {
-            public static bool alertOnce = false;
-            static void Postfix(LungProp __instance)
+            static void Postfix(TerminalAccessibleObject __instance)
             {
-                Plugin.Spam("Apparatus has been pulled!");
-                if (!__instance.isLungDocked && !alertOnce)
-                {
-                    OpenLibEvents.ApparatusPull.Invoke();
-                    alertOnce = true;
-                }
-                    
+                CodeStuff.NewUsableCode(__instance);
             }
-        } */
+        }
+
+        [HarmonyPatch(typeof(TerminalAccessibleObject), "OnDestroy")]
+        public class TerminalAccessibleObject_DestroyPatch
+        {
+            static void Postfix(TerminalAccessibleObject __instance)
+            {
+                CodeStuff.RemoveUsableCode(__instance);
+            }
+        }
 
         [HarmonyPatch(typeof(LungProp), "DisconnectFromMachinery", MethodType.Enumerator)]
         public class ApparatusPullPatch

@@ -59,7 +59,7 @@ namespace ghostCodes
 
 
             TerminalAdditions.ResetBools();
-            CodeStuff.GetUsableCodes();
+            Doors.UpdateCacheDoorsList();
             Plugin.instance.RandCodeAmount = NumberStuff.GetInt(SetupConfig.MinCodes.Value, SetupConfig.MaxCodes.Value);
 
             if (SetupConfig.SoloAssist.Value)

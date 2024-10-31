@@ -10,7 +10,6 @@
 
         internal static void FlipLights()
         {
-            SignalTranslator.MessWithSignalTranslator();
             Plugin.MoreLogs("who turned out the lights??");
             NetHandler.Instance.FacilityBreakerServerRpc();
         }

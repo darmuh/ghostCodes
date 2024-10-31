@@ -1,6 +1,7 @@
 ﻿using GameNetcodeStuff;
 using ghostCodes.Configs;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static ghostCodes.Misc;
 
@@ -102,6 +103,10 @@ namespace ghostCodes.Interactions
         internal static void HauntItemUse(bool isHeld)
         {
             List<GrabbableObject> SoundMakers = [.. Object.FindObjectsOfType<GrabbableObject>()];
+
+            List<string> noTouch = OpenLib.Common.CommonStringStuff.GetKeywordsPerConfigItem(InteractionsConfig.NoTouchItems.stringValue.ToLower(), ',');
+
+            SoundMakers.RemoveAll(x => noTouch.Contains(x.name.ToLower())); //remove deny list items
 
             if (isHeld)
             {

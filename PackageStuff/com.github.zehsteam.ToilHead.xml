@@ -1,0 +1,196 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>com.github.zehsteam.ToilHead</name>
+    </assembly>
+    <members>
+        <member name="P:com.github.zehsteam.ToilHead.Api.EnemyTurretHeadControllerPairs">
+            <summary>
+            This is for all enemy turret pairs.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.PlayerTurretHeadControllerPairs">
+            <summary>
+            This is for all player turret pairs.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.DeadBodyTurretHeadControllerPairs">
+            <summary>
+            This is for all player ragdoll turret pairs.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ToilHeadData">
+            <summary>
+            Toil-Head data.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ForceToilHeadSpawns">
+            <summary>
+            If enabled, will force any spawned Coil-Heads to become Toil-Heads.
+            This will get reset automatically when the day ends.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ForceToilHeadMaxSpawnCount">
+            <summary>
+            If set to any value above -1, will temporarily override the Toil-Head max spawn count.
+            This will get reset automatically when the day ends.
+            </summary>
+        </member>
+        <member name="M:com.github.zehsteam.ToilHead.Api.SetToilHeadOnServer(EnemyAI)">
+            <summary>
+            This must only be called on the Host/Server.
+            Only accepts an EnemyAI instance where the EnemyType.enemyName is "Spring".
+            </summary>
+            <param name="enemyScript">Coil-Head "Spring" EnemyAI instance.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.MantiToilData">
+            <summary>
+            Manti-Toil data.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ForceMantiToilSpawns">
+            <summary>
+            If enabled, will force any spawned Manticoils to become Manti-Toils.
+            This will get reset automatically when the day ends.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ForceMantiToilMaxSpawnCount">
+            <summary>
+            If set to any value above -1, will temporarily override the Manti-Toil max spawn count.
+            This will get reset automatically when the day ends.
+            </summary>
+        </member>
+        <member name="M:com.github.zehsteam.ToilHead.Api.SetMantiToilOnServer(EnemyAI)">
+            <summary>
+            This must only be called on the Host/Server.
+            Only accepts an EnemyAI instance where the EnemyType.enemyName is "Manticoil".
+            </summary>
+            <param name="enemyScript">Manticoil "Manticoil" EnemyAI instance.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ToilSlayerData">
+            <summary>
+            Toil-Slayer data.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ForceToilSlayerSpawns">
+            <summary>
+            If enabled, will force any spawned Coil-Heads to become Toil-Slayers.
+            This will get reset automatically when the day ends.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ForceToilSlayerMaxSpawnCount">
+            <summary>
+            If set to any value above -1, will temporarily override the Toil-Slayer max spawn count.
+            This will get reset automatically when the day ends.
+            </summary>
+        </member>
+        <member name="M:com.github.zehsteam.ToilHead.Api.SetToilSlayerOnServer(EnemyAI)">
+            <summary>
+            This must only be called on the Host/Server.
+            Only accepts an EnemyAI instance where the EnemyType.enemyName is "Spring".
+            </summary>
+            <param name="enemyScript">Coil-Head "Spring" EnemyAI instance.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.MantiSlayerData">
+            <summary>
+            Manti-Slayer data.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ForceMantiSlayerSpawns">
+            <summary>
+            If enabled, will force any spawned Manticoils to become Manti-Slayers.
+            This will get reset automatically when the day ends.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ForceMantiSlayerMaxSpawnCount">
+            <summary>
+            If set to any value above -1, will temporarily override the Manti-Slayer max spawn count.
+            This will get reset automatically when the day ends.
+            </summary>
+        </member>
+        <member name="M:com.github.zehsteam.ToilHead.Api.SetMantiSlayerOnServer(EnemyAI)">
+            <summary>
+            This must only be called on the Host/Server.
+            Only accepts an EnemyAI instance where the EnemyType.enemyName is "Manticoil".
+            </summary>
+            <param name="enemyScript">Manticoil "Manticoil" EnemyAI instance.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ToilPlayerData">
+            <summary>
+            Toil-Player data.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ForceToilPlayerSpawns">
+            <summary>
+            If enabled, will force all Players to become Toil-Players when the round starts.
+            This will get reset automatically when the day ends.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ForceToilPlayerMaxSpawnCount">
+            <summary>
+            If set to any value above -1, will temporarily override the Toil-Player max spawn count.
+            This will get reset automatically when the day ends.
+            </summary>
+        </member>
+        <member name="M:com.github.zehsteam.ToilHead.Api.SetToilPlayerOnServer(GameNetcodeStuff.PlayerControllerB,System.Boolean)">
+            <summary>
+            This must only be called on the Host/Server.
+            </summary>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ToilMaskedData">
+            <summary>
+            Toil-Masked data.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ForceToilMaskedSpawns">
+            <summary>
+            If enabled, will force any spawned Masked to become a Toil-Masked.
+            This will get reset automatically when the day ends.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ForceToilMaskedMaxSpawnCount">
+            <summary>
+            If set to any value above -1, will temporarily override the Toil-Masked max spawn count.
+            This will get reset automatically when the day ends.
+            </summary>
+        </member>
+        <member name="M:com.github.zehsteam.ToilHead.Api.SetToilMaskedOnServer(EnemyAI)">
+            <summary>
+            This must only be called on the Host/Server.
+            Only accepts an EnemyAI instance where the EnemyType.enemyName is "Masked".
+            </summary>
+            <param name="enemyScript">Masked "Masked" EnemyAI instance.</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.SlayerMaskedData">
+            <summary>
+            Slayer-Masked data.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ForceSlayerMaskedSpawns">
+            <summary>
+            If enabled, will force any spawned Masked to become a Slayer-Masked.
+            This will get reset automatically when the day ends.
+            </summary>
+        </member>
+        <member name="P:com.github.zehsteam.ToilHead.Api.ForceSlayerMaskedMaxSpawnCount">
+            <summary>
+            If set to any value above -1, will temporarily override the Slayer-Masked max spawn count.
+            This will get reset automatically when the day ends.
+            </summary>
+        </member>
+        <member name="M:com.github.zehsteam.ToilHead.Api.SetSlayerMaskedOnServer(EnemyAI)">
+            <summary>
+            This must only be called on the Host/Server.
+            Only accepts an EnemyAI instance where the EnemyType.enemyName is "Masked".
+            </summary>
+            <param name="enemyScript">Masked "Masked" EnemyAI instance.</param>
+            <returns>True if successful.</returns>
+        </member>
+    </members>
+</doc>

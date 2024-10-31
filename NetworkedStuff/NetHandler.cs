@@ -106,8 +106,6 @@ namespace ghostCodes
         [ServerRpc(RequireOwnership = false)]
         public void FlickerLightsServerRpc(bool flickerFlash, bool disableFlash)
         {
-
-            Plugin.MoreLogs($"SERVER: garbling all walkies");
             FlickerLightsClientRpc(flickerFlash, disableFlash);
         }
 

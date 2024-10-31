@@ -127,48 +127,6 @@ namespace ghostCodes
             return true;
         }
 
-        internal static bool IsThisaMine(int randomObjectNum)
-        {
-            if (randomObjectNum < 0)
-                return false;
-
-            if (myTerminalObjects.Count == 0)
-                return false;
-
-            if (myTerminalObjects[randomObjectNum] == null)
-                return false;
-
-            if (myTerminalObjects[randomObjectNum].gameObject == null)
-                return false;
-
-            if (myTerminalObjects[randomObjectNum].GetComponent<Landmine>() != null)
-                return true;
-
-            return false;
-
-        }
-
-        internal static bool IsThisaTurret(int randomObjectNum)
-        {
-            if (randomObjectNum < 0)
-                return false;
-
-            if (myTerminalObjects.Count == 0)
-                return false;
-
-            if (myTerminalObjects[randomObjectNum] == null)
-                return false;
-
-            if (myTerminalObjects[randomObjectNum].gameObject == null)
-                return false;
-
-            if (myTerminalObjects[randomObjectNum].gameObject.name.Contains("TurretScript"))
-                return true;
-
-            return false;
-
-        }
-
         internal static bool IsThisaBigDoor(int randomObjectNum)
         {
             if (randomObjectNum < 0)
