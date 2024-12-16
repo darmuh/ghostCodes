@@ -26,5 +26,20 @@ namespace ghostCodes
             string logTime = clockTime.Replace("\n", "").Replace("\r", "");
             Plugin.MoreLogs($"TIME: {logTime}");
         }
+
+        internal static bool TryGetPlayerFromID(ulong playerID, out PlayerControllerB thePlayer)
+        {
+            foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
+            {
+                if (player.actualClientId == playerID)
+                {
+                    thePlayer = player;
+                    return true;
+                }
+            }
+
+            thePlayer = null!;
+            return false;
+        }
     }
 }

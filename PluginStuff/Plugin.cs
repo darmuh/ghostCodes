@@ -9,7 +9,7 @@ using UnityEngine;
 namespace ghostCodes
 {
     [BepInPlugin("darmuh.ghostCodes", "ghostCodes", (PluginInfo.PLUGIN_VERSION))]
-    [BepInDependency("darmuh.OpenLib", "0.2.5")] //hard dependency for my library
+    [BepInDependency("darmuh.OpenLib", "0.2.11")] //hard dependency for my library
 
     public class Plugin : BaseUnityPlugin
     {
@@ -18,7 +18,7 @@ namespace ghostCodes
         {
             public const string PLUGIN_GUID = "darmuh.ghostCodes";
             public const string PLUGIN_NAME = "ghostCodes";
-            public const string PLUGIN_VERSION = "2.5.1";
+            public const string PLUGIN_VERSION = "2.5.2";
         }
 
         internal static new ManualLogSource GC;
@@ -44,6 +44,7 @@ namespace ghostCodes
         //Compatibility Stuff
         internal bool FacilityMeltdown = false;
         internal bool ToilHead = false;
+        internal bool TerminalStuff = false;
 
         private void Awake()
         {

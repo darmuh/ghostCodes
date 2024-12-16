@@ -24,3 +24,29 @@ Corrupted Cameras/Bodycam -> Zaggy says i'll need to do this thru editor
 
 
 Steps towards implementation = function created -> added config items -> added to interactions pool -> tested interaction -> tested interaction as non-host
+
+
+
+========= rapidfire lights notes =========
+
+[Custom Interiors That Work]
+- Black Mesa (laggy & a fuckton of lights)
+- Skaarj Outpost (unreal interiors)
+- Nali Haven (unreal interiors)
+
+[Custom Interiors That Work w/minor issues]
+- Black Mesa (a fuckton of lights resulting in a slower/uniform flicker)
+- Rrajigar Mines (a lot of lights have null sound clips in their animators resulting in no sound & warning spam in logs)
+
+[Custom Interiors That play sound but lights dont flicker]
+- Toy Store
+- Grand Armory
+- SlaughterHouse (also has a large amount of lights)
+
+[Custom Interiors with powered lights that dont play sound OR flicker]
+- LC Office
+- Dantor's Mental Hospital
+
+[Custom Interiors without powered lights]
+- Tomb
+- Chizra Temple (unreal interiors)

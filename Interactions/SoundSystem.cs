@@ -146,6 +146,8 @@ namespace ghostCodes
 
         internal static void PlayTerminalSound(AudioClip clip)
         {
+            if (clip == null)
+                return;
             Plugin.instance.Terminal.terminalAudio.PlayOneShot(clip, 0.8f);
         }
 

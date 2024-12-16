@@ -8,6 +8,7 @@ namespace ghostCodes
     internal class Bools
     {
         internal static bool lightsFlickering = false;
+        internal static bool endFlicker = false;
         internal static bool appPullInvoked = false;
         public static bool endAllCodes = false;
 
@@ -82,6 +83,20 @@ namespace ghostCodes
             }
             else
                 return GameNetworkManager.Instance.gameHasStarted && Plugin.instance.DressGirl.hauntingLocalPlayer == StartOfRound.Instance.localPlayerController;
+        }
+
+        internal static bool PlayerStillAliveAndControlled(PlayerControllerB player) 
+        {
+            if (player == null)
+                return false;
+
+            if (!player.isPlayerControlled)
+                return false;
+
+            if (player.isPlayerDead)
+                return false;
+
+            return true;
         }
 
         internal static bool KeepSendingCodes()

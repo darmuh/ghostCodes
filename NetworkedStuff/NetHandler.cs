@@ -1,14 +1,12 @@
 ﻿using GameNetcodeStuff;
-using ghostCodes.Configs;
+using static ghostCodes.Bools;
 using ghostCodes.Interactions;
 using Unity.Netcode;
-using UnityEngine;
 
 namespace ghostCodes
 {
     public class NetHandler : NetworkBehaviour
     {
-
         public static NetHandler Instance { get; private set; }
 
         [ServerRpc(RequireOwnership = false)]
@@ -42,17 +40,17 @@ namespace ghostCodes
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void ChangeDressGirlToPlayerServerRpc(string playerName)
+        public void ChangeDressGirlToPlayerServerRpc(ulong playerID)
         {
             if (Plugin.instance.DressGirl == null)
                 return;
 
-            Plugin.MoreLogs($"SERVER: Changing dressgirl to {playerName}");
-            ChangeDressGirlToPlayerClientRpc(playerName);
+            Plugin.MoreLogs($"SERVER: Changing dressgirl to {playerID}");
+            ChangeDressGirlToPlayerClientRpc(playerID);
         }
 
         [ClientRpc]
-        public void ChangeDressGirlToPlayerClientRpc(string playerName)
+        public void ChangeDressGirlToPlayerClientRpc(ulong playerID)
         {
             if (Plugin.instance.DressGirl == null)
             {
@@ -60,46 +58,14 @@ namespace ghostCodes
                 return;
             }
 
-            if (OpenLib.Common.Misc.TryGetPlayerFromName(playerName, out PlayerControllerB changeToPlayer))
+            if (Misc.TryGetPlayerFromID(playerID, out PlayerControllerB changeToPlayer))
             {
                 Plugin.instance.DressGirl.switchedHauntingPlayer = true;
                 Plugin.instance.DressGirl.StartCoroutine(Plugin.instance.DressGirl.setSwitchingHauntingPlayer());
                 DressGirl.ChangeHauntedPlayer(changeToPlayer);
-                Plugin.MoreLogs($"Changing haunted player to {playerName}");
+                Plugin.MoreLogs($"Changing haunted player to {playerID}");
             }
 
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void AlarmLightsServerRpc(bool normal)
-        {
-            if (SetupConfig.RapidLightsColorValue.Value.ToLower() == "nochange" || SetupConfig.RapidLightsColorValue.Value.ToLower() == "default" || SetupConfig.RapidLightsColorValue.Value.Length == 0)
-                return;
-
-            Plugin.MoreLogs("AlarmLights color ServerRpc");
-            AlarmLightsClientRpc(normal);
-        }
-
-        [ClientRpc]
-        public void AlarmLightsClientRpc(bool normalLights) //Color
-        {
-            if (normalLights == false)
-            {
-                Color32 configColor = OpenLib.Common.Misc.HexToColor(SetupConfig.RapidLightsColorValue.Value);
-                for (int i = 0; i < RoundManager.Instance.allPoweredLights.Count; i++)
-                {
-                    RoundManager.Instance.allPoweredLights[i].color = configColor;
-                }
-                Plugin.MoreLogs("Alarm lights set");
-            }
-            else if (normalLights == true)
-            {
-                for (int i = 0; i < RoundManager.Instance.allPoweredLights.Count; i++)
-                {
-                    RoundManager.Instance.allPoweredLights[i].color = Color.white;
-                }
-                Plugin.MoreLogs("Lights set back to normal");
-            }
         }
 
         //RoundManager.Instance.FlickerLights(flickerFlashlights: true, disableFlashlights: false);
@@ -113,6 +79,36 @@ namespace ghostCodes
         public void FlickerLightsClientRpc(bool flickerFlash, bool disableFlash)
         {
             RoundManager.Instance.FlickerLights(flickerFlashlights: flickerFlash, disableFlashlights: disableFlash);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void StartRapidFireLightsServerRpc(ulong clientID)
+        {
+            StartRapidFireLightsClientRpc(clientID);
+        }
+
+        [ClientRpc]
+        public void StartRapidFireLightsClientRpc(ulong clientID)
+        {
+            if(Misc.TryGetPlayerFromID(clientID, out PlayerControllerB hauntedPlayer))
+            {
+                Plugin.Spam($"Starting RapidFireLight sequence from - {hauntedPlayer.playerUsername}");
+                StartOfRound.Instance.StartCoroutine(Lights.PoweredLightsColor(hauntedPlayer));
+                StartOfRound.Instance.StartCoroutine(Lights.FlickerPoweredLights(hauntedPlayer));
+            }        
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void EndRapidFireLightsServerRpc()
+        {
+            EndRapidFireLightsClientRpc();
+        }
+
+        [ClientRpc]
+        public void EndRapidFireLightsClientRpc()
+        {
+            lightsFlickering = false;
+            Lights.warningLights = false;
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -234,6 +230,7 @@ namespace ghostCodes
         [ClientRpc]
         public void GGTermAudioClientRpc(int num)
         {
+            SoundSystem.InitSounds();
             Instance.PlayGhostAudioonTerminal(num);
         }
 
@@ -254,7 +251,7 @@ namespace ghostCodes
         public void PlayGhostAudioonTerminal(int num)
         {
             if (SoundSystem.allSounds.Count < num)
-                SoundSystem.InitSounds();
+                return;
 
             if (SoundSystem.allSounds.Count >= num)
                 Plugin.instance.Terminal.terminalAudio.PlayOneShot(SoundSystem.allSounds[num]);

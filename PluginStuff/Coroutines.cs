@@ -17,7 +17,6 @@ namespace ghostCodes
     {
         internal static bool rapidFireStart = false;
         internal static bool codeLooperStarted = false; //enusre only one instance of coroutine being run
-        internal static bool activeFlicker = false;
 
         internal static IEnumerator InitEnumerator(StartOfRound instance)
         {
@@ -251,37 +250,6 @@ namespace ghostCodes
 
             localPlayer.isPlayerSliding = false;
             localPlayer.slideFriction = oldfriction;
-        }
-
-        internal static IEnumerator AlarmLights()
-        {
-            if (lightsFlickering)
-                yield break;
-
-            lightsFlickering = true;
-            BreakerBox breakerBox = Object.FindObjectOfType<BreakerBox>();
-            if (breakerBox == null)
-                yield break;
-
-            Plugin.Spam("Starting light flicker loop");
-            NetHandler.Instance.AlarmLightsServerRpc(false);
-
-            while (startRapidFire && !StartOfRound.Instance.localPlayerController.isPlayerDead && !endAllCodes)
-            {
-                if (StartOfRound.Instance.localPlayerController.isInsideFactory)
-                    NetHandler.Instance.FlickerLightsServerRpc(false, false);
-                yield return new WaitForSeconds(Random.Range(SetupConfig.RapidLightsMin.Value, SetupConfig.RapidLightsMax.Value));
-            }
-
-            NetHandler.Instance.AlarmLightsServerRpc(true);
-            yield return new WaitForSeconds(1);
-            if (!breakerBox.isPowerOn)
-            {
-                breakerBox.SwitchBreaker(true);
-                Plugin.GC.LogInfo("returning to normal");
-            }
-            lightsFlickering = false;
-
         }
 
         internal static IEnumerator GhostGirlEnhanced(StartOfRound instance)

@@ -34,7 +34,7 @@ namespace ghostCodes
             AddRegularDoorStuff();
             Maininteractions();
 
-            if (randomObjectNum < 0)
+            if (randomObjectNum < 0 || myTerminalObjects.Count <= randomObjectNum)
                 return;
 
             TerminalObjectActions(instance, randomObjectNum);
@@ -46,7 +46,7 @@ namespace ghostCodes
                 possibleActions.Add(new ActionPercentage("AffectAllBatteries", () => Items.AdjustAllPlayersBattery(), AffectAllBatteries.Value));
 
             if (AffectRandomPlayerBatteries.Value > 0)
-                possibleActions.Add(new ActionPercentage("AffectRandomPlayerBatteries", () => Items.AffectRandomPlayersBatterys(), AffectRandomPlayerBatteries.Value));
+                possibleActions.Add(new ActionPercentage("AffectRandomPlayerBatteries", () => Items.AffectRandomPlayersBatteries(), AffectRandomPlayerBatteries.Value));
 
             if (HauntFactoryScrap.Value > 0)
                 possibleActions.Add(new ActionPercentage("HauntFactoryScrap", () => Items.HauntItemUse(false), HauntFactoryScrap.Value));
@@ -81,7 +81,7 @@ namespace ghostCodes
                 possibleActions.Add(new ActionPercentage("ggFlashlight", () => GGFlashlight(), PlayerLights.Value));
 
             if (AffectHauntedPlayerBatteries.Value > 0)
-                possibleActions.Add(new ActionPercentage("AffectHauntedPlayerBatteries", () => Items.AffectHauntedPlayersBatterys(), AffectHauntedPlayerBatteries.Value));
+                possibleActions.Add(new ActionPercentage("AffectHauntedPlayerBatteries", () => Items.AffectHauntedPlayersBatteries(), AffectHauntedPlayerBatteries.Value));
 
             MessWithWalkies();
 
@@ -138,6 +138,9 @@ namespace ghostCodes
         private static void AddRegularDoorStuff()
         {
             if (!AreAnyPlayersInFacility())
+                return;
+
+            if (AllDoors.Count == 0)
                 return;
 
             if (ToggleAllRegularDoors.Value > 0)
@@ -247,7 +250,7 @@ namespace ghostCodes
 
         internal static void DefaultTerminalAction(int randomObjectNum)
         {
-            if (randomObjectNum == -1)
+            if (randomObjectNum == -1 || myTerminalObjects.Count <= randomObjectNum)
                 return;
 
             myTerminalObjects[randomObjectNum].CallFunctionFromTerminal();

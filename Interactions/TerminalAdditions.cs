@@ -1,6 +1,7 @@
 ﻿using GameNetcodeStuff;
 using ghostCodes.Configs;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using static ghostCodes.Bools;
 using static ghostCodes.NumberStuff;
@@ -107,33 +108,6 @@ namespace ghostCodes
             Plugin.MoreLogs($"terminal interactable set to {state}");
         }
 
-        internal static string PlayerNameNode()
-        {
-            if (Plugin.instance.DressGirl == null)
-            {
-                Plugin.instance.Terminal.LoadNewNode(Plugin.instance.Terminal.terminalNodes.specialNodes[5]);
-                return "";
-            }
-
-            if (!Plugin.instance.DressGirl.hauntingLocalPlayer)
-            {
-                Plugin.instance.Terminal.LoadNewNode(Plugin.instance.Terminal.terminalNodes.specialNodes[5]);
-                return "";
-            }
-
-            Plugin.MoreLogs("handling player name node");
-
-            if (InteractionsConfig.DeathNoteMaxStrikes.Value != -1 && deathNoteStrikes > InteractionsConfig.DeathNoteMaxStrikes.Value)
-            {
-                string newText = "\n\n\n\n\n\n\t\tDeath note is out of space...\r\n";
-                return newText;
-            }
-
-            string playerName = OpenLib.Common.CommonStringStuff.GetCleanedScreenText(Plugin.instance.Terminal);
-            playerName = TerminalFriendlyString(playerName);
-            return ValidPlayerNameInput(playerName);
-        }
-
         internal static string HandleRebootNode()
         {
             Plugin.MoreLogs("Handling reboot node");
@@ -169,7 +143,7 @@ namespace ghostCodes
                 return;
 
             CreateRebootNode();
-            CreatePlayerNameNodes();
+            CreateDeathNoteNode();
         }
 
         private static void CreateRebootNode()
@@ -180,76 +154,55 @@ namespace ghostCodes
             rebootNode = OpenLib.CoreMethods.AddingThings.AddNodeManual("ghostCodes_reboot", "reboot", AskTerminalReboot, true, 1, OpenLib.ConfigManager.ConfigSetup.defaultListing, 0, HandleRebootNode, null, "", $"Terminal Reboot has been cancelled.\r\n\r\n");
         }
 
-        private static void CreatePlayerNameNodes()
+        private static void CreateDeathNoteNode()
         {
             if (InteractionsConfig.DeathNote.Value < 1)
                 return;
 
-            foreach (PlayerControllerB player in Plugin.instance.players)
+            if(StartOfRound.Instance.allPlayerScripts.Any(x => x.isPlayerControlled && x != StartOfRound.Instance.localPlayerController))
             {
-                if (player != StartOfRound.Instance.localPlayerController && player.isPlayerControlled)
-                {
-                    string playerName = player.playerUsername;
-                    playerName = TerminalFriendlyString(playerName);
-                    OpenLib.CoreMethods.AddingThings.AddNodeManual("ghostCodes_haunt_" + playerName, playerName, PlayerNameNode, true, 0, OpenLib.ConfigManager.ConfigSetup.defaultListing, 0, null, null, "", "", false, 1, "", true);
-                    Plugin.MoreLogs($"Command created for haunting {playerName}");
-                }
-                else
-                    Plugin.MoreLogs("skipping self and non-player controlled players");
-
+                Plugin.Spam("Adding deathnotemenu!");
+                Interactions.DeathNote.DeathNoteMenu = OpenLib.CoreMethods.AddingThings.AddNodeManual("DeathNoteMenu", "leave me alone", OpenDeathNote, true, 0, OpenLib.ConfigManager.ConfigSetup.defaultListing);
             }
         }
 
-        private static void DeathNoteFail()
+        internal static string OpenDeathNote()
+        {
+            if (!CanUseDeathNote())
+                return "Chill out, no one is after you lol\r\n\r\n";
+
+            if (Plugin.instance.TerminalStuff)
+                Compatibility.TerminalStuff.StopShortCuts(true);
+
+            Interactions.DeathNote.currentPage = 1;
+            Plugin.instance.Terminal.StartCoroutine(Interactions.DeathNote.MenuStart());
+            return Interactions.DeathNote.GetPlayerList(0, 10, ref Interactions.DeathNote.currentPage);
+        }
+
+        internal static bool CanUseDeathNote()
+        {
+            if (Plugin.instance.DressGirl == null)
+                return false;
+
+            if (!Plugin.instance.DressGirl.hauntingLocalPlayer)
+                return false;
+
+            if (!StartOfRound.Instance.allPlayerScripts.Any(x => x.isPlayerControlled && x != StartOfRound.Instance.localPlayerController))
+                return false;
+
+            if (StartOfRound.Instance.shipIsLeaving)
+                return false;
+
+            return true;
+        }
+
+        internal static void DeathNoteFail()
         {
             if (!InteractionsConfig.DeathNoteFailChase.boolValue || Plugin.instance.DressGirl == null)
                 return;
 
             Plugin.MoreLogs("death note failed, beginning ghost girl chase");
             Plugin.instance.DressGirl.BeginChasing();
-        }
-
-        private static string ValidPlayerNameInput(string s)
-        {
-            int chance = GetInt(0, 100);
-            if (OpenLib.Common.Misc.TryGetPlayerFromName(s, out PlayerControllerB changeToPlayer))
-            {
-                if (InteractionsConfig.DeathNote.Value < chance)
-                {
-                    string newText = $"\n\n\n\n\n\n<color=#b81b1b>You're not getting rid of me that easy! :3</color>\n\n";
-                    deathNoteStrikes++;
-                    DeathNoteFail();
-                    //Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
-                    return newText;
-                }
-                else if (changeToPlayer.isPlayerControlled && !changeToPlayer.isPlayerDead)
-                {
-                    string newText = $"\n\n\n\n\n\n<color=#b81b1b>Okay! I'll go play with {s} now! :3</color>\n\n";
-                    DressGirl.EndAllGirlStuff();
-                    NetHandler.Instance.ChangeDressGirlToPlayerServerRpc(s);
-                    deathNoteStrikes++;
-                    //Plugin.instance.Terminal.StartCoroutine(DelayedReturnToNormalText());
-                    Plugin.MoreLogs("You should not be haunted anymore.");
-                    return newText; // make sure you only skip if really necessary
-                }
-                else
-                {
-                    string newText = $"\n\n\n\n\n\n<color=#b81b1b>I think i'll keep having fun with you! :3</color>\n\n";
-                    deathNoteStrikes++;
-                    Plugin.MoreLogs("picked player is likely dead, this is an else statement");
-                    DeathNoteFail();
-                    return newText;
-                }
-            }
-            else
-            {
-                string newText = $"\n\n\n\n\n\n<color=#b81b1b>I don't know anyone by that name! Guess you're stuck with me ^.^</color>\n\n";
-                deathNoteStrikes++;
-                DeathNoteFail();
-                return newText;
-            }
-
-
         }
 
         internal static void CorruptedCredits(bool state)

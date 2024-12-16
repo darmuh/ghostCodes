@@ -32,10 +32,14 @@ namespace ghostCodes
 
         internal static void OpenorClose1RandomDoor()
         {
+            if(AllDoors.Count == 0) 
+                return;
 
             int doorNumber = NumberStuff.GetInt(0, AllDoors.Count);
+
             if (AllDoors[doorNumber] == null)
                 return;
+            
             AllDoors[doorNumber].OpenOrCloseDoor(StartOfRound.Instance.localPlayerController);
 
             Plugin.MoreLogs("Opened or Closed one door");
@@ -43,6 +47,9 @@ namespace ghostCodes
 
         internal static void LockorUnlockARandomDoor(bool stateLocked)
         {
+
+            if (AllDoors.Count == 0)
+                return;
 
             for (int i = 0; i < AllDoors.Count; i++)
             {
@@ -68,6 +75,9 @@ namespace ghostCodes
 
         internal static void HauntDoors(int value)
         {
+            if(AllDoors.Count == 0) 
+                return;
+
             float percentage = value / 100f;
             Plugin.MoreLogs($"Attempting to Haunt {value}% of doors!");
             float count;

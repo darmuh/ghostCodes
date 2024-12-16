@@ -236,7 +236,7 @@ namespace ghostCodes
 
         internal static void HauntedOrderFunc()
         {
-            if (Plugin.instance.Terminal.orderedItemsFromTerminal.Count > 0 || Plugin.instance.Terminal.vehicleInDropship || Plugin.instance.Terminal.numberOfItemsInDropship > 0 || HasDropShipLanded())
+            if (!ShouldHauntDropShip())
                 return;
 
             int itemType;
@@ -262,6 +262,27 @@ namespace ghostCodes
 
             if (!itemDropship.shipLanded && StartOfRound.Instance.shipHasLanded)
                 itemDropship.LandShipOnServer();
+        }
+
+        internal static bool ShouldHauntDropShip()
+        {
+            if (Plugin.instance.Terminal.orderedItemsFromTerminal.Count > 0)
+                return false;
+
+            if (Plugin.instance.Terminal.vehicleInDropship)
+                return false;
+
+            if (Plugin.instance.Terminal.numberOfItemsInDropship > 0)
+                return false;
+
+            if (HasDropShipLanded())
+                return false;
+
+            if (StartOfRound.Instance.shipIsLeaving)
+                return false;
+
+            return true;
+
         }
 
         internal static bool HasDropShipLanded()

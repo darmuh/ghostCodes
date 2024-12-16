@@ -1,5 +1,23 @@
 # ghostCodes Change Log
 
+## [2.5.2]
+ - Updated death note to use a menu system for fairness between player names.
+	- To open the death note menu type ``leave me alone`` in the terminal while you are haunted.
+	- Use arrow keys to navigate the menu and enter to select the player you wish to send the ghost girl to.
+ - Added handling for some of the more common errors that have been reported, such as:
+	- out of index sounds
+	- out of index default terminal action
+ - Updated lighting during rapid fire event to smoothly transition to your new color of choice.
+	- also updated this to use all lights within the interior (dungeon) when powered lights could not be found
+	- There is still issues with some modded interiors not having their animators set up as they are with vanilla interiors. Still determining how I will fix this.
+ - Light flicker event now uses only two networked Rpcs (start/stop), the rest of the event is handled client side between each client.
+	- This should hopefully improve performance by offloading the event off the network.
+	- In the event that the player who called the start rpc can not call the stop rpc, the event *should* stop for everyone else.
+ - Added ``NoTouchItems`` config item for the haunted scrap interactions.
+	- This should allow you to filter out items that throw an error in logs when they are activated by a player not currently holding them.
+	- I'd still like reports of which items cause this error so I might be able to find another way to fix this in the future.
+
+
 ## [2.5.1]
  - Fixed SignalTranslator messages only being sent for specific interactions instead of being sent as it's own interaction.
  - Adjusted TerminalAccessibleObject filtering logic to address rare null ref errors

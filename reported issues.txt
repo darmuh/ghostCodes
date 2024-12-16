@@ -1,1 +1,35 @@
-﻿
+﻿[Debug  :ghostCodes] AlarmLights color ServerRpc
+[Error  : Unity Log] NullReferenceException: Object reference not set to an instance of an object
+Stack trace:
+ghostCodes.NetHandler.AlarmLightsClientRpc (System.Boolean normalLights) (at ./NetworkedStuff/NetHandler.cs:99)
+ghostCodes.NetHandler.__rpc_handler_2480206829 (Unity.Netcode.NetworkBehaviour target, Unity.Netcode.FastBufferReader reader, Unity.Netcode.__RpcParams rpcParams) (at <5fb50136b93d4f2eb2acf0018ffed911>:IL_0049)
+Unity.Netcode.RpcMessageHelpers.Handle (Unity.Netcode.NetworkContext& context, Unity.Netcode.RpcMetadata& metadata, Unity.Netcode.FastBufferReader& payload, Unity.Netcode.__RpcParams& rpcParams) (at <895801699cfc4b4ab52267f31e2a4998>:IL_004E)
+Rethrow as Exception: Unhandled RPC exception!
+UnityEngine.Debug:LogException(Exception)
+Unity.Netcode.RpcMessageHelpers:Handle(NetworkContext&, RpcMetadata&, FastBufferReader&, __RpcParams&)
+Unity.Netcode.ClientRpcMessage:Handle(NetworkContext&)
+Unity.Netcode.NetworkBehaviour:__endSendClientRpc(FastBufferWriter&, UInt32, ClientRpcParams, RpcDelivery)
+ghostCodes.NetHandler:AlarmLightsClientRpc(Boolean) (at ./NetworkedStuff/NetHandler.cs:86)
+ghostCodes.NetHandler:AlarmLightsServerRpc(Boolean) (at ./NetworkedStuff/NetHandler.cs:80)
+ghostCodes.NetHandler:__rpc_handler_3389752968(NetworkBehaviour, FastBufferReader, __RpcParams)
+Unity.Netcode.RpcMessageHelpers:Handle(NetworkContext&, RpcMetadata&, FastBufferReader&, __RpcParams&)
+Unity.Netcode.ServerRpcMessage:Handle(NetworkContext&)
+Unity.Netcode.NetworkBehaviour:__endSendServerRpc(FastBufferWriter&, UInt32, ServerRpcParams, RpcDelivery)
+ghostCodes.NetHandler:AlarmLightsServerRpc(Boolean) (at ./NetworkedStuff/NetHandler.cs:76)
+ghostCodes.<AlarmLights>d__9:MoveNext() (at ./PluginStuff/Coroutines.cs:276)
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Error  : Unity Log] NullReferenceException: Object reference not set to an instance of an object
+Stack trace:
+ghostCodes.NetHandler.AlarmLightsClientRpc (System.Boolean normalLights) (at ./NetworkedStuff/NetHandler.cs:99)
+ghostCodes.NetHandler.AlarmLightsServerRpc (System.Boolean normal) (at ./NetworkedStuff/NetHandler.cs:80)
+ghostCodes.NetHandler.__rpc_handler_3389752968 (Unity.Netcode.NetworkBehaviour target, Unity.Netcode.FastBufferReader reader, Unity.Netcode.__RpcParams rpcParams) (at <5fb50136b93d4f2eb2acf0018ffed911>:IL_0049)
+Unity.Netcode.RpcMessageHelpers.Handle (Unity.Netcode.NetworkContext& context, Unity.Netcode.RpcMetadata& metadata, Unity.Netcode.FastBufferReader& payload, Unity.Netcode.__RpcParams& rpcParams) (at <895801699cfc4b4ab52267f31e2a4998>:IL_004E)
+Rethrow as Exception: Unhandled RPC exception!
+UnityEngine.Debug:LogException(Exception)
+Unity.Netcode.RpcMessageHelpers:Handle(NetworkContext&, RpcMetadata&, FastBufferReader&, __RpcParams&)
+Unity.Netcode.ServerRpcMessage:Handle(NetworkContext&)
+Unity.Netcode.NetworkBehaviour:__endSendServerRpc(FastBufferWriter&, UInt32, ServerRpcParams, RpcDelivery)
+ghostCodes.NetHandler:AlarmLightsServerRpc(Boolean) (at ./NetworkedStuff/NetHandler.cs:76)
+ghostCodes.<AlarmLights>d__9:MoveNext() (at ./PluginStuff/Coroutines.cs:276)
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)

@@ -43,7 +43,8 @@ namespace ghostCodes
 
             if (SetupConfig.RapidLights.Value && !lightsFlickering && !endAllCodes)
             {
-                StartOfRound.Instance.StartCoroutine(Coroutines.AlarmLights());
+                NetHandler.Instance.StartRapidFireLightsServerRpc(StartOfRound.Instance.localPlayerController.actualClientId);
+                StartOfRound.Instance.StartCoroutine(Lights.WhileLightsFlicker());
                 Plugin.MoreLogs("networking enabled, sending alarm lights");
             }
         }

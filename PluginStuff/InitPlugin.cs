@@ -15,6 +15,7 @@ namespace ghostCodes
             BaseReset();
             DressGirl.InitDressGirl();
             StartPlugin();
+            Lights.InitLights();
         }
 
         private static void StartPlugin()

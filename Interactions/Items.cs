@@ -29,7 +29,7 @@ namespace ghostCodes.Interactions
             }
         }
 
-        internal static void AffectHauntedPlayersBatterys()
+        internal static void AffectHauntedPlayersBatteries()
         {
             if (Plugin.instance.DressGirl == null || !Plugin.instance.DressGirl.hauntingLocalPlayer)
                 return;
@@ -41,7 +41,7 @@ namespace ghostCodes.Interactions
             Plugin.MoreLogs("haunted player battery drain called");
         }
 
-        internal static void AffectRandomPlayersBatterys()
+        internal static void AffectRandomPlayersBatteries()
         {
             List<PlayerControllerB> allPlayers = GetAllLivingPlayers();
             int randomPlayer = NumberStuff.GetInt(0, allPlayers.Count);
@@ -112,6 +112,9 @@ namespace ghostCodes.Interactions
             {
                 foreach (GrabbableObject item in SoundMakers)
                 {
+                    if (!item.itemProperties.isScrap)
+                        continue;
+
                     if (item.isHeld && item.scrapValue > 0 && Rand.Next(101) >= 50)
                         item.ActivateItemServerRpc(true, true);
                 }
@@ -120,6 +123,9 @@ namespace ghostCodes.Interactions
             {
                 foreach (GrabbableObject item in SoundMakers)
                 {
+                    if (!item.itemProperties.isScrap)
+                        continue;
+
                     if (item.isInFactory && item.scrapValue > 0 && Rand.Next(101) >= 50)
                         item.ActivateItemServerRpc(true, true);
                 }

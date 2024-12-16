@@ -1,6 +1,7 @@
 ﻿using ghostCodes.Compatibility;
 using ghostCodes.Configs;
 using static OpenLib.Common.StartGame;
+using static ghostCodes.Interactions.DeathNote;
 
 namespace ghostCodes.Patches
 {
@@ -16,6 +17,9 @@ namespace ghostCodes.Patches
             OpenLib.Events.EventManager.StartOfRoundAwake.AddListener(StartOfRoundAwake);
             GhostCodesReset.AddListener(InitPlugin.BaseReset);
             ApparatusPull.AddListener(AppPull);
+
+            OpenLib.TerminalUpdatePatch.usePatch = true;
+            OpenLib.Events.EventManager.TerminalKeyPressed.AddListener(OnTerminalKeyPress);
         }
 
         internal static void StartOfRoundAwake()
@@ -24,13 +28,16 @@ namespace ghostCodes.Patches
             NetObject.SpawnNetworkHandler();
         }
 
-        internal static void AppPull()
+        internal static void OnTerminalKeyPress()
         {
-            if (!SetupConfig.GhostCodesSettings.HauntingsMode && !Bools.endAllCodes)
-                Bools.endAllCodes = true;
+            if (!Plugin.instance.Terminal.terminalInUse)
+                return;
+
+            if (inDeathNote)
+                HandleInput();
         }
 
-        internal static void GetInvoke()
+        internal static void GetInvoke() //needed for patch
         {
             if (Bools.appPullInvoked)
                 return;
@@ -38,6 +45,12 @@ namespace ghostCodes.Patches
             Bools.appPullInvoked = true;
             Plugin.Spam("Apparatus pull detected");
             ApparatusPull.Invoke();
+        }
+
+        internal static void AppPull()
+        {
+            if (!SetupConfig.GhostCodesSettings.HauntingsMode && !Bools.endAllCodes)
+                Bools.endAllCodes = true;
         }
 
         internal static void OnTerminalAwake(Terminal instance)
@@ -55,6 +68,8 @@ namespace ghostCodes.Patches
             {
                 Plugin.MoreLogs("ToilHeads mod detected!");
             }
+            if (SoftCompatibility("darmuh.TerminalStuff", ref Plugin.instance.TerminalStuff))
+                Plugin.MoreLogs("TerminalStuf compatibility added!");
 
             NetObject.Init();
             SoundSystem.LoadCustomSounds();
