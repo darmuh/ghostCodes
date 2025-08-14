@@ -33,12 +33,12 @@ namespace ghostCodes
             {
                 yield return new WaitForSeconds(firstWait);
                 StartOfRound.Instance.StartCoroutine(CodeLooper(instance));
-                Plugin.MoreLogs("The ghost is in the machine...");
+                Plugin.GC.LogInfo("The ghost is in the machine...");
                 TerminalAdditions.CreateAllNodes();
             }
             else
             {
-                Plugin.MoreLogs("Ghost Girl Enhanced is disabled and you are not the host.");
+                Plugin.GC.LogInfo("Ghost Girl Enhanced is disabled and you are not the host.");
                 TerminalAdditions.CreateAllNodes();
             }
         }

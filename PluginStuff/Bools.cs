@@ -48,7 +48,7 @@ namespace ghostCodes
         {
             if (Plugin.instance.Terminal == null)
             {
-                Plugin.MoreLogs("Terminal instance null");
+                Plugin.ERROR("Terminal instance null");
                 return false;
             }
 
